@@ -48,7 +48,7 @@
   <meta name="copyright" content="Copyright (C) 2026 sebasmobil"/>
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
-  <title>S-Öğretmen Pro 3.20</title>
+  <title>S-Öğretmen Pro 3.21</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
     body{background:#060A12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:none;font-size:15px;}
@@ -117,12 +117,12 @@
   <!-- Babel Standalone (JSX dönüştürür) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" data-presets="react">
-const APP_VERSION = "Pro 3.20";
+const APP_VERSION = "Pro 3.21";
 const { useState, useMemo, useEffect, useRef, createContext, useContext } = React;
 
 // ── Versiyon Yenilikleri ──
 const VERSION_CHANGELOG = {
-  "Pro 3.20": [
+  "Pro 3.21": [
     "✅ Not İşlemleri aramada Tam Puan butonu eklendi (Sınav Detayı)",
     "⭐ Arama yapınca çıkan öğrenci kartında Tam Puan + MAX butonu mevcut",
   ],
@@ -4806,7 +4806,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
   const analyzedForStats=analyzed.filter(s=>!s.bep&&!s.kopya&&hasEntered(s.id));
   const allSc=analyzedForStats.map(s=>isComposite?s.pct:s.total);
   const stats=useMemo(()=>calcStats(allSc),[allSc]);
-  const qStats=useMemo(()=>{const qAnalyzed=analyzedForStats.filter(s=>{const ss=scores[s.id]||{};return ss.__soScore==null||ss.__soScore===""});return exam.questions.map(q=>{const maxS=Number(q.maxScore);const rawVals=qAnalyzed.map(s=>{const v=scores[s.id]?.[q.id];return(v!=null&&v!=="")?Number(v):null;});const vals=rawVals.filter(v=>v!==null);const notEntered=rawVals.filter(v=>v===null).length;const full=vals.filter(v=>v===maxS).length;const partial=vals.filter(v=>v>0&&v<maxS).length;const zero=vals.filter(v=>v===0).length;const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;const sp=maxS>0?Math.round((avg/maxS)*100):0;return{...q,full,partial,zero,notEntered,avg:avg.toFixed(1),sp,qCount:qAnalyzed.length};});},[analyzedForStats,scores,exam]);
+  const qStats=useMemo(()=>{const qAnalyzed=analyzedForStats.filter(s=>exam.questions.some(q=>scores[s.id]?.[q.id]!==""&&scores[s.id]?.[q.id]!==undefined));return exam.questions.map(q=>{const maxS=Number(q.maxScore);const rawVals=qAnalyzed.map(s=>{const v=scores[s.id]?.[q.id];return(v!=null&&v!=="")?Number(v):null;});const vals=rawVals.filter(v=>v!==null);const notEntered=rawVals.filter(v=>v===null).length;const full=vals.filter(v=>v===maxS).length;const partial=vals.filter(v=>v>0&&v<maxS).length;const zero=vals.filter(v=>v===0).length;const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;const sp=maxS>0?Math.round((avg/maxS)*100):0;return{...q,full,partial,zero,notEntered,avg:avg.toFixed(1),sp,qCount:qAnalyzed.length};});},[analyzedForStats,scores,exam]);
   const dist=[{r:"0–49",min:0,max:49},{r:"50–59",min:50,max:59},{r:"60–69",min:60,max:69},{r:"70–84",min:70,max:84},{r:"85–100",min:85,max:100}].map((d,i)=>({...d,cnt:allSc.filter(s=>s>=d.min&&s<=d.max).length,c:[T.danger,T.warn,"#06B6D4",T.accent,T.success][i]}));
   const maxDist=Math.max(1,...dist.map(d=>d.cnt));
   return <div>
@@ -5308,7 +5308,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
                 </tbody>
               </table>
             </div>}
-            {!isComposite&&(()=>{const soCount=analyzedForStats.length-(qStats[0]?.qCount??analyzedForStats.length);return soCount>0?<div style={{marginTop:8,padding:"7px 10px",background:T.warnDim,borderRadius:7,fontSize:10,color:T.warn}}>ℹ️ <b>{soCount} öğrencinin</b> notu "Sadece Sonuç" modunda girildiğinden soru bazlı analize dahil edilememiştir. Tablo <b>{qStats[0]?.qCount??0} öğrenci</b> üzerinden hesaplanmıştır.</div>:null;})()}
+            {!isComposite&&(()=>{const soCount=analyzedForStats.length-(qStats[0]?.qCount??analyzedForStats.length);return soCount>0?<div style={{marginTop:8,padding:"7px 10px",background:T.warnDim,borderRadius:7,fontSize:10,color:T.warn}}>ℹ️ <b>{soCount} öğrencinin</b> soru bazlı puanı bulunmadığından analize dahil edilememiştir. Tablo <b>{qStats[0]?.qCount??0} öğrenci</b> üzerinden hesaplanmıştır.</div>:null;})()}
             {!isComposite&&qStats.some(q=>q.sp<70)&&<div style={{marginTop:10,padding:"10px 12px",background:T.warnDim,borderRadius:8}}>
               {qStats.filter(q=>q.sp<50).length>0&&<><div style={{color:T.danger,fontSize:11,fontWeight:700,marginBottom:4}}>🔴 Geri Bildirim Verilmeli:</div>{qStats.filter(q=>q.sp<50).map(q=><div key={q.id} style={{color:T.textSub,fontSize:11,marginBottom:2}}>· S{q.label} – %{q.sp}</div>)}</>}
               {qStats.filter(q=>q.sp>=50&&q.sp<70).length>0&&<><div style={{color:T.warn,fontSize:11,fontWeight:700,marginTop:6,marginBottom:4}}>🟡 Bireysel Çalışma Gerekli:</div>{qStats.filter(q=>q.sp>=50&&q.sp<70).map(q=><div key={q.id} style={{color:T.textSub,fontSize:11,marginBottom:2}}>· S{q.label} – %{q.sp}</div>)}</>}
@@ -6591,10 +6591,11 @@ function buildExamAnalysisPDF(exam,scores,students,classes,lessons,school,opts={
   const badgeStyle=pct=>pct>=50?"background:#d1fae5;color:#059669":"background:#fee2e2;color:#dc2626";
 
   // Soru analizi
-    // __soScore ile toplu not girilmişse soru bazlı analiz gösterme
-  const hasSoScoreOnly=entered.length>0&&entered.every(s=>{const ss=sc[s.id]||{};return ss.__soScore!=null&&ss.__soScore!=="";});
-  // Soru bazlı analiz sadece soru bazlı girilen öğrencileri kapsar
-  const qEntered=entered.filter(s=>{const ss=sc[s.id]||{};return ss.__soScore==null||ss.__soScore==="";});
+  // Gerçekten soru bazlı puan girilmiş öğrenciler (q.id key'i ile)
+  const hasQSc=s=>exam.questions.some(q=>{const v=sc[s.id]?.[q.id];return v!==""&&v!==undefined&&v!==null;});
+  const hasSoScoreOnly=entered.length>0&&entered.every(s=>!hasQSc(s));
+  // Soru bazlı analiz sadece soru bazlı puan girilmiş öğrencileri kapsar
+  const qEntered=entered.filter(s=>hasQSc(s));
   const soScoreCount=entered.length-qEntered.length;
   const qStats=exam.questions.map(q=>{
     const maxS=Number(q.maxScore);
@@ -6732,7 +6733,7 @@ function buildExamAnalysisPDF(exam,scores,students,classes,lessons,school,opts={
       html+=`<h2>🎯 Soru Bazlı Konu Analizi</h2><div style="background:#fef3c7;border:1px solid #d97706;border-radius:8px;padding:10px 14px;font-size:11px;color:#92400e;margin-bottom:10px;">ℹ️ Bu sınavdaki notlar "Sadece Sonuç" modunda girildiğinden soru bazlı analiz yapılamamaktadır.</div>`;
     } else {
       html+=`<h2>🎯 Soru Bazlı Konu Analizi</h2>`;
-      if(soScoreCount>0){html+=`<div style="background:#fef9c3;border:1px solid #ca8a04;border-radius:7px;padding:8px 12px;font-size:10px;color:#713f12;margin-bottom:8px;">ℹ️ <b>${soScoreCount} öğrencinin</b> notu "Sadece Sonuç" modunda girildiğinden soru bazlı analize dahil edilememiştir. Aşağıdaki tablo <b>${qEntered.length} öğrenci</b> üzerinden hesaplanmıştır.</div>`;}
+      if(soScoreCount>0){html+=`<div style="background:#fef9c3;border:1px solid #ca8a04;border-radius:7px;padding:8px 12px;font-size:10px;color:#713f12;margin-bottom:8px;">ℹ️ <b>${soScoreCount} öğrencinin</b> soru bazlı puanı bulunmadığından analize dahil edilememiştir. Aşağıdaki tablo <b>${qEntered.length} öğrenci</b> üzerinden hesaplanmıştır.</div>`;}
       html+=`<table>
     <tr><th>Soru</th><th style="text-align:center">Max</th><th style="text-align:center;color:#059669">Tam Alan</th><th style="text-align:center;color:#d97706">Kısmi Alan</th><th style="text-align:center;color:#dc2626">Sıfır Alan</th>${qEntered.some((_,i,a)=>a)?"<th style=\"text-align:center;color:#94a3b8\">Girilmemiş</th>":""}<th style="text-align:center">Ort. Puan</th><th style="text-align:center">Cevaplanma %</th><th>Konu Analizi</th></tr>`;
   qStats.forEach(q=>{
