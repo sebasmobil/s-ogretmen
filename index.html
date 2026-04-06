@@ -48,7 +48,7 @@
   <meta name="copyright" content="Copyright (C) 2026 sebasmobil"/>
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
-  <title>S-Öğretmen Pro 3.22</title>
+  <title>S-Öğretmen Pro 3.23</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
     body{background:#060A12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:none;font-size:15px;}
@@ -117,11 +117,17 @@
   <!-- Babel Standalone (JSX dönüştürür) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" data-presets="react">
-const APP_VERSION = "Pro 3.22";
+const APP_VERSION = "Pro 3.23";
 const { useState, useMemo, useEffect, useRef, createContext, useContext } = React;
 
 // ── Versiyon Yenilikleri ──
 const VERSION_CHANGELOG = {
+  "Pro 3.23": [
+    "🔗 Yazılı Analizi ↔ Sadece Sonuç çift yönlü entegrasyon",
+    "✅ Sonuca puan girilince soru bazlı analiz verileri otomatik temizlenir",
+    "✅ Analiz soru puanları girilince Sonuç bölümü anında güncellenir",
+    "✅ Sadece Sonuç modunda puan girişi artık 0–tmax arası (ham puan) olarak gösterilir",
+  ],
   "Pro 3.22": [
     "✅ Not İşlemleri aramada Tam Puan butonu eklendi (Sınav Detayı)",
     "⭐ Arama yapınca çıkan öğrenci kartında Tam Puan + MAX butonu mevcut",
@@ -4768,8 +4774,23 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
     return hasQScores(sid)||hasSoScore(sid);
   };
   const setSoScore=(sid,val)=>{
-    const n=val===""?"":Math.max(0,Math.min(100,Number(val)));
-    setScores(s=>({...s,[sid]:{...(s[sid]||{}),__soScore:n}}));
+    const rawMax=tmax>0?tmax:100;
+    const n=val===""?"":Math.max(0,Math.min(rawMax,Number(val)));
+    setScores(s=>{
+      const prev=s[sid]||{};
+      // Sonuç girilince soru bazlı analiz verilerini temizle (çift yönlü senkronizasyon)
+      const cleared={};
+      exam.questions.forEach(q=>{cleared[q.id]="";});
+      // __soScore 0-100 yüzde olarak sakla (mevcut sistem)
+      const pct=rawMax>0&&n!==""?Math.round((Number(n)/rawMax)*100):n;
+      return {...s,[sid]:{...prev,...cleared,__soScore:pct}};
+    });
+  };
+  // Görüntüleme için: yüzde soScore → ham puan (0-tmax)
+  const getSoRaw=sid=>{
+    const pct=scores[sid]?.__soScore;
+    if(pct===""||pct===undefined||pct===null)return "";
+    return tmax>0?Math.round(Number(pct)*tmax/100):Number(pct);
   };
   const entered=cls.filter(s=>hasEntered(s.id)).length;
   const scoreFields=useMemo(()=>[
@@ -5022,9 +5043,9 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
               {/* SADECE SONUÇ MODU */}
               {scoreOnlyMode&&!isComposite&&!isBEP(st.id)&&!isKopya(st.id)&&<div style={{display:"flex",alignItems:"center",gap:8,background:T.bg,borderRadius:9,padding:"8px 10px"}}>
                 <span style={{color:T.textSub,fontSize:11,flex:1}}>Puan (0–{tmax})</span>
-                <button style={{...btnSm(T.toggleBg,T.textSub),padding:"5px 10px",fontSize:15}} onClick={()=>{const c=scores[st.id]?.__soScore||0;setSoScore(st.id,Math.max(0,Number(c)-1));}}>−</button>
-                <input type="number" inputMode="numeric" pattern="[0-9]*" min={0} max={tmax} value={scores[st.id]?.__soScore??""} onChange={e=>setSoScore(st.id,e.target.value)} style={{...inp,width:60,textAlign:"center",padding:"6px 4px",fontSize:18,fontWeight:800}} placeholder="—" onFocus={e=>e.target.select()}/>
-                <button style={{...btnSm(T.accentDim,T.accent),padding:"5px 10px",fontSize:15}} onClick={()=>{const c=scores[st.id]?.__soScore||0;setSoScore(st.id,Math.min(tmax,Number(c)+1));}}>+</button>
+                <button style={{...btnSm(T.toggleBg,T.textSub),padding:"5px 10px",fontSize:15}} onClick={()=>{const c=getSoRaw(st.id)||0;setSoScore(st.id,Math.max(0,Number(c)-1));}}>−</button>
+                <input type="number" inputMode="numeric" pattern="[0-9]*" min={0} max={tmax} value={getSoRaw(st.id)} onChange={e=>setSoScore(st.id,e.target.value)} style={{...inp,width:60,textAlign:"center",padding:"6px 4px",fontSize:18,fontWeight:800}} placeholder="—" onFocus={e=>e.target.select()}/>
+                <button style={{...btnSm(T.accentDim,T.accent),padding:"5px 10px",fontSize:15}} onClick={()=>{const c=getSoRaw(st.id)||0;setSoScore(st.id,Math.min(tmax,Number(c)+1));}}>+</button>
               </div>}
               {/* NORMAL MOD */}
               {!isComposite&&!scoreOnlyMode&&!isBEP(st.id)&&!isKopya(st.id)&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
@@ -5149,9 +5170,9 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
             {scoreOnlyMode&&!isComposite&&!isBEP(st.id)&&!isKopya(st.id)&&<div style={{display:"flex",alignItems:"center",gap:10,background:T.bg,borderRadius:9,padding:"10px 12px"}}>
               <span style={{color:T.textSub,fontSize:12,flex:1,fontWeight:600}}>Sınav Puanı <span style={{color:T.textMuted,fontSize:10}}>(0–{tmax})</span></span>
               <div style={{display:"flex",alignItems:"center",gap:6}}>
-                <button style={{...btnSm(T.toggleBg,T.textSub),padding:"6px 13px",fontSize:17}} onClick={()=>{const c=scores[st.id]?.__soScore||0;setSoScore(st.id,Math.max(0,Number(c)-1));}}>−</button>
-                <input type="number" inputMode="numeric" pattern="[0-9]*" min={0} max={tmax} value={scores[st.id]?.__soScore??""} onChange={e=>setSoScore(st.id,e.target.value)} style={{...inp,width:68,textAlign:"center",padding:"7px 4px",fontSize:20,fontWeight:800}} placeholder="—" onFocus={e=>e.target.select()}/>
-                <button style={{...btnSm(T.accentDim,T.accent),padding:"6px 13px",fontSize:17}} onClick={()=>{const c=scores[st.id]?.__soScore||0;setSoScore(st.id,Math.min(tmax,Number(c)+1));}}>+</button>
+                <button style={{...btnSm(T.toggleBg,T.textSub),padding:"6px 13px",fontSize:17}} onClick={()=>{const c=getSoRaw(st.id)||0;setSoScore(st.id,Math.max(0,Number(c)-1));}}>−</button>
+                <input type="number" inputMode="numeric" pattern="[0-9]*" min={0} max={tmax} value={getSoRaw(st.id)} onChange={e=>setSoScore(st.id,e.target.value)} style={{...inp,width:68,textAlign:"center",padding:"7px 4px",fontSize:20,fontWeight:800}} placeholder="—" onFocus={e=>e.target.select()}/>
+                <button style={{...btnSm(T.accentDim,T.accent),padding:"6px 13px",fontSize:17}} onClick={()=>{const c=getSoRaw(st.id)||0;setSoScore(st.id,Math.min(tmax,Number(c)+1));}}>+</button>
               </div>
               {!isBEP(st.id)&&!isKopya(st.id)&&<div style={{display:"flex",gap:4}}>
                 <button onClick={()=>setBEP(st.id,true)} style={{background:T.toggleBg,border:`1px solid ${T.border}`,borderRadius:7,padding:"3px 7px",cursor:"pointer",color:T.textSub,fontSize:10,fontFamily:"inherit"}}>BEP</button>
