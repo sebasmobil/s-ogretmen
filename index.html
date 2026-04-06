@@ -124,10 +124,10 @@ const { useState, useMemo, useEffect, useRef, createContext, useContext } = Reac
 const VERSION_CHANGELOG = {
   "Pro 4.0": [
     "🔗 Yazılı Analizi ↔ Sadece Sonuç çift yönlü entegrasyon",
+    "🐛 Dönem notu hesaplaması düzeltildi — puan artık Not Çizelgesine doğru yansıyor",
     "✅ Sonuca puan girilince soru bazlı analiz verileri otomatik temizlenir",
     "✅ Analiz soru puanları girilince Sonuç bölümü anında güncellenir",
-    "✅ Tam Puan butonu artık Sadece Sonuç kısmını da anında günceller",
-    "✅ Sadece Sonuç modunda puan girişi 0–tmax arası ham puan olarak gösterilir",
+    "✅ Tam Puan butonu artık Sadece Sonuç ve Dönem Notu hesabını da anında günceller",
   ],
   "Pro 3.22": [
     "✅ Not İşlemleri aramada Tam Puan butonu eklendi (Sınav Detayı)",
@@ -4730,7 +4730,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
     const n=v===""?"":Math.max(0,Math.min(Number(v),max));
     setScores(s=>{
       const updated={...(s[sid]||{}),[qid]:n};
-      // Analiz modunda soru puanı değişince __soScore'u da güncelle (senkronizasyon)
+      // Analiz modunda soru puanı değişince __soScore ve __scoreOnly'u da güncelle
       if(!scoreOnlyMode){
         const qTotal=exam.questions.reduce((acc,q)=>{
           const val=q.id===qid?n:updated[q.id];
@@ -4739,6 +4739,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
         const tmx=exam.questions.reduce((a,q)=>a+Number(q.maxScore),0);
         const newPct=tmx>0?Math.round((qTotal/tmx)*100):0;
         updated.__soScore=newPct;
+        updated.__scoreOnly=newPct;
       }
       return {...s,[sid]:updated};
     });
@@ -4748,7 +4749,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
   const setBEP=(sid,val)=>setScores(s=>{const prev=s[sid]||{};if(val){const bepScore=prev.__bepScore??"";;return {...s,[sid]:{...prev,__bep:true,__kopya:false,__bepScore:bepScore}};}else{const {__bep,...rest}=prev;return {...s,[sid]:rest};}});
   const setKopya=(sid,val)=>setScores(s=>{const prev=s[sid]||{};if(val){const newQ={};exam.questions.forEach(q=>{newQ[q.id]=0;});return {...s,[sid]:{...prev,...newQ,__kopya:true,__bep:false}};}else{const {__kopya,...rest}=prev;return {...s,[sid]:rest};}});
   const setBEPScore=(sid,val)=>setScores(s=>({...s,[sid]:{...(s[sid]||{}),__bepScore:val===""?"":Math.max(0,Math.min(100,Number(val))),__bep:true}}));
-  const setFullScore=(sid)=>setScores(s=>{const newQ={};exam.questions.forEach(q=>{newQ[q.id]=Number(q.maxScore);});return {...s,[sid]:{...(s[sid]||{}),...newQ,__soScore:100}};});
+  const setFullScore=(sid)=>setScores(s=>{const newQ={};exam.questions.forEach(q=>{newQ[q.id]=Number(q.maxScore);});return {...s,[sid]:{...(s[sid]||{}),...newQ,__soScore:100,__scoreOnly:100}};});
   // Öğrenci için soru bazlı puan girilip girilmediği
   const hasQScores=sid=>exam.questions.some(q=>scores[sid]?.[q.id]!==""&&scores[sid]?.[q.id]!==undefined);
   // Öğrenci için __soScore girilip girilmediği
@@ -4784,7 +4785,8 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
       exam.questions.forEach(q=>{cleared[q.id]="";});
       // __soScore 0-100 yüzde olarak sakla (mevcut sistem)
       const pct=rawMax>0&&n!==""?Math.round((Number(n)/rawMax)*100):n;
-      return {...s,[sid]:{...prev,...cleared,__soScore:pct}};
+      // __scoreOnly da yazılmalı — calcTermGrade bu anahtarı okuyor
+      return {...s,[sid]:{...prev,...cleared,__soScore:pct,__scoreOnly:pct}};
     });
   };
   // Görüntüleme için: yüzde soScore → ham puan (0-tmax)
