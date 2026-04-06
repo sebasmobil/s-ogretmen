@@ -48,7 +48,7 @@
   <meta name="copyright" content="Copyright (C) 2026 sebasmobil"/>
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
-  <title>S-Öğretmen Pro 3.23</title>
+  <title>S-Öğretmen Pro 4.0</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
     body{background:#060A12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:none;font-size:15px;}
@@ -117,16 +117,17 @@
   <!-- Babel Standalone (JSX dönüştürür) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" data-presets="react">
-const APP_VERSION = "Pro 3.23";
+const APP_VERSION = "Pro 4.0";
 const { useState, useMemo, useEffect, useRef, createContext, useContext } = React;
 
 // ── Versiyon Yenilikleri ──
 const VERSION_CHANGELOG = {
-  "Pro 3.23": [
+  "Pro 4.0": [
     "🔗 Yazılı Analizi ↔ Sadece Sonuç çift yönlü entegrasyon",
     "✅ Sonuca puan girilince soru bazlı analiz verileri otomatik temizlenir",
     "✅ Analiz soru puanları girilince Sonuç bölümü anında güncellenir",
-    "✅ Sadece Sonuç modunda puan girişi artık 0–tmax arası (ham puan) olarak gösterilir",
+    "✅ Tam Puan butonu artık Sadece Sonuç kısmını da anında günceller",
+    "✅ Sadece Sonuç modunda puan girişi 0–tmax arası ham puan olarak gösterilir",
   ],
   "Pro 3.22": [
     "✅ Not İşlemleri aramada Tam Puan butonu eklendi (Sınav Detayı)",
@@ -4747,7 +4748,7 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
   const setBEP=(sid,val)=>setScores(s=>{const prev=s[sid]||{};if(val){const bepScore=prev.__bepScore??"";;return {...s,[sid]:{...prev,__bep:true,__kopya:false,__bepScore:bepScore}};}else{const {__bep,...rest}=prev;return {...s,[sid]:rest};}});
   const setKopya=(sid,val)=>setScores(s=>{const prev=s[sid]||{};if(val){const newQ={};exam.questions.forEach(q=>{newQ[q.id]=0;});return {...s,[sid]:{...prev,...newQ,__kopya:true,__bep:false}};}else{const {__kopya,...rest}=prev;return {...s,[sid]:rest};}});
   const setBEPScore=(sid,val)=>setScores(s=>({...s,[sid]:{...(s[sid]||{}),__bepScore:val===""?"":Math.max(0,Math.min(100,Number(val))),__bep:true}}));
-  const setFullScore=(sid)=>setScores(s=>{const newQ={};exam.questions.forEach(q=>{newQ[q.id]=Number(q.maxScore);});return {...s,[sid]:{...(s[sid]||{}),...newQ}};});
+  const setFullScore=(sid)=>setScores(s=>{const newQ={};exam.questions.forEach(q=>{newQ[q.id]=Number(q.maxScore);});return {...s,[sid]:{...(s[sid]||{}),...newQ,__soScore:100}};});
   // Öğrenci için soru bazlı puan girilip girilmediği
   const hasQScores=sid=>exam.questions.some(q=>scores[sid]?.[q.id]!==""&&scores[sid]?.[q.id]!==undefined);
   // Öğrenci için __soScore girilip girilmediği
