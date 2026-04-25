@@ -11,7 +11,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>S-Plan Oluştur Pro 2.0</title>
+<title>S-Plan Oluştur Pro 2.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
@@ -162,7 +162,7 @@ table.ptbl tr.split td{background:color-mix(in srgb,var(--purple-light) 55%,tran
 
 <div class="topbar">
   <div class="topbar-inner">
-    <span>Pro 2.0</span>
+    <span>Pro 2.1</span>
     <span class="topbar-sep">|</span>
     <span>© sebasmobil 2026</span>
     <span class="topbar-sep">|</span>
@@ -235,6 +235,7 @@ table.ptbl tr.split td{background:color-mix(in srgb,var(--purple-light) 55%,tran
           </select>
         </div>
       </div>
+
     </div>
 
     <!-- Tarih ayarları -->
@@ -489,17 +490,22 @@ function doMerge() {
 
   const groups = [];
   let grp = null;
+  let lastWv = null;
   for (const cells of rawRows) {
     const wv = cells[wc];
-    if (wv !== '') {
+    if (wv !== '' && wv !== lastWv) {
+      // Yeni farklı hafta değeri → yeni grup
       grp = { cells: cells.map(c => [c]), rowCount: 1 };
       groups.push(grp);
+      lastWv = wv;
     } else if (grp) {
+      // Boş VEYA aynı hafta değeri → mevcut gruba ekle
       grp.rowCount++;
       cells.forEach((c, ci) => { if (c !== '') grp.cells[ci].push(c); });
     } else {
       grp = { cells: cells.map(c => [c]), rowCount: 1 };
       groups.push(grp);
+      lastWv = wv;
     }
   }
 
@@ -614,11 +620,19 @@ function renderPreview() {
   const more = headers.length > pc;
 
   document.getElementById('th').innerHTML = '<tr>' +
+    '<th style="width:36px"><input type="checkbox" id="checkAll" title="Tümünü seç/kaldır" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent)"></th>' +
     '<th>#</th><th>Durum</th>' +
     (hasDate ? '<th class="th-date">📅 Güncel Hafta İçeriği</th>' : '') +
     headers.slice(0, pc).map(h => `<th>${esc(h.substring(0,24))}</th>`).join('') +
     (more ? `<th style="color:var(--text3)">…+${headers.length - pc}</th>` : '') +
     '</tr>';
+  // Tümünü seç/kaldır
+  setTimeout(() => {
+    const ca = document.getElementById('checkAll');
+    if (ca) ca.addEventListener('change', () => {
+      document.querySelectorAll('.row-chk').forEach(cb => cb.checked = ca.checked);
+    });
+  }, 0);
 
   const tb = document.getElementById('tb');
   tb.innerHTML = '';
@@ -634,10 +648,18 @@ function renderPreview() {
         : `<span class="bdg bs">tekil</span>`;
 
     tr.innerHTML =
+      `<td style="text-align:center"><input type="checkbox" class="row-chk" data-idx="${i}" checked style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent)"></td>` +
       `<td>${i+1}</td><td>${bdg}</td>` +
       (hasDate ? `<td class="td-date">${esc(r.dateLabel||'—')}</td>` : '') +
       r.cells.slice(0, pc).map(c => `<td title="${esc(c)}">${esc(c.replace(/\n/g,' ').substring(0,50))}</td>`).join('') +
       (more ? '<td style="color:var(--text3)">…</td>' : '');
+    // Satır tıklayınca checkbox toggle
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', e => {
+      if (e.target.tagName === 'INPUT') return;
+      const cb = tr.querySelector('.row-chk');
+      if (cb) cb.checked = !cb.checked;
+    });
     tb.appendChild(tr);
   });
 
@@ -646,14 +668,23 @@ function renderPreview() {
     tr.innerHTML = `<td colspan="${pc+(hasDate?4:3)}" style="text-align:center;color:var(--text3);padding:10px">… ve ${finalRows.length-300} satır daha</td>`;
     tb.appendChild(tr);
   }
-  document.getElementById('ptitle').textContent = `Önizleme — ${finalRows.length} satır`;
+  document.getElementById('ptitle').textContent = `Önizleme — ${finalRows.length} satır (tümü seçili, istemediğini tıkla)`;
 }
 
 // ── Download ───────────────────────────────────────────────────────────────
 document.getElementById('dlBtn').onclick = () => {
   if (!finalRows.length) { setStatus('err', 'Önce birleştirme yapın.'); return; }
+  // Sadece işaretli satırları al
+  const checked = new Set(
+    [...document.querySelectorAll('.row-chk')]
+      .filter(cb => cb.checked)
+      .map(cb => parseInt(cb.dataset.idx))
+  );
+  const selectedRows = finalRows.filter((_, i) => checked.size === 0 || checked.has(i));
+  if (!selectedRows.length) { setStatus('err', 'Hiç satır seçili değil!'); return; }
+
   const outHeaders = ['Güncel Hafta İçeriği', ...headers];
-  const outRows = finalRows.map(r => [r.dateLabel, ...r.cells]);
+  const outRows = selectedRows.map(r => [r.dateLabel, ...r.cells]);
   const ws = XLSX.utils.aoa_to_sheet([outHeaders, ...outRows]);
   ws['!cols'] = [{ wch: 52 }, ...headers.map(() => ({ wch: 28 }))];
   ws['!rows'] = [{ hpt: 28 }];
@@ -677,6 +708,13 @@ document.getElementById('resetBtn').onclick = () => {
   document.getElementById('howtoBox').style.display = '';
   document.getElementById('fi').value = '';
 };
+
+// Tüm number inputlarına tıklayınca otomatik seç
+document.addEventListener('focusin', e => {
+  if (e.target.tagName === 'INPUT') {
+    e.target.select();
+  }
+});
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
