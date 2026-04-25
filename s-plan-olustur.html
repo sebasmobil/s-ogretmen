@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-Plan Oluştur</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf1;
+  --text:#1a1d23;--text2:#4a5568;--text3:#8a9ab0;
+  --border:#d1d9e6;--accent:#3b6fce;--accent2:#2a4e9a;--accent-light:#e8effc;
+  --green:#2d7d52;--green-light:#e6f4ed;
+  --red:#c53030;--red-light:#fde8e8;
+  --amber:#b7791f;--amber-light:#fef3cd;
+  --purple:#6b46c1;--purple-light:#ede9fe;
+  --shadow:0 2px 8px rgba(0,0,0,.08);--r:10px;--rs:6px;
+}
+[data-theme=dark]{
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#252836;
+  --text:#e8eaf0;--text2:#a0aec0;--text3:#5a6a80;
+  --border:#2d3348;--accent:#5b8dee;--accent2:#7ba4f4;--accent-light:#1a2a4a;
+  --green:#48bb78;--green-light:#1a2e25;
+  --red:#fc8181;--red-light:#2d1a1a;
+  --amber:#f6ad55;--amber-light:#2d2010;
+  --purple:#9f7aea;--purple-light:#2d1f4a;
+  --shadow:0 2px 8px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;transition:background .2s,color .2s}
+
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.hdr-in{max-width:920px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-ico{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-ico svg{display:block}
+.logo-txt{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:-.4px}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:500;margin-top:-2px}
+.tbtn{width:36px;height:36px;border:1px solid var(--border);background:var(--bg3);border-radius:var(--rs);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:background .15s}
+.tbtn:hover{background:var(--accent-light)}
+
+.main{max-width:920px;margin:0 auto;padding:24px 20px}
+
+.howto{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.howto h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.step{display:flex;align-items:flex-start;gap:10px}
+.sn{width:24px;height:24px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.st{font-size:12px;color:var(--text2);line-height:1.5}
+.st b{color:var(--text);display:block;margin-bottom:2px}
+
+.drop{border:2px dashed var(--border);border-radius:var(--r);padding:44px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--bg2)}
+.drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-light)}
+.drop-icon{font-size:42px;display:block;margin-bottom:10px}
+.drop-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.drop-sub{font-size:13px;color:var(--text3)}
+.ubtn{display:inline-block;margin-top:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:9px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit}
+.ubtn:hover{background:var(--accent2)}
+
+.sbar{display:none;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-top:14px}
+.sbar.on{display:flex}
+.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sdot.spin{background:var(--amber);animation:pulse 1s infinite}
+.sdot.ok{background:var(--green)}
+.sdot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.panel{display:none;margin-top:20px}
+.panel.on{display:block}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 14px;text-align:center}
+.snum{font-size:22px;font-weight:700;color:var(--accent);line-height:1}
+.slbl{font-size:11px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+
+.box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
+.box-title{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.box-hint{font-size:12px;color:var(--text3);margin-bottom:12px}
+
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cfg-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.cfg-item{display:flex;flex-direction:column;gap:5px}
+.cfg-label{font-size:12px;color:var(--text3);font-weight:500}
+.sel{border:1px solid var(--border);background:var(--bg3);color:var(--text);border-radius:var(--rs);padding:7px 10px;font-size:13px;font-family:inherit;outline:none;width:100%;cursor:pointer}
+.sel:focus{border-color:var(--accent)}
+.inp{border:1px solid var(--border);background:var(--bg3);color:var(--text);border-radius:var(--rs);padding:7px 10px;font-size:13px;font-family:inherit;outline:none;width:100%}
+.inp:focus{border-color:var(--accent)}
+
+.date-section{border-left:3px solid var(--accent);padding-left:14px}
+.date-preview{margin-top:10px;padding:9px 12px;background:var(--accent-light);border-radius:var(--rs);font-size:12px;color:var(--accent);font-weight:600;min-height:34px}
+
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.ph-title{font-size:15px;font-weight:700}
+.ph-acts{display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:var(--rs);padding:7px 15px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-p:hover{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.btn-g{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-g:hover{opacity:.88}
+.btn-purple{background:var(--purple);color:#fff;border-color:var(--purple)}
+.btn-purple:hover{opacity:.88}
+
+/* ── Hafta düzenleyici tablosu ── */
+.week-editor{display:none;margin-top:14px}
+.week-editor.on{display:block}
+.we-hint{font-size:12px;color:var(--text3);margin-bottom:10px;padding:9px 12px;background:var(--amber-light);border-radius:var(--rs);border-left:3px solid var(--amber);color:var(--amber)}
+.we-table-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);max-height:380px;overflow-y:auto}
+.we-table{width:100%;border-collapse:collapse;font-size:13px;min-width:400px}
+.we-table th{background:var(--bg3);color:var(--text2);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;z-index:2}
+.we-table td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.we-table tr:last-child td{border-bottom:none}
+.we-table tr:hover td{background:var(--bg3)}
+.row-preview{font-size:12px;color:var(--text2);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.week-count-input{width:60px;border:1px solid var(--border);background:var(--bg3);color:var(--text);border-radius:var(--rs);padding:4px 8px;font-size:13px;font-family:inherit;text-align:center;outline:none}
+.week-count-input:focus{border-color:var(--purple)}
+.week-count-input.multi{border-color:var(--amber);background:var(--amber-light);font-weight:700;color:var(--amber)}
+[data-theme=dark] .week-count-input.multi{color:var(--amber)}
+.wc-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:var(--purple-light);color:var(--purple)}
+
+/* ── Preview table ── */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+table.ptbl{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+table.ptbl th{background:var(--bg3);color:var(--text2);font-weight:600;padding:9px 11px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+table.ptbl th.th-date{background:var(--accent-light);color:var(--accent)}
+table.ptbl td{padding:7px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.ptbl td.td-date{background:var(--accent-light);color:var(--accent);font-weight:600;white-space:normal;min-width:170px}
+table.ptbl tr:last-child td{border-bottom:none}
+table.ptbl tr:hover td{background:var(--bg3)}
+table.ptbl tr:hover td.td-date{background:var(--accent-light)}
+table.ptbl tr.rm td{background:color-mix(in srgb,var(--accent-light) 55%,transparent)}
+table.ptbl tr.split td{background:color-mix(in srgb,var(--purple-light) 55%,transparent)}
+.bdg{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.bm{background:var(--green-light);color:var(--green)}
+.bs{background:var(--bg3);color:var(--text3)}
+.bsplit{background:var(--purple-light);color:var(--purple)}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo">
+      <div class="logo-ico">
+        <svg width="18" height="18" fill="none" viewBox="0 0 18 18">
+          <rect x="2" y="2" width="6" height="6" rx="1.5" fill="white" opacity=".95"/>
+          <rect x="10" y="2" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
+          <rect x="2" y="10" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
+          <rect x="10" y="10" width="6" height="6" rx="1.5" fill="white" opacity=".45"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-txt">S-Plan Oluştur</div>
+        <div class="logo-sub">Yıllık Plan Birleştirici</div>
+      </div>
+    </div>
+    <button class="tbtn" id="themeBtn">☀️</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="howto" id="howtoBox">
+    <h3>📋 Nasıl çalışır?</h3>
+    <div class="steps">
+      <div class="step"><div class="sn">1</div><div class="st"><b>Excel yükle</b>Yıllık plan .xlsx dosyanı sürükle veya seç</div></div>
+      <div class="step"><div class="sn">2</div><div class="st"><b>Ayarları yap</b>Hafta sütunu, başlangıç tarihi ve aralık türünü belirle</div></div>
+      <div class="step"><div class="sn">3</div><div class="st"><b>Hafta sayısı düzenle</b>Tatil gibi özel satırların kaç haftaya karşılık geldiğini gir</div></div>
+      <div class="step"><div class="sn">4</div><div class="st"><b>İndir</b>"Güncel Hafta İçeriği" sütunuyla xlsx'i indir</div></div>
+    </div>
+  </div>
+
+  <div class="drop" id="dropZone">
+    <span class="drop-icon">📊</span>
+    <div class="drop-title">Excel dosyanı buraya sürükle</div>
+    <div class="drop-sub">ya da bilgisayarından seç (.xlsx, .xls)</div>
+    <button class="ubtn" onclick="document.getElementById('fi').click()">Dosya Seç</button>
+    <input type="file" id="fi" accept=".xlsx,.xls" style="display:none">
+  </div>
+
+  <div class="sbar" id="sb"><div class="sdot" id="sd"></div><span id="st2"></span></div>
+
+  <div class="panel" id="pp">
+
+    <div class="stats" id="sr"></div>
+
+    <!-- Birleştirme ayarları -->
+    <div class="box">
+      <div class="box-title">⚙️ Birleştirme Ayarları</div>
+      <div class="box-hint">Aynı haftaya ait ardışık satırlar seçilen sütuna göre gruplandırılıp tek satıra birleştirilecek.</div>
+      <div class="cfg-grid">
+        <div class="cfg-item">
+          <span class="cfg-label">Hafta sütunu (boş olmayan değer yeni grubu başlatır)</span>
+          <select class="sel" id="wcs"></select>
+        </div>
+        <div class="cfg-item">
+          <span class="cfg-label">Birden fazla değeri birleştirme yöntemi</span>
+          <select class="sel" id="mm">
+            <option value="newline">Satır atla ( ↵ )</option>
+            <option value="slash">Eğik çizgiyle ( / )</option>
+            <option value="space">Boşlukla</option>
+            <option value="first">Sadece ilk değeri al</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarih ayarları -->
+    <div class="box">
+      <div class="box-title">📅 Güncel Hafta İçeriği Sütunu</div>
+      <div class="box-hint">Her satıra karşılık gelen gerçek tarih aralığı en başa yeni sütun olarak eklenecek.</div>
+      <div class="date-section">
+        <div class="cfg-grid-3">
+          <div class="cfg-item">
+            <span class="cfg-label">1. Haftanın başlangıç tarihi (Pazartesi)</span>
+            <input type="date" class="inp" id="startDate">
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">Hafta aralığı türü</span>
+            <select class="sel" id="weekRange">
+              <option value="5">Pazartesi – Cuma (5 gün)</option>
+              <option value="7">Pazartesi – Pazar (7 gün)</option>
+            </select>
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">Tarih formatı</span>
+            <select class="sel" id="dateFmt">
+              <option value="long">6 Nisan 2026 Pazartesi</option>
+              <option value="short">06.04.2026 Pzt</option>
+              <option value="numeric">06.04.2026</option>
+            </select>
+          </div>
+        </div>
+        <div class="date-preview" id="datePreview">Tarih seçince örnek görünür…</div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-p" id="mergeBtn">▶ Birleştir ve Önizle</button>
+        <button class="btn btn-purple" id="editWeeksBtn" style="display:none">✏️ Hafta Sayılarını Düzenle</button>
+      </div>
+    </div>
+
+    <!-- Hafta sayısı düzenleyici -->
+    <div class="box week-editor" id="weekEditorBox">
+      <div class="box-title">✏️ Satır Başına Hafta Sayısı</div>
+      <div class="we-hint">
+        Tatil veya özel satırların kaç haftaya karşılık geldiğini düzenle. 
+        Varsayılan her satır = 1 hafta. Birden fazla haftalık satırlar o kadar satıra bölünür ve hafta numaraları kayar.
+      </div>
+      <div class="we-table-wrap">
+        <table class="we-table">
+          <thead><tr><th style="width:50px">#</th><th style="width:90px">Hafta Sayısı</th><th>Satır İçeriği (ilk sütun)</th></tr></thead>
+          <tbody id="weTbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-p" id="applyWeeksBtn">✅ Uygula ve Önizle</button>
+        <button class="btn" id="resetWeeksBtn">↩ Hepsini 1'e Sıfırla</button>
+      </div>
+    </div>
+
+    <!-- Önizleme -->
+    <div class="ph">
+      <div class="ph-title" id="ptitle">Önizleme</div>
+      <div class="ph-acts">
+        <button class="btn" id="resetBtn">🗑 Yeni Dosya</button>
+        <button class="btn btn-g" id="dlBtn">⬇ Excel İndir</button>
+      </div>
+    </div>
+
+    <div class="tw">
+      <table class="ptbl"><thead id="th"></thead><tbody id="tb"></tbody></table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Theme ──────────────────────────────────────────────────────────────────
+const savedTheme = localStorage.getItem('sp_theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+document.getElementById('themeBtn').onclick = () => {
+  const c = document.documentElement.getAttribute('data-theme');
+  const n = c === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', n);
+  localStorage.setItem('sp_theme', n);
+  document.getElementById('themeBtn').textContent = n === 'dark' ? '🌙' : '☀️';
+};
+
+// ── State ──────────────────────────────────────────────────────────────────
+let headers = [], rawRows = [], fname = '';
+// merged: array of { cells[], mergedCount, weekCount (user editable) }
+let mergedGroups = [];
+// final output rows (after split by weekCount)
+let finalRows = [];
+
+// ── Drag & drop ────────────────────────────────────────────────────────────
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); loadFile(e.dataTransfer.files[0]); });
+document.getElementById('fi').onchange = e => loadFile(e.target.files[0]);
+
+function setStatus(type, msg) {
+  document.getElementById('sb').className = 'sbar on';
+  document.getElementById('sd').className = 'sdot ' + type;
+  document.getElementById('st2').textContent = msg;
+}
+
+// ── Load Excel ─────────────────────────────────────────────────────────────
+function loadFile(file) {
+  if (!file) return;
+  if (!/\.(xlsx|xls)$/i.test(file.name)) { setStatus('err', 'Lütfen .xlsx veya .xls dosyası seçin.'); return; }
+  fname = file.name.replace(/\.(xlsx|xls)$/i, '');
+  setStatus('spin', 'Dosya okunuyor…');
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      if (aoa.length < 2) { setStatus('err', 'Dosya boş veya okunamadı.'); return; }
+
+      let hi = 0;
+      for (let i = 0; i < aoa.length; i++) { if (aoa[i].some(c => c !== '')) { hi = i; break; } }
+      headers = aoa[hi].map((h, i) => h !== '' ? String(h).replace(/\n/g, ' ').trim() : `Sütun ${i+1}`);
+      rawRows = aoa.slice(hi + 1)
+        .map(row => headers.map((_, ci) => String(row[ci] ?? '').trim()))
+        .filter(row => row.some(c => c !== ''));
+
+      setStatus('ok', `"${file.name}" yüklendi — ${rawRows.length} veri satırı, ${headers.length} sütun`);
+      document.getElementById('howtoBox').style.display = 'none';
+      buildWeekColSelect();
+      showStats(rawRows.length, null, null);
+      document.getElementById('pp').classList.add('on');
+      updateDatePreview();
+      doMerge();
+    } catch (err) { setStatus('err', 'Hata: ' + err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── Week col selector ──────────────────────────────────────────────────────
+function buildWeekColSelect() {
+  const sel = document.getElementById('wcs');
+  sel.innerHTML = headers.map((h, i) => `<option value="${i}">${colLetter(i)} — ${h.substring(0,45)}</option>`).join('');
+  const auto = headers.findIndex(h => /hafta|week|hft/i.test(h));
+  sel.value = auto >= 0 ? auto : 0;
+}
+
+function colLetter(i) {
+  let s = '', n = i;
+  while (n >= 0) { s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26) - 1; }
+  return s;
+}
+
+// ── Date helpers ───────────────────────────────────────────────────────────
+const TR_DAYS  = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const TR_DAYS_S = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+const TR_MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+function parseStartDate() {
+  const v = document.getElementById('startDate').value;
+  if (!v) return null;
+  const d = new Date(v + 'T00:00:00');
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function addDays(d, n) {
+  const r = new Date(d); r.setDate(r.getDate() + n); return r;
+}
+
+function fmtDate(d, fmt) {
+  if (fmt === 'long')    return `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()} ${TR_DAYS[d.getDay()]}`;
+  if (fmt === 'short')   return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${TR_DAYS_S[d.getDay()]}`;
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+}
+
+// weekIndex = 0-based absolute week number
+function buildWeekLabel(weekNo1based, startDate, weekCount) {
+  if (!startDate) return '';
+  const rangeDays = parseInt(document.getElementById('weekRange').value);
+  const fmt = document.getElementById('dateFmt').value;
+  if (weekCount === 1) {
+    const ws = addDays(startDate, (weekNo1based - 1) * 7);
+    const we = addDays(ws, rangeDays - 1);
+    return `${weekNo1based}. Hafta: ${fmtDate(ws, fmt)} – ${fmtDate(we, fmt)}`;
+  } else {
+    // Multi-week: show range of weeks
+    const ws = addDays(startDate, (weekNo1based - 1) * 7);
+    const we = addDays(startDate, (weekNo1based - 1 + weekCount - 1) * 7 + rangeDays - 1);
+    const lastWeekNo = weekNo1based + weekCount - 1;
+    return `${weekNo1based}–${lastWeekNo}. Hafta: ${fmtDate(ws, fmt)} – ${fmtDate(we, fmt)}`;
+  }
+}
+
+function updateDatePreview() {
+  const sd = parseStartDate();
+  const preview = document.getElementById('datePreview');
+  if (!sd) { preview.textContent = 'Tarih seçince örnek görünür…'; return; }
+  const ex1 = buildWeekLabel(1, sd, 1);
+  const ex2 = buildWeekLabel(2, sd, 2);
+  preview.textContent = `Örnek → ${ex1}   |   Çift haftalık: ${ex2}`;
+}
+
+['startDate','weekRange','dateFmt'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => { updateDatePreview(); if (finalRows.length) buildFinalAndRender(); });
+});
+
+// ── MERGE ──────────────────────────────────────────────────────────────────
+document.getElementById('mergeBtn').onclick = doMerge;
+
+function doMerge() {
+  const wc = parseInt(document.getElementById('wcs').value);
+  const method = document.getElementById('mm').value;
+  const sep = { newline: '\n', slash: ' / ', space: ' ', first: null }[method];
+
+  const groups = [];
+  let grp = null;
+  for (const cells of rawRows) {
+    const wv = cells[wc];
+    if (wv !== '') {
+      grp = { cells: cells.map(c => [c]), rowCount: 1 };
+      groups.push(grp);
+    } else if (grp) {
+      grp.rowCount++;
+      cells.forEach((c, ci) => { if (c !== '') grp.cells[ci].push(c); });
+    } else {
+      grp = { cells: cells.map(c => [c]), rowCount: 1 };
+      groups.push(grp);
+    }
+  }
+
+  mergedGroups = groups.map(g => {
+    const cells = g.cells.map(vals => {
+      if (method === 'first') return vals[0] || '';
+      const u = [...new Set(vals.filter(v => v !== ''))];
+      return u.join(sep);
+    });
+    return { cells, rowCount: g.rowCount, weekCount: 1 }; // weekCount editable
+  });
+
+  buildFinalAndRender();
+  buildWeekEditor();
+  document.getElementById('editWeeksBtn').style.display = '';
+}
+
+// ── Build final rows from mergedGroups + weekCounts ────────────────────────
+function buildFinalAndRender() {
+  const sd = parseStartDate();
+  finalRows = [];
+  let weekCursor = 1; // 1-based running week number
+
+  for (const mg of mergedGroups) {
+    const wc = mg.weekCount || 1;
+    if (wc <= 1) {
+      // Single row
+      const label = sd ? buildWeekLabel(weekCursor, sd, 1) : '';
+      finalRows.push({ cells: mg.cells, dateLabel: label, isSplit: false, isMerged: mg.rowCount > 1 });
+      weekCursor += 1;
+    } else {
+      // Split into wc rows, same content, each gets own week label
+      for (let i = 0; i < wc; i++) {
+        const label = sd ? buildWeekLabel(weekCursor, sd, 1) : '';
+        finalRows.push({ cells: mg.cells, dateLabel: label, isSplit: true, isMerged: mg.rowCount > 1 });
+        weekCursor += 1;
+      }
+    }
+  }
+
+  showStats(rawRows.length, mergedGroups.length, finalRows.length);
+  renderPreview();
+}
+
+// ── Week editor ────────────────────────────────────────────────────────────
+document.getElementById('editWeeksBtn').onclick = () => {
+  const box = document.getElementById('weekEditorBox');
+  box.classList.toggle('on');
+};
+
+function buildWeekEditor() {
+  const tbody = document.getElementById('weTbody');
+  tbody.innerHTML = '';
+  mergedGroups.forEach((mg, i) => {
+    const preview = mg.cells[0] ? mg.cells[0].replace(/\n/g,' ').substring(0, 60) : '(boş)';
+    const tr = document.createElement('tr');
+    const isMulti = mg.weekCount > 1;
+    tr.innerHTML = `
+      <td style="color:var(--text3);font-weight:600">${i+1}</td>
+      <td>
+        <input type="number" min="1" max="10" value="${mg.weekCount}"
+          class="week-count-input${isMulti ? ' multi' : ''}"
+          data-idx="${i}" title="Bu satırın kaç haftaya karşılık geldiğini gir">
+      </td>
+      <td class="row-preview" title="${esc(mg.cells[0] || '')}">${esc(preview)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // live update on input change
+  tbody.querySelectorAll('.week-count-input').forEach(inp => {
+    inp.addEventListener('input', function() {
+      const v = Math.max(1, parseInt(this.value) || 1);
+      this.value = v;
+      mergedGroups[parseInt(this.dataset.idx)].weekCount = v;
+      this.classList.toggle('multi', v > 1);
+    });
+  });
+}
+
+document.getElementById('applyWeeksBtn').onclick = () => {
+  // Sync input values → mergedGroups
+  document.querySelectorAll('.week-count-input').forEach(inp => {
+    const idx = parseInt(inp.dataset.idx);
+    mergedGroups[idx].weekCount = Math.max(1, parseInt(inp.value) || 1);
+  });
+  buildFinalAndRender();
+  document.getElementById('weekEditorBox').classList.remove('on');
+};
+
+document.getElementById('resetWeeksBtn').onclick = () => {
+  mergedGroups.forEach(mg => mg.weekCount = 1);
+  document.querySelectorAll('.week-count-input').forEach(inp => {
+    inp.value = 1;
+    inp.classList.remove('multi');
+  });
+  buildFinalAndRender();
+};
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+function showStats(orig, grouped, final) {
+  document.getElementById('sr').innerHTML = `
+    <div class="sc"><div class="snum">${orig}</div><div class="slbl">Orijinal Satır</div></div>
+    ${grouped !== null ? `<div class="sc"><div class="snum">${grouped}</div><div class="slbl">Birleştirilmiş Grup</div></div>` : ''}
+    ${final !== null ? `<div class="sc"><div class="snum">${final}</div><div class="slbl">Çıktı Satır</div></div>` : ''}
+    <div class="sc"><div class="snum">${headers.length + 1}</div><div class="slbl">Çıktı Sütun</div></div>`;
+}
+
+// ── Render preview ─────────────────────────────────────────────────────────
+function renderPreview() {
+  const hasDate = finalRows.some(r => r.dateLabel);
+  const pc = Math.min(headers.length, 6);
+  const more = headers.length > pc;
+
+  document.getElementById('th').innerHTML = '<tr>' +
+    '<th>#</th><th>Durum</th>' +
+    (hasDate ? '<th class="th-date">📅 Güncel Hafta İçeriği</th>' : '') +
+    headers.slice(0, pc).map(h => `<th>${esc(h.substring(0,24))}</th>`).join('') +
+    (more ? `<th style="color:var(--text3)">…+${headers.length - pc}</th>` : '') +
+    '</tr>';
+
+  const tb = document.getElementById('tb');
+  tb.innerHTML = '';
+  finalRows.slice(0, 300).forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (r.isSplit) tr.className = 'split';
+    else if (r.isMerged) tr.className = 'rm';
+
+    const bdg = r.isSplit
+      ? `<span class="bdg bsplit">⇢ bölünmüş</span>`
+      : r.isMerged
+        ? `<span class="bdg bm">✓ birleşik</span>`
+        : `<span class="bdg bs">tekil</span>`;
+
+    tr.innerHTML =
+      `<td>${i+1}</td><td>${bdg}</td>` +
+      (hasDate ? `<td class="td-date">${esc(r.dateLabel||'—')}</td>` : '') +
+      r.cells.slice(0, pc).map(c => `<td title="${esc(c)}">${esc(c.replace(/\n/g,' ').substring(0,50))}</td>`).join('') +
+      (more ? '<td style="color:var(--text3)">…</td>' : '');
+    tb.appendChild(tr);
+  });
+
+  if (finalRows.length > 300) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="${pc+(hasDate?4:3)}" style="text-align:center;color:var(--text3);padding:10px">… ve ${finalRows.length-300} satır daha</td>`;
+    tb.appendChild(tr);
+  }
+  document.getElementById('ptitle').textContent = `Önizleme — ${finalRows.length} satır`;
+}
+
+// ── Download ───────────────────────────────────────────────────────────────
+document.getElementById('dlBtn').onclick = () => {
+  if (!finalRows.length) { setStatus('err', 'Önce birleştirme yapın.'); return; }
+  const outHeaders = ['Güncel Hafta İçeriği', ...headers];
+  const outRows = finalRows.map(r => [r.dateLabel, ...r.cells]);
+  const ws = XLSX.utils.aoa_to_sheet([outHeaders, ...outRows]);
+  ws['!cols'] = [{ wch: 52 }, ...headers.map(() => ({ wch: 28 }))];
+  ws['!rows'] = [{ hpt: 28 }];
+  finalRows.forEach(r => {
+    const maxL = Math.max(...[r.dateLabel, ...r.cells].map(c => (c.match(/\n/g)||[]).length+1));
+    ws['!rows'].push({ hpt: Math.min(maxL * 15, 120) });
+  });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Plan');
+  XLSX.writeFile(wb, `${fname}_birlestirme.xlsx`);
+  setStatus('ok', '✅ Excel dosyası indirildi!');
+};
+
+// ── Reset ──────────────────────────────────────────────────────────────────
+document.getElementById('resetBtn').onclick = () => {
+  headers = []; rawRows = []; mergedGroups = []; finalRows = [];
+  document.getElementById('pp').classList.remove('on');
+  document.getElementById('sb').classList.remove('on');
+  document.getElementById('weekEditorBox').classList.remove('on');
+  document.getElementById('editWeeksBtn').style.display = 'none';
+  document.getElementById('howtoBox').style.display = '';
+  document.getElementById('fi').value = '';
+};
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
