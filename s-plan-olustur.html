@@ -319,17 +319,52 @@ function loadFile(file) {
     try {
       const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-      if (aoa.length < 2) { setStatus('err', 'Dosya boş veya okunamadı.'); return; }
 
+      // ── 1. Ham hücre değerlerini 2D diziye al ──────────────────────────
+      const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+      const nRows = range.e.r - range.s.r + 1;
+      const nCols = range.e.c - range.s.c + 1;
+
+      // Boş 2D dizi
+      const grid = Array.from({ length: nRows }, () => Array(nCols).fill(''));
+
+      // Hücre değerlerini doldur
+      for (let r = 0; r < nRows; r++) {
+        for (let c = 0; c < nCols; c++) {
+          const addr = XLSX.utils.encode_cell({ r: r + range.s.r, c: c + range.s.c });
+          const cell = ws[addr];
+          grid[r][c] = cell ? String(cell.v ?? '').trim() : '';
+        }
+      }
+
+      // ── 2. Birleştirilmiş hücreleri (merges) tüm satırlara yay ────────
+      // !merges: [{s:{r,c}, e:{r,c}}]
+      const merges = ws['!merges'] || [];
+      for (const m of merges) {
+        const sr = m.s.r - range.s.r;
+        const er = m.e.r - range.s.r;
+        const sc = m.s.c - range.s.c;
+        const ec = m.e.c - range.s.c;
+        const val = grid[Math.max(0, sr)][Math.max(0, sc)]; // sol-üst köşe değeri
+        for (let r = sr; r <= er; r++) {
+          for (let c = sc; c <= ec; c++) {
+            if (r < 0 || c < 0 || r >= nRows || c >= nCols) continue;
+            grid[r][c] = val; // merge kapsamındaki tüm hücrelere aynı değeri yaz
+          }
+        }
+      }
+
+      // ── 3. Header satırını bul ─────────────────────────────────────────
       let hi = 0;
-      for (let i = 0; i < aoa.length; i++) { if (aoa[i].some(c => c !== '')) { hi = i; break; } }
-      headers = aoa[hi].map((h, i) => h !== '' ? String(h).replace(/\n/g, ' ').trim() : `Sütun ${i+1}`);
-      rawRows = aoa.slice(hi + 1)
+      for (let i = 0; i < nRows; i++) { if (grid[i].some(c => c !== '')) { hi = i; break; } }
+
+      headers = grid[hi].map((h, i) => h !== '' ? h.replace(/\n/g, ' ').trim() : `Sütun ${i+1}`);
+
+      rawRows = grid.slice(hi + 1)
         .map(row => headers.map((_, ci) => String(row[ci] ?? '').trim()))
         .filter(row => row.some(c => c !== ''));
 
-      setStatus('ok', `"${file.name}" yüklendi — ${rawRows.length} veri satırı, ${headers.length} sütun`);
+      setStatus('ok', `"${file.name}" yüklendi — ${rawRows.length} veri satırı, ${headers.length} sütun (birleştirilmiş hücreler otomatik yayıldı)`);
       document.getElementById('howtoBox').style.display = 'none';
       buildWeekColSelect();
       showStats(rawRows.length, null, null);
