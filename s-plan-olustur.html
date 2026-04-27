@@ -157,6 +157,120 @@ table.ptbl tr.split td{background:color-mix(in srgb,var(--purple-light) 55%,tran
 .bs{background:var(--bg3);color:var(--text3)}
 .bsplit{background:var(--purple-light);color:var(--purple)}
 </style>
+
+<link rel="manifest" href="data:application/json,{
+  %22name%22:%22S-Plan%20Olu%C5%9Ftur%22,
+  %22short_name%22:%22S-Plan%22,
+  %22description%22:%22S-%C3%96%C4%9Fretmen%20i%C3%A7in%20y%C4%B1ll%C4%B1k%20plan%20d%C3%B6n%C3%BC%C5%9Ft%C3%BCr%C3%BCc%C3%BC%22,
+  %22start_url%22:%22.%22,
+  %22display%22:%22standalone%22,
+  %22background_color%22:%22%233b6fce%22,
+  %22theme_color%22:%22%233b6fce%22,
+  %22orientation%22:%22portrait%22,
+  %22icons%22:[{%22src%22:%22icon-192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image%2Fpng%22},{%22src%22:%22icon-512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image%2Fpng%22}]
+}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="S-Plan">
+<meta name="theme-color" content="#3b6fce">
+<link rel="apple-touch-icon" id="appleTouchIcon" href="">
+
+<script>
+// PWA Icon generator - draws S-Plan icon onto canvas and registers service worker
+(function() {
+  function drawIcon(size) {
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const ctx = c.getContext('2d');
+    const r = size * 0.14; // corner radius
+
+    // Background
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(size - r, 0);
+    ctx.quadraticCurveTo(size, 0, size, r);
+    ctx.lineTo(size, size - r);
+    ctx.quadraticCurveTo(size, size, size - r, size);
+    ctx.lineTo(r, size);
+    ctx.quadraticCurveTo(0, size, 0, size - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, '#4a7fe0');
+    grad.addColorStop(1, '#2a4e9a');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // 4 grid squares
+    const pad = size * 0.18;
+    const sq = size * 0.26;
+    const gap = size * 0.08;
+    const positions = [
+      [pad, pad], [pad + sq + gap, pad],
+      [pad, pad + sq + gap], [pad + sq + gap, pad + sq + gap]
+    ];
+    const opacities = [0.98, 0.75, 0.75, 0.5];
+    positions.forEach(([x, y], i) => {
+      ctx.beginPath();
+      const sr = sq * 0.18;
+      ctx.moveTo(x + sr, y);
+      ctx.lineTo(x + sq - sr, y);
+      ctx.quadraticCurveTo(x + sq, y, x + sq, y + sr);
+      ctx.lineTo(x + sq, y + sq - sr);
+      ctx.quadraticCurveTo(x + sq, y + sq, x + sq - sr, y + sq);
+      ctx.lineTo(x + sr, y + sq);
+      ctx.quadraticCurveTo(x, y + sq, x, y + sq - sr);
+      ctx.lineTo(x, y + sr);
+      ctx.quadraticCurveTo(x, y, x + sr, y);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(255,255,255,${opacities[i]})`;
+      ctx.fill();
+    });
+
+    // "S" letter at bottom right area
+    ctx.font = `bold ${size * 0.22}px 'Segoe UI', system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('S', size * 0.73, size * 0.73);
+
+    return c.toDataURL('image/png');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const icon = drawIcon(192);
+      // Apple touch icon
+      const el = document.getElementById('appleTouchIcon');
+      if (el) el.href = icon;
+
+      // Dynamic manifest with real icon data
+      const icon512 = drawIcon(512);
+      const manifest = {
+        name: 'S-Plan Oluştur',
+        short_name: 'S-Plan',
+        description: 'S-Öğretmen için yıllık plan dönüştürücü',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#3b6fce',
+        theme_color: '#3b6fce',
+        orientation: 'portrait',
+        icons: [
+          { src: icon, sizes: '192x192', type: 'image/png' },
+          { src: icon512, sizes: '512x512', type: 'image/png' }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = url;
+      document.head.appendChild(link);
+    } catch(e) { console.warn('PWA icon generation failed:', e); }
+  });
+})();
+</script>
 </head>
 <body>
 
