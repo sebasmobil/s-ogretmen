@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-Değerlendirme Ölçekleri</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --ink:#1f2a24;
+  --paper:#f6f3ec;
+  --paper2:#fffdf8;
+  --moss:#3d5a45;
+  --moss-d:#2a4032;
+  --terracotta:#bd5d3a;
+  --gold:#c9a14a;
+  --line:#d8d2c2;
+  --muted:#8a8475;
+  --geçmez:#c0594a;
+  --geçer:#cf9b3a;
+  --orta:#4f8fb0;
+  --iyi:#5a8f5a;
+  --pekiyi:#3d5a45;
+  --radius:10px;
+  --serif: 'Georgia', 'Times New Roman', serif;
+  --sans: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--sans);
+  background:
+    radial-gradient(circle at 10% 0%, #fbf7ee 0%, transparent 40%),
+    var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ===== Top bar / brand ===== */
+.brandbar{
+  background:linear-gradient(135deg, var(--moss) 0%, var(--moss-d) 100%);
+  color:#fdfbf5;
+  padding:22px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:14px;
+  border-bottom:4px solid var(--gold);
+}
+.brandbar .crest{
+  display:flex;align-items:center;gap:14px;
+}
+.brandbar h1{
+  font-family:var(--serif);
+  font-size:1.3rem;
+  margin:0;
+  letter-spacing:.02em;
+  font-weight:700;
+}
+.brandbar .sub{
+  font-size:.78rem;
+  color:#cfe0d2;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-top:2px;
+}
+.version-tag{
+  display:inline-block;
+  margin-top:6px;
+  font-size:.68rem;
+  font-family:var(--sans);
+  font-weight:700;
+  letter-spacing:.06em;
+  color:var(--moss-d);
+  background:var(--gold);
+  padding:2px 9px;
+  border-radius:20px;
+}
+.brandbar .tag{
+  font-family:var(--serif);
+  font-style:italic;
+  color:var(--gold);
+  font-size:.95rem;
+}
+
+/* ===== Layout ===== */
+.shell{
+  max-width:1280px;
+  margin:0 auto;
+  padding:24px;
+}
+
+/* ===== Tabs ===== */
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:10px;
+  margin-bottom:24px;
+}
+.tab-btn{
+  font-family:var(--serif);
+  font-size:.92rem;
+  font-weight:700;
+  background:var(--paper2);
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 14px 14px;
+  cursor:pointer;
+  color:var(--moss-d);
+  transition:all .18s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  text-align:center;
+  box-shadow:0 1px 2px rgba(40,50,40,.03);
+}
+.tab-btn .tab-icon{
+  font-size:1.5rem;
+  line-height:1;
+}
+.tab-btn .tab-label{
+  letter-spacing:.01em;
+}
+.tab-btn:hover{
+  border-color:var(--gold);
+  transform:translateY(-2px);
+  box-shadow:0 4px 10px rgba(40,50,40,.08);
+}
+.tab-btn.active{
+  background:var(--moss);
+  border-color:var(--moss-d);
+  color:#fdfbf5;
+  box-shadow:0 4px 12px rgba(61,90,69,.25);
+}
+.tab-btn.active .tab-icon{
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));
+}
+
+.panel{display:none;}
+.panel.active{display:block; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== Cards ===== */
+.card{
+  background:var(--paper2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 1px 3px rgba(40,50,40,.04);
+}
+.card h2{
+  font-family:var(--serif);
+  font-size:1.15rem;
+  margin:0 0 4px;
+  color:var(--moss-d);
+  display:flex;align-items:center;gap:10px;
+}
+.card h2 .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--moss);color:#fff;font-size:.85rem;
+  font-family:var(--sans);font-weight:700;
+}
+.card .desc{
+  color:var(--muted);
+  font-size:.85rem;
+  margin:0 0 16px;
+  line-height:1.5;
+}
+
+/* ===== Buttons ===== */
+.btn{
+  font-family:var(--sans);
+  font-size:.85rem;
+  font-weight:600;
+  padding:10px 18px;
+  border-radius:7px;
+  border:1.5px solid var(--moss);
+  background:var(--moss);
+  color:#fff;
+  cursor:pointer;
+  transition:all .15s ease;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn:hover{background:var(--moss-d);border-color:var(--moss-d);transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn.secondary{
+  background:transparent;color:var(--moss);
+}
+.btn.secondary:hover{background:var(--moss);color:#fff;}
+.btn.terracotta{
+  background:var(--terracotta);border-color:var(--terracotta);
+}
+.btn.terracotta:hover{background:#a04d2f;border-color:#a04d2f;}
+.btn.gold{
+  background:var(--gold);border-color:var(--gold);color:#3a2e10;
+}
+.btn.gold:hover{background:#b88f3c;}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+
+input[type=file]{display:none;}
+.file-drop{
+  border:2px dashed var(--line);
+  border-radius:var(--radius);
+  padding:28px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s ease;
+  background:#fcfaf4;
+}
+.file-drop:hover, .file-drop.drag{
+  border-color:var(--moss);
+  background:#f1f5ee;
+}
+.file-drop .icon{font-size:2rem;margin-bottom:8px;display:block;}
+.file-drop .title{font-weight:700;color:var(--moss-d);font-family:var(--serif);font-size:1.05rem;}
+.file-drop .hint{color:var(--muted);font-size:.8rem;margin-top:4px;}
+
+/* ===== Mode selector ===== */
+.mode-select{
+  display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;
+}
+.mode-card{
+  flex:1;min-width:240px;
+  border:2px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  cursor:pointer;
+  transition:all .15s ease;
+  background:#fcfaf4;
+}
+.mode-card:hover{border-color:var(--gold);}
+.mode-card.selected{
+  border-color:var(--moss);
+  background:#eef3ec;
+  box-shadow:0 0 0 3px rgba(61,90,69,.08);
+}
+.mode-card .mc-title{
+  font-family:var(--serif);font-weight:700;font-size:1rem;
+  color:var(--moss-d);margin-bottom:4px;
+  display:flex;align-items:center;gap:8px;
+}
+.mode-card .mc-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.mode-card .badge{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;
+  padding:2px 8px;border-radius:20px;
+  background:var(--gold);color:#3a2e10;font-weight:700;
+}
+.mode-card.selected .badge.b-real{background:var(--moss);color:#fff;}
+
+/* ===== Tables ===== */
+.table-wrap{overflow-x:auto; border-radius:8px; border:1px solid var(--line);}
+table{
+  border-collapse:collapse;
+  width:100%;
+  font-size:.82rem;
+  background:#fff;
+}
+th,td{
+  border:1px solid var(--line);
+  padding:7px 9px;
+  text-align:center;
+  white-space:nowrap;
+}
+th{
+  background:var(--moss);
+  color:#fff;
+  font-weight:600;
+  font-size:.74rem;
+  position:sticky;top:0;
+  letter-spacing:.02em;
+}
+td.name-cell{
+  text-align:left;
+  font-weight:600;
+  white-space:normal;
+  min-width:140px;
+  background:#fbf8f0;
+  position:sticky;left:0;
+}
+th.th-name{position:sticky;left:0;z-index:2;}
+tr:nth-child(even) td:not(.name-cell){background:#fafaf6;}
+input.score-input{
+  width:56px;
+  padding:4px;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:4px;
+  font-size:16px;
+  font-family:var(--sans);
+}
+input.score-input:focus{outline:2px solid var(--moss);border-color:var(--moss);}
+input.score-input:disabled{background:#f0efe8;color:var(--muted);}
+.total-cell{font-weight:800;color:var(--moss-d);background:#eef3ec !important;}
+.grade-pill{
+  display:inline-block;padding:2px 8px;border-radius:20px;
+  font-size:.68rem;font-weight:700;color:#fff;letter-spacing:.03em;
+}
+.g-gecmez{background:var(--geçmez);}
+.g-gecer{background:var(--geçer);color:#3a2e10;}
+.g-orta{background:var(--orta);}
+.g-iyi{background:var(--iyi);}
+.g-pekiyi{background:var(--pekiyi);}
+
+/* ===== Badges / status ===== */
+.status-line{
+  display:flex;align-items:center;gap:10px;
+  font-size:.85rem;color:var(--muted);
+  margin-top:10px;flex-wrap:wrap;
+}
+.status-line .pill{
+  background:var(--moss);color:#fff;font-weight:700;
+  padding:3px 10px;border-radius:20px;font-size:.75rem;
+}
+.legend{
+  display:flex;gap:10px;flex-wrap:wrap;font-size:.72rem;color:var(--muted);margin-top:10px;
+}
+.legend span{display:flex;align-items:center;gap:5px;}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;}
+
+/* ===== Sub-module tabs (Proje 1/2/3 + add/remove) ===== */
+.subtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.subtab-pill{
+  display:flex;align-items:center;gap:0;
+  border:1.5px solid var(--line);
+  border-radius:20px;overflow:hidden;
+  transition:all .15s ease;
+  background:#fff;
+}
+.subtab-pill.active{border-color:var(--moss);}
+.subtab-btn{
+  font-size:.8rem;font-weight:700;
+  border:none;
+  background:#fff;color:var(--moss-d);
+  padding:8px 14px;cursor:pointer;
+  transition:all .15s ease;
+}
+.subtab-pill.active .subtab-btn{background:var(--moss);color:#fff;}
+.subtab-btn:hover:not(.active-btn){opacity:.85;}
+.subtab-del{
+  border:none;background:#fff;color:var(--terracotta);
+  padding:8px 10px;cursor:pointer;font-size:.8rem;font-weight:700;
+  border-left:1px solid var(--line);
+  transition:all .15s ease;
+}
+.subtab-pill.active .subtab-del{border-left-color:var(--moss-d);}
+.subtab-del:hover{background:var(--terracotta);color:#fff;}
+.subtab-add{
+  font-size:.8rem;font-weight:700;
+  border:1.5px dashed var(--gold);
+  background:#fcf8ec;color:#8a6d24;
+  padding:8px 16px;border-radius:20px;cursor:pointer;
+  transition:all .15s ease;
+}
+.subtab-add:hover{background:var(--gold);color:#3a2e10;border-style:solid;}
+
+/* Editable module name */
+.mod-name-input{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:1.05rem;
+  color:var(--moss-d);
+  border:1.5px solid var(--line);
+  border-radius:6px;
+  padding:8px 10px;
+  width:100%;
+  max-width:420px;
+  font-size:16px;
+  margin-bottom:14px;
+}
+.mod-name-input:focus{outline:2px solid var(--moss); border-color:var(--moss);}
+
+/* ===== Empty state ===== */
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--muted);
+}
+.empty-state .icon{font-size:2.5rem;display:block;margin-bottom:10px;}
+.empty-state .et{font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);margin-bottom:6px;}
+
+/* ===== Footer note / printable header ===== */
+.note-box{
+  background:#f1ece0;
+  border-left:4px solid var(--gold);
+  padding:12px 16px;
+  font-size:.8rem;
+  color:#5a523f;
+  border-radius:0 6px 6px 0;
+  margin-top:14px;
+  line-height:1.6;
+}
+.school-id{
+  display:flex;flex-direction:column;gap:6px;margin-bottom:12px;
+}
+.school-id input{
+  padding:8px 10px;border:1px solid var(--line);border-radius:6px;
+  font-family:var(--sans);font-size:16px;
+}
+.school-id label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;}
+.id-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+
+/* ===== Per-field archive ===== */
+.field-row{display:flex;gap:6px;align-items:center;}
+.field-row input{flex:1;}
+.field-pin{padding:8px 10px;font-size:.95rem;line-height:1;flex-shrink:0;}
+.field-archive{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;
+}
+.field-chip{
+  display:flex;align-items:center;gap:6px;
+  background:#eef3ec;border:1px solid var(--line);
+  border-radius:20px;padding:4px 6px 4px 12px;
+  font-size:.74rem;color:var(--moss-d);font-weight:600;
+  cursor:pointer;transition:all .15s ease;
+  max-width:240px;
+}
+.field-chip:hover{border-color:var(--moss);background:#e3ece2;}
+.field-chip .chip-text{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;
+}
+.field-chip .chip-del{
+  flex-shrink:0;
+  border:none;background:transparent;color:var(--terracotta);
+  font-weight:800;font-size:.8rem;cursor:pointer;
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.field-chip .chip-del:hover{background:var(--terracotta);color:#fff;}
+
+/* ===== Config Archive ===== */
+.archive-item{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;
+  background:#fcfaf4;
+}
+.archive-item .ai-info{flex:1 1 240px;}
+.archive-item .ai-title{font-family:var(--serif);font-weight:700;color:var(--moss-d);font-size:.95rem;}
+.archive-item .ai-sub{font-size:.75rem;color:var(--muted);margin-top:2px;line-height:1.5;}
+.archive-item .ai-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* ===== Criteria editor ===== */
+.crit-row{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:8px 10px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;
+  background:#fcfaf4;font-size:.82rem;
+}
+.crit-row .crit-text{flex:1 1 160px; min-width:0; font-size:16px; padding:4px 6px; border:1px solid var(--line); border-radius:4px;}
+.crit-row .crit-max{
+  width:60px;flex-shrink:0;text-align:center;border:1px solid var(--line);border-radius:4px;padding:4px;font-size:16px;
+}
+.crit-row .crit-del{flex-shrink:0;}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--moss-d);color:#fff;
+  padding:13px 22px;border-radius:8px;
+  font-size:.85rem;font-weight:600;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+  z-index:999;opacity:0;transform:translateY(10px);
+  transition:all .25s ease;
+  pointer-events:none;
+  max-width:320px;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* Loading overlay */
+.overlay{
+  position:fixed;inset:0;background:rgba(31,42,36,.55);
+  display:none;align-items:center;justify-content:center;z-index:1000;
+}
+.overlay.show{display:flex;}
+.overlay .box{
+  background:#fff;padding:24px 32px;border-radius:10px;
+  font-family:var(--serif);color:var(--moss-d);font-size:1rem;
+  display:flex;align-items:center;gap:12px;
+}
+.map-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border:1px solid var(--line);border-radius:6px;
+  background:#fcfaf4;flex-wrap:wrap;
+}
+.map-row .map-col-name{
+  flex:1 1 160px;font-weight:700;color:var(--moss-d);font-size:.85rem;
+  font-family:var(--sans);
+}
+.map-row .map-sample{
+  font-size:.72rem;color:var(--muted);font-family:var(--sans);
+  flex:0 0 100%;
+}
+.map-row select{
+  font-size:16px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;
+  font-family:var(--sans);flex:1 1 200px;
+}
+.spinner{
+  width:22px;height:22px;border:3px solid var(--line);
+  border-top-color:var(--moss);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ===== Print sheet (hidden, used for pdf rendering) ===== */
+.print-sheet{
+  width:1000px;
+  background:#fff;
+  padding:40px;
+  font-family:var(--sans);
+  color:#1a1a1a;
+}
+.print-sheet h1,.print-sheet h2,.print-sheet h3{font-family:var(--serif);}
+.print-sheet .ph-head{text-align:center;margin-bottom:18px;}
+.print-sheet .ph-head .school{font-weight:800;font-size:1.05rem;letter-spacing:.04em;}
+.print-sheet .ph-head .meta{font-size:.85rem;color:#444;margin-top:2px;}
+.print-sheet .ph-head .formtitle{
+  font-weight:800;font-size:1.15rem;margin-top:10px;
+  border-bottom:2px solid #2a4032;display:inline-block;padding-bottom:4px;
+}
+.print-sheet table{width:100%;border-collapse:collapse;font-size:11px;margin-top:14px;}
+.print-sheet th,.print-sheet td{border:1px solid #999;padding:5px 6px;text-align:center;}
+.print-sheet th{background:#3d5a45;color:#fff;font-size:9.5px;}
+.print-sheet td.name-cell{text-align:left;font-weight:600;}
+.print-sheet .ph-foot{margin-top:14px;font-size:10px;color:#555;line-height:1.6;}
+.print-sheet .ph-grades{margin-top:6px;font-size:10px;display:flex;gap:14px;flex-wrap:wrap;}
+.print-sheet .formality-stamp{
+  position:absolute;top:40px;right:40px;
+  border:3px solid #bd5d3a;color:#bd5d3a;
+  padding:6px 14px;font-weight:800;font-size:13px;
+  transform:rotate(8deg);border-radius:6px;letter-spacing:.1em;
+}
+
+/* ===== Responsive ===== */
+@media (max-width:760px){
+  .brandbar{padding:16px;}
+  .brandbar h1{font-size:1.05rem;}
+  .shell{padding:14px;}
+  .card{padding:16px;}
+  .tabs{grid-template-columns:repeat(2, 1fr); gap:8px;}
+  .tab-btn{padding:12px 8px; font-size:.78rem;}
+  .tab-btn .tab-icon{font-size:1.3rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="crest">
+    <div>
+      <h1>S-Değerlendirme Ölçekleri</h1>
+      <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
+      <div class="version-tag">v1.0.05</div>
+    </div>
+  </div>
+  <div class="tag">"Ölç, değerlendir, geliştir."</div>
+</div>
+
+<div class="shell">
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="ogrenci"><span class="tab-icon">👥</span><span class="tab-label">Öğrenci Listesi</span></button>
+    <button class="tab-btn" data-tab="proje"><span class="tab-icon">📁</span><span class="tab-label">Proje Değerlendirme</span></button>
+    <button class="tab-btn" data-tab="dersici"><span class="tab-icon">📝</span><span class="tab-label">Ders İçi Performans</span></button>
+    <button class="tab-btn" data-tab="odev"><span class="tab-icon">📚</span><span class="tab-label">Performans Ödevi</span></button>
+    <button class="tab-btn" data-tab="ayarlar"><span class="tab-icon">⚙️</span><span class="tab-label">Form Bilgileri</span></button>
+  </div>
+
+  <!-- ============ ÖĞRENCİ LİSTESİ ============ -->
+  <div class="panel active" id="panel-ogrenci">
+    <div class="card">
+      <h2><span class="num">1</span> Öğrenci Listesini İçe Aktar</h2>
+      <p class="desc">Excel dosyanızda <b>Numara</b>, <b>Adı Soyadı</b> sütunları bulunmalıdır. İsteğe bağlı olarak <b>Proje 1</b>, <b>Proje 2</b>, <b>Proje 3</b>... veya <b>Ders İçi 1</b>, <b>Performans Ödevi 1</b> gibi sütunlar da ekleyebilirsiniz — bu notlar otomatik olarak ilgili modüllere aktarılacak ve değerlendirme kriterlerine göre dağıtılacaktır.</p>
+
+      <div class="file-drop" id="dropzone">
+        <span class="icon">📊</span>
+        <div class="title">Excel dosyasını sürükleyin veya tıklayın</div>
+        <div class="hint">.xlsx / .xls / .csv desteklenir</div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+      </div>
+
+      <div class="status-line" id="importStatus" style="display:none;">
+        <span class="pill" id="studentCount">0 öğrenci</span>
+        <span id="importDetails"></span>
+      </div>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn secondary" id="btnTemplate">📥 Örnek Şablon İndir (.xlsx)</button>
+        <button class="btn secondary" id="btnAddManual">➕ Manuel Öğrenci Ekle</button>
+        <button class="btn terracotta" id="btnClearAll" style="margin-left:auto;">🗑 Tümünü Temizle</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span> Öğrenci Listesi</h2>
+      <p class="desc">Yüklenen veya eklenen öğrenciler. Bu liste tüm değerlendirme modüllerinde otomatik olarak kullanılır.</p>
+      <div id="studentTableWrap"><div class="empty-state"><span class="icon">📭</span><div class="et">Henüz öğrenci eklenmedi</div>Excel dosyası yükleyin ya da manuel ekleyin.</div></div>
+    </div>
+  </div>
+
+  <!-- ============ PROJE ============ -->
+  <div class="panel" id="panel-proje">
+    <div class="card">
+      <h2><span class="num">📁</span> Proje Değerlendirme</h2>
+      <p class="desc">İstediğiniz sayıda proje ekleyebilirsiniz (1, 2, 3, 4, 5... istediğiniz kadar). Her proje için ayrı kriterler, notlar ve mod seçilebilir.</p>
+      <div class="subtabs" id="subtabs-proje"></div>
+      <div id="modName-proje"></div>
+
+      <div class="mode-select" id="modeSelect-proje"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="btnApply-proje">⚡ Notları Kriterlere Dağıt / Uygula</button>
+        <button class="btn gold" id="btnPdf-proje">📄 PDF Olarak İndir</button>
+        <button class="btn secondary" id="btnXlsx-proje">📊 Excel Olarak İndir</button>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
+        <span><i style="background:var(--geçer)"></i> 50–59,99 Geçer</span>
+        <span><i style="background:var(--orta)"></i> 60–69,99 Orta</span>
+        <span><i style="background:var(--iyi)"></i> 70–84,99 İyi</span>
+        <span><i style="background:var(--pekiyi)"></i> 85–100 Pekiyi</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📐</span> Değerlendirme Kriterleri</h2>
+      <p class="desc">Toplam <b>100 puan</b> üzerinden kriterler. Gerekirse maksimum puanları, metinleri düzenleyebilir; yeni kriter ekleyip mevcutları silebilirsiniz (toplamın 100 olmasına dikkat edin).</p>
+      <div id="critEditor-proje"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableWrap-proje"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ DERS İÇİ PERFORMANS ============ -->
+  <div class="panel" id="panel-dersici">
+    <div class="card">
+      <h2><span class="num">📝</span> Ders İçi Performans Değerlendirme</h2>
+      <p class="desc">İstediğiniz sayıda ders içi performans değerlendirmesi (1. dönem, 2. dönem, ayrı tarihler vb.) ekleyebilirsiniz.</p>
+      <div class="subtabs" id="subtabs-dersici"></div>
+      <div id="modName-dersici"></div>
+
+      <div class="mode-select" id="modeSelect-dersici"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="btnApply-dersici">⚡ Notları Kriterlere Dağıt / Uygula</button>
+        <button class="btn gold" id="btnPdf-dersici">📄 PDF Olarak İndir</button>
+        <button class="btn secondary" id="btnXlsx-dersici">📊 Excel Olarak İndir</button>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
+        <span><i style="background:var(--geçer)"></i> 50–59,99 Geçer</span>
+        <span><i style="background:var(--orta)"></i> 60–69,99 Orta</span>
+        <span><i style="background:var(--iyi)"></i> 70–84,99 İyi</span>
+        <span><i style="background:var(--pekiyi)"></i> 85–100 Pekiyi</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📐</span> Değerlendirme Kriterleri</h2>
+      <p class="desc">Toplam <b>100 puan</b> üzerinden kriterler. Yeni kriter ekleyip mevcutları silebilirsiniz.</p>
+      <div id="critEditor-dersici"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableWrap-dersici"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ PERFORMANS ÖDEVİ ============ -->
+  <div class="panel" id="panel-odev">
+    <div class="card">
+      <h2><span class="num">📚</span> Performans Ödevi Değerlendirme</h2>
+      <p class="desc">İstediğiniz sayıda performans ödevi ekleyebilirsiniz (1, 2, 3, 4, 5, 6... istediğiniz kadar).</p>
+      <div class="subtabs" id="subtabs-odev"></div>
+      <div id="modName-odev"></div>
+
+      <div class="mode-select" id="modeSelect-odev"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="btnApply-odev">⚡ Notları Kriterlere Dağıt / Uygula</button>
+        <button class="btn gold" id="btnPdf-odev">📄 PDF Olarak İndir</button>
+        <button class="btn secondary" id="btnXlsx-odev">📊 Excel Olarak İndir</button>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
+        <span><i style="background:var(--geçer)"></i> 50–59,99 Geçer</span>
+        <span><i style="background:var(--orta)"></i> 60–69,99 Orta</span>
+        <span><i style="background:var(--iyi)"></i> 70–84,99 İyi</span>
+        <span><i style="background:var(--pekiyi)"></i> 85–100 Pekiyi</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📐</span> Değerlendirme Kriterleri</h2>
+      <p class="desc">Yeni kriter ekleyip mevcutları silebilirsiniz.</p>
+      <div id="critEditor-odev"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableWrap-odev"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ AYARLAR ============ -->
+  <div class="panel" id="panel-ayarlar">
+    <div class="card">
+      <h2><span class="num">⚙️</span> Form Üst Bilgileri</h2>
+      <p class="desc">PDF ve Excel çıktılarında görünecek okul, ders ve dönem bilgileri. Her alanın yanındaki 📌 butonuna basarak o alanın değerini kendi arşivine kaydedebilir, altında listelenen kayıtlardan tek tıkla seçebilir, ✕ ile arşivden silebilirsiniz.</p>
+      <div class="id-grid">
+        <div class="school-id">
+          <label>Okul Adı</label>
+          <div class="field-row">
+            <input type="text" id="cfgSchool" value="…………………………………………… ORTAOKULU">
+            <button class="btn gold field-pin" data-field="school" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-school"></div>
+        </div>
+        <div class="school-id">
+          <label>Eğitim-Öğretim Yılı</label>
+          <div class="field-row">
+            <input type="text" id="cfgYear" value="2025-2026">
+            <button class="btn gold field-pin" data-field="year" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-year"></div>
+        </div>
+        <div class="school-id">
+          <label>Dönem</label>
+          <div class="field-row">
+            <input type="text" id="cfgTerm" value="I. Dönem">
+            <button class="btn gold field-pin" data-field="term" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-term"></div>
+        </div>
+        <div class="school-id">
+          <label>Ders Adı</label>
+          <div class="field-row">
+            <input type="text" id="cfgCourse" value="…………………………………………… DERSİ">
+            <button class="btn gold field-pin" data-field="course" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-course"></div>
+        </div>
+        <div class="school-id">
+          <label>Sınıf / Şube</label>
+          <div class="field-row">
+            <input type="text" id="cfgClass" value="">
+            <button class="btn gold field-pin" data-field="cls" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-cls"></div>
+        </div>
+        <div class="school-id">
+          <label>Öğretmen Adı Soyadı</label>
+          <div class="field-row">
+            <input type="text" id="cfgTeacher" value="">
+            <button class="btn gold field-pin" data-field="teacher" title="Bu değeri arşive kaydet">📌</button>
+          </div>
+          <div class="field-archive" id="archive-teacher"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn" id="btnSaveCfg">💾 Bilgileri Kaydet</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="note-box">
+        💡 <b>İpucu — Hızlı Sonuç Modu:</b> Excel'inizde her öğrenci için bir toplam not varsa (örn. "Proje 1" sütunu), "Hızlı Sonuç" modunu seçip <i>"Notları Kriterlere Dağıt"</i> butonuna basın. Sistem, o toplam notu kriterlere rastgele ama mantıklı şekilde bölüştürür ve toplamın her zaman girdiğiniz nota eşit kalmasını sağlar — resmi form/karne formatına uygun bir görünüm elde edersiniz.<br><br>
+        💡 <b>Detaylı İnceleme Modu:</b> Bu modda kriter hücrelerine doğrudan puan girebilirsiniz; toplam canlı olarak hesaplanır.<br><br>
+        ➕ <b>Modül ekleme/silme:</b> "Proje", "Ders İçi Performans" ve "Performans Ödevi" sekmelerinde, üstteki sekme barındaki <b>+ Yeni Ekle</b> butonuyla istediğiniz sayıda proje/değerlendirme ekleyebilir, ✕ ile silebilir, başlık alanından adını değiştirebilirsiniz.<br><br>
+        📌 Tüm veriler tarayıcınızda saklanır (yerel depolama). Sayfayı yeniden açtığınızda kaldığınız yerden devam edebilirsiniz.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay"><div class="box"><div class="spinner"></div><span id="overlayText">İşleniyor...</span></div></div>
+
+<div class="overlay" id="mappingOverlay">
+  <div class="box" style="flex-direction:column;align-items:stretch;gap:14px;max-width:560px;max-height:80vh;overflow-y:auto;font-family:var(--sans);">
+    <div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;">📋 Sütun Eşleştirmesini Doğrulayın</div>
+    <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">Excel dosyanızdaki her sütunu aşağıdan ilgili alanla eşleştirin. Kullanılmayacak sütunlar için "— Aktarma —" seçeneğini bırakın.</div>
+    <div id="mappingRows" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+      <button class="btn secondary" id="mappingCancel">İptal</button>
+      <button class="btn" id="mappingOk">✅ Eşleştirmeyi Onayla ve Aktar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="box" style="flex-direction:column;align-items:stretch;gap:16px;max-width:380px;">
+    <div style="font-size:1.3rem;text-align:center;">⚠️</div>
+    <div id="confirmMsg" style="font-family:var(--sans);font-size:.9rem;color:var(--ink);text-align:center;line-height:1.5;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="btn secondary" id="confirmCancel">İptal</button>
+      <button class="btn terracotta" id="confirmOk">Evet, Sil</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden print container for PDF generation -->
+<div style="position:fixed; left:-99999px; top:0;" id="printRoot"></div>
+
+<script>
+/* ============================================================
+   VERİ MODELİ
+   ============================================================
+   DB.modules: { proje:[ {id, name, mode, criteria:[{text,max}], scores:{sid:[..]}, totals:{sid:val} }, ... ],
+                 dersici:[...], odev:[...] }
+   ============================================================ */
+const STORAGE_KEY = 'hayme_degerlendirme_v2';
+
+const DEFAULT_CRITERIA = {
+  proje: [
+    {text:"Proje hazırlama, plana yayma ve uygulama başarısı", max:10},
+    {text:"Proje için gerekli bilgi, doküman, araç gereç toplanması ve kullanılması", max:10},
+    {text:"Proje hazırlama sırasında ders öğretmeniyle diyalog kurması", max:10},
+    {text:"Kaynak kişiler ile varsa kaynak gruplar ile iletişim kurabilme", max:10},
+    {text:"Projenin doğruluk ve kullanılabilirlik derecesi", max:10},
+    {text:"Projenin yazım ve dersin özel kurallarına uygunluğu", max:10},
+    {text:"Düzgün ifade kullanma ve anlaşılabilir olması", max:10},
+    {text:"Projenin özenle yapılması, tertip, temizlik ve estetik görüntüsü", max:10},
+    {text:"Projeyi, yaptığı plan çerçevesinde tamamlama", max:10},
+    {text:"Projenin zamanında teslim edilmesi", max:10},
+  ],
+  dersici: [
+    {text:"Ödevlerini Zamanında Yapma", max:20},
+    {text:"Ders İçi Etkinliklere Katılım", max:20},
+    {text:"Dersteki Tutum ve Davranışları", max:20},
+    {text:"Ders Araç & Gereçlerini Yanında Bulundurma", max:20},
+    {text:"Derse Hazırlıklı Gelme / Genel Performans", max:20},
+  ],
+  odev: [
+    {text:"Ödeve uygun plan yapma / grup içinde uygun görev dağılımı yapma", max:10},
+    {text:"Ödev hazırlarken çeşitli kaynaklardan yararlanma", max:10},
+    {text:"Konunun amaca uygun hazırlanması, bilgilerin analiz ve düzenlenmesi", max:10},
+    {text:"Sunumda eleştirel düşünce, akıcı ve özgüvenli sunum yapma", max:10},
+    {text:"Raporun anlaşılır yazılması, yazım kuralları, sayfa düzeni ve temizlik", max:10},
+    {text:"Ödevin materyalle desteklenmesi ve amacına uygun olması", max:40},
+  ]
+};
+
+const MODULE_LABELS = {
+  proje: { single:'Proje', formTitlePrefix:'PROJE DEĞERLENDİRME FORMU', formTitleFull:'PROJE DEĞERLENDİRME ÖLÇEĞİ' },
+  dersici: { single:'Ders İçi Performans', formTitlePrefix:'DERS İÇİ PERFORMANS DEĞERLENDİRME ÖLÇEĞİ', formTitleFull:'DERS İÇİ PERFORMANS DEĞERLENDİRME ÖLÇEĞİ' },
+  odev: { single:'Performans Ödevi', formTitlePrefix:'PERFORMANS ÖDEVİ DEĞERLENDİRME ÖLÇEĞİ', formTitleFull:'PERFORMANS ÖDEVİ DEĞERLENDİRME ÖLÇEĞİ' }
+};
+
+function makeModule(type, index){
+  return {
+    id: 'm'+type+'_'+Date.now()+'_'+Math.floor(Math.random()*10000),
+    name: MODULE_LABELS[type].single + ' ' + index,
+    mode: 'formalite',
+    criteria: JSON.parse(JSON.stringify(DEFAULT_CRITERIA[type])),
+    scores: {},
+    totals: {}
+  };
+}
+
+let DB = {
+  students: [], // {id, no, name}
+  config: {
+    school:"…………………………………………… ORTAOKULU",
+    year:"2025-2026", term:"I. Dönem",
+    course:"…………………………………………… DERSİ",
+    cls:"", teacher:""
+  },
+  modules: {
+    proje: [makeModule('proje',1), makeModule('proje',2), makeModule('proje',3)],
+    dersici: [makeModule('dersici',1)],
+    odev: [makeModule('odev',1)]
+  },
+  current: { proje:null, dersici:null, odev:null }, // module id currently displayed per type
+  configArchive: { school:[], year:[], term:[], course:[], cls:[], teacher:[] } // each: array of strings
+};
+
+function saveDB(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+}
+function loadDB(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    try{
+      const parsed = JSON.parse(raw);
+      DB = Object.assign(DB, parsed);
+    }catch(e){console.warn('DB yüklenemedi', e);}
+  }
+  // ensure structure integrity
+  ['proje','dersici','odev'].forEach(type=>{
+    if(!DB.modules[type] || !Array.isArray(DB.modules[type]) || DB.modules[type].length===0){
+      DB.modules[type] = [makeModule(type,1)];
+    }
+    DB.modules[type].forEach(m=>{
+      if(!m.scores) m.scores = {};
+      if(!m.totals) m.totals = {};
+      if(!m.mode) m.mode = 'formalite';
+      if(!m.criteria || !m.criteria.length) m.criteria = JSON.parse(JSON.stringify(DEFAULT_CRITERIA[type]));
+    });
+    if(!DB.current[type] || !DB.modules[type].find(m=>m.id===DB.current[type])){
+      DB.current[type] = DB.modules[type][0].id;
+    }
+  });
+  if(!DB.configArchive || typeof DB.configArchive !== 'object' || Array.isArray(DB.configArchive)){
+    DB.configArchive = { school:[], year:[], term:[], course:[], cls:[], teacher:[] };
+  }
+  ['school','year','term','course','cls','teacher'].forEach(f=>{
+    if(!Array.isArray(DB.configArchive[f])) DB.configArchive[f] = [];
+  });
+}
+loadDB();
+
+function getModule(type, id){
+  return DB.modules[type].find(m=>m.id===id);
+}
+function getCurrentModule(type){
+  return getModule(type, DB.current[type]);
+}
+
+/* ============================================================
+   YARDIMCI FONKSİYONLAR
+   ============================================================ */
+function toast(msg, ms=2600){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), ms);
+}
+function showOverlay(text){
+  document.getElementById('overlayText').textContent = text || 'İşleniyor...';
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+}
+function confirmDialog(message){
+  return new Promise((resolve)=>{
+    const overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmMsg').textContent = message;
+    overlay.classList.add('show');
+    const okBtn = document.getElementById('confirmOk');
+    const cancelBtn = document.getElementById('confirmCancel');
+    function cleanup(result){
+      overlay.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
+function gradeInfo(score){
+  if(score < 50) return {label:'Geçmez', cls:'g-gecmez'};
+  if(score < 60) return {label:'Geçer', cls:'g-gecer'};
+  if(score < 70) return {label:'Orta', cls:'g-orta'};
+  if(score < 85) return {label:'İyi', cls:'g-iyi'};
+  return {label:'Pekiyi', cls:'g-pekiyi'};
+}
+
+function fmtNum(n){
+  if(n === null || n === undefined || isNaN(n)) return '';
+  return (Math.round(n*100)/100).toString().replace('.', ',');
+}
+
+/* Distribute a total score across criteria with given max values, randomly but proportionally,
+   ensuring sum == total exactly (rounded to 2 decimals), and each value within [0, max]. */
+function distributeScore(total, maxes){
+  total = Math.max(0, Math.min(100, total));
+  const n = maxes.length;
+  const sumMax = maxes.reduce((a,b)=>a+b,0);
+  let raw = maxes.map(m => total * (m/sumMax));
+  let vals = raw.map((v,i)=>{
+    const m = maxes[i];
+    const jitterRange = Math.min(m*0.25, total*0.15, 3);
+    const jitter = (Math.random()*2-1) * jitterRange;
+    let nv = v + jitter;
+    nv = Math.max(0, Math.min(m, nv));
+    return nv;
+  });
+  for(let iter=0; iter<25; iter++){
+    let sum = vals.reduce((a,b)=>a+b,0);
+    let diff = total - sum;
+    if(Math.abs(diff) < 0.001) break;
+    if(diff > 0){
+      let room = vals.map((v,i)=>maxes[i]-v);
+      let totalRoom = room.reduce((a,b)=>a+b,0);
+      if(totalRoom <= 0) break;
+      vals = vals.map((v,i)=> v + diff*(room[i]/totalRoom));
+    } else {
+      let room = vals.map(v=>v);
+      let totalRoom = room.reduce((a,b)=>a+b,0);
+      if(totalRoom <= 0) break;
+      vals = vals.map((v,i)=> v + diff*(room[i]/totalRoom));
+    }
+    vals = vals.map((v,i)=>Math.max(0, Math.min(maxes[i], v)));
+  }
+  vals = vals.map(v=>Math.round(v*100)/100);
+  let sum = vals.reduce((a,b)=>a+b,0);
+  let diff = Math.round((total - sum)*100)/100;
+  if(Math.abs(diff) >= 0.01){
+    let idx = 0, best=-1;
+    for(let i=0;i<n;i++){
+      const room = diff>0 ? maxes[i]-vals[i] : vals[i];
+      if(room > best){ best = room; idx = i; }
+    }
+    vals[idx] = Math.round((vals[idx]+diff)*100)/100;
+    vals[idx] = Math.max(0, Math.min(maxes[idx], vals[idx]));
+  }
+  return vals;
+}
+
+/* ============================================================
+   TAB NAVIGATION
+   ============================================================ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============================================================
+   ÖĞRENCİ İÇE AKTARMA
+   ============================================================ */
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('click', ()=>fileInput.click());
+dropzone.addEventListener('dragover', e=>{e.preventDefault(); dropzone.classList.add('drag');});
+dropzone.addEventListener('dragleave', ()=>dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e=>{
+  e.preventDefault(); dropzone.classList.remove('drag');
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e=>{
+  if(e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function normalizeHeader(h){
+  return (h||'').toString().toLowerCase().trim()
+    .replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
+}
+
+/* Build list of selectable target fields for mapping dropdown */
+function getMappingTargets(){
+  const targets = [
+    {value:'__skip__', label:'— Aktarma —'},
+    {value:'no', label:'No / Numara'},
+    {value:'name', label:'Adı Soyadı'},
+  ];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>{
+      targets.push({value: type+':'+mod.id, label: mod.name});
+    });
+  });
+  return targets;
+}
+
+/* Guess a default target for a header (used to pre-select dropdown) */
+function guessTarget(header, usedTargets){
+  const h = normalizeHeader(header);
+  const tryPick = (val)=>{
+    if(usedTargets.has(val)) return null;
+    return val;
+  };
+  if(['no','numara','okul no'].some(c=>h.includes(c))) return tryPick('no');
+  if(['ad soyad','adi soyadi','isim','ogrenci'].some(c=>h.includes(c))) return tryPick('name');
+
+  const baseMap = {
+    proje: ['proje'],
+    dersici: ['ders ici','dersici','ders performans'],
+    odev: ['performans odev','odev']
+  };
+  for(const type of ['proje','dersici','odev']){
+    for(const mod of DB.modules[type]){
+      const idx = DB.modules[type].indexOf(mod)+1;
+      for(const b of baseMap[type]){
+        const re1 = new RegExp(b.replace(/\s+/g,'\\s*')+'\\s*'+idx+'\\b');
+        const re2 = new RegExp('\\b'+idx+'\\.?\\s*'+b.replace(/\s+/g,'\\s*'));
+        if(re1.test(h) || re2.test(h)){
+          const val = type+':'+mod.id;
+          return tryPick(val);
+        }
+        if(idx===1 && h.includes(b) && !/[0-9]/.test(h)){
+          const val = type+':'+mod.id;
+          return tryPick(val);
+        }
+      }
+    }
+  }
+  return null;
+}
+
+let pendingImportRows = null;
+let pendingImportHeaders = null;
+
+function handleFile(file){
+  showOverlay('Excel dosyası okunuyor...');
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:''});
+      if(rows.length < 2){ toast('Dosyada veri bulunamadı.'); hideOverlay(); return; }
+      const headers = rows[0];
+      pendingImportRows = rows;
+      pendingImportHeaders = headers;
+      hideOverlay();
+      showMappingModal(headers, rows);
+    }catch(err){
+      console.error(err);
+      toast('❌ Dosya okunurken hata oluştu.');
+      hideOverlay();
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function showMappingModal(headers, rows){
+  const targets = getMappingTargets();
+  const used = new Set();
+  // first pass: guess all
+  const guesses = headers.map(h=>{
+    const g = guessTarget(h, used);
+    if(g) used.add(g);
+    return g;
+  });
+
+  const container = document.getElementById('mappingRows');
+  let html = '';
+  headers.forEach((h, i)=>{
+    // gather a sample value from first non-empty data row
+    let sample = '';
+    for(let r=1;r<rows.length;r++){
+      if(rows[r][i]!=='' && rows[r][i]!=null){ sample = rows[r][i]; break; }
+    }
+    const headerLabel = (h===''||h==null) ? `(Sütun ${i+1})` : h.toString();
+    html += `<div class="map-row">
+      <div class="map-col-name">${headerLabel}</div>
+      <select data-colidx="${i}">
+        ${targets.map(t=>`<option value="${t.value}" ${guesses[i]===t.value?'selected':''}>${t.label}</option>`).join('')}
+      </select>
+      <div class="map-sample">Örnek değer: ${sample!==''?sample:'—'}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  document.getElementById('mappingOverlay').classList.add('show');
+}
+
+document.getElementById('mappingCancel').addEventListener('click', ()=>{
+  document.getElementById('mappingOverlay').classList.remove('show');
+  pendingImportRows = null;
+  pendingImportHeaders = null;
+  toast('İçe aktarma iptal edildi.');
+});
+
+document.getElementById('mappingOk').addEventListener('click', ()=>{
+  const selects = document.querySelectorAll('#mappingRows select');
+  const mapping = {}; // colIdx -> target value
+  let idxNo = -1, idxName = -1;
+  const modColMap = { proje:{}, dersici:{}, odev:{} };
+  const usedTargets = new Set();
+  let duplicateTarget = null;
+
+  selects.forEach(sel=>{
+    const colIdx = +sel.dataset.colidx;
+    const val = sel.value;
+    if(val==='__skip__') return;
+    if(usedTargets.has(val)){ duplicateTarget = val; }
+    usedTargets.add(val);
+    if(val==='no') idxNo = colIdx;
+    else if(val==='name') idxName = colIdx;
+    else {
+      const [type, modId] = val.split(':');
+      modColMap[type][modId] = colIdx;
+    }
+  });
+
+  if(idxName < 0){
+    toast('⚠️ "Adı Soyadı" alanı için bir sütun seçmelisiniz.');
+    return;
+  }
+  if(duplicateTarget){
+    toast('⚠️ Aynı alan birden fazla sütuna eşleştirilemez. Lütfen kontrol edin.');
+    return;
+  }
+
+  document.getElementById('mappingOverlay').classList.remove('show');
+  showOverlay('Veriler aktarılıyor...');
+
+  const rows = pendingImportRows;
+
+  let count = 0;
+  DB.students = [];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>{ mod.scores = {}; mod.totals = {}; });
+  });
+
+  for(let r=1; r<rows.length; r++){
+    const row = rows[r];
+    if(!row || row.every(c=>c==='' || c===null || c===undefined)) continue;
+    const no = idxNo>=0 ? (row[idxNo]||'').toString().trim() : (count+1).toString();
+    const name = idxName>=0 ? (row[idxName]||'').toString().trim() : '';
+    if(!name) continue;
+    const sid = 's'+count;
+    DB.students.push({id:sid, no:no, name:name});
+
+    ['proje','dersici','odev'].forEach(type=>{
+      DB.modules[type].forEach(mod=>{
+        const ci = modColMap[type][mod.id];
+        if(ci!=null && row[ci]!=='' && row[ci]!=null){
+          const val = parseFloat(row[ci]);
+          if(!isNaN(val)) mod.totals[sid] = val;
+        }
+      });
+    });
+
+    count++;
+  }
+
+  saveDB();
+  renderStudentTable();
+  renderAllModuleViews();
+  document.getElementById('importStatus').style.display='flex';
+  document.getElementById('studentCount').textContent = count + ' öğrenci';
+  let detailParts = [];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>{
+      if(modColMap[type][mod.id]!=null) detailParts.push(mod.name+' ✓');
+    });
+  });
+  document.getElementById('importDetails').textContent = detailParts.length ? ('Aktarılan notlar: '+detailParts.join(', ')) : 'Not sütunu eşleştirilmedi (sadece isim listesi).';
+  toast('✅ '+count+' öğrenci başarıyla içe aktarıldı.');
+  hideOverlay();
+  pendingImportRows = null;
+  pendingImportHeaders = null;
+});
+
+document.getElementById('btnTemplate').addEventListener('click', ()=>{
+  const headers = ['No','Adı Soyadı'];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach((mod,i)=>{
+      headers.push(mod.name);
+    });
+  });
+  const wsData = [
+    headers,
+    [1,'Ahmet YILMAZ', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
+    [2,'Ayşe DEMİR', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
+    [3,'Mehmet KAYA', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Öğrenciler');
+  XLSX.writeFile(wb, 'ogrenci_listesi_sablon.xlsx');
+});
+
+document.getElementById('btnAddManual').addEventListener('click', ()=>{
+  const name = prompt('Öğrenci Adı Soyadı:');
+  if(!name) return;
+  const no = prompt('Öğrenci Numarası:', (DB.students.length+1).toString()) || (DB.students.length+1).toString();
+  const sid = 's'+Date.now()+Math.floor(Math.random()*1000);
+  DB.students.push({id:sid, no:no, name:name});
+  saveDB();
+  renderStudentTable();
+  renderAllModuleViews();
+  toast('✅ Öğrenci eklendi: '+name);
+});
+
+document.getElementById('btnClearAll').addEventListener('click', async ()=>{
+  if(!await confirmDialog('Tüm öğrenci listesi ve notlar silinecek. Emin misiniz?')) return;
+  DB.students = [];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>{ mod.scores = {}; mod.totals = {}; });
+  });
+  saveDB();
+  renderStudentTable();
+  renderAllModuleViews();
+  document.getElementById('importStatus').style.display='none';
+  toast('🗑 Tüm veriler temizlendi.');
+});
+
+function renderStudentTable(){
+  const wrap = document.getElementById('studentTableWrap');
+  if(DB.students.length === 0){
+    wrap.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="et">Henüz öğrenci eklenmedi</div>Excel dosyası yükleyin ya da manuel ekleyin.</div>';
+    return;
+  }
+  // build dynamic columns: one per module instance
+  const cols = [];
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>cols.push({type, mod}));
+  });
+
+  let html = '<div class="table-wrap"><table><thead><tr><th>No</th><th class="th-name">Adı Soyadı</th>';
+  cols.forEach(c=>{ html += `<th>${c.mod.name}</th>`; });
+  html += '<th>İşlem</th></tr></thead><tbody>';
+  DB.students.forEach(st=>{
+    html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>`;
+    cols.forEach(c=>{
+      const v = c.mod.totals[st.id];
+      html += `<td>${v!=null ? fmtNum(v) : '—'}</td>`;
+    });
+    html += `<td><button class="btn terracotta" style="padding:5px 10px;font-size:.7rem;" onclick="removeStudent('${st.id}')">Sil</button></td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+}
+
+async function removeStudent(sid){
+  if(!await confirmDialog('Bu öğrenciyi silmek istediğinize emin misiniz?')) return;
+  DB.students = DB.students.filter(s=>s.id!==sid);
+  ['proje','dersici','odev'].forEach(type=>{
+    DB.modules[type].forEach(mod=>{
+      delete mod.scores[sid];
+      delete mod.totals[sid];
+    });
+  });
+  saveDB();
+  renderStudentTable();
+  renderAllModuleViews();
+}
+
+/* ============================================================
+   SUBTABS (module instances) — render + add/remove/select
+   ============================================================ */
+function renderSubtabs(type){
+  const container = document.getElementById('subtabs-'+type);
+  let html = '';
+  DB.modules[type].forEach(mod=>{
+    const active = mod.id === DB.current[type];
+    html += `<div class="subtab-pill ${active?'active':''}">
+      <button class="subtab-btn" data-type="${type}" data-id="${mod.id}">${mod.name}</button>
+      <button class="subtab-del" data-type="${type}" data-id="${mod.id}" title="Bu modülü sil">✕</button>
+    </div>`;
+  });
+  html += `<button class="subtab-add" data-type="${type}">➕ Yeni Ekle</button>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('.subtab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      DB.current[type] = btn.dataset.id;
+      saveDB();
+      renderModuleView(type);
+    });
+  });
+  container.querySelectorAll('.subtab-del').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const t = btn.dataset.type, id = btn.dataset.id;
+      if(DB.modules[t].length <= 1){ toast('⚠️ En az bir '+MODULE_LABELS[t].single.toLowerCase()+' kalmalıdır.'); return; }
+      const mod = getModule(t, id);
+      if(!await confirmDialog(`"${mod.name}" silinecek. Bu modüle ait tüm puanlar kaybolacaktır. Emin misiniz?`)) return;
+      DB.modules[t] = DB.modules[t].filter(m=>m.id!==id);
+      if(DB.current[t] === id){
+        DB.current[t] = DB.modules[t][0].id;
+      }
+      saveDB();
+      renderModuleView(t);
+    });
+  });
+  container.querySelector('.subtab-add').addEventListener('click', ()=>{
+    const t = container.querySelector('.subtab-add').dataset.type;
+    const newIndex = DB.modules[t].length + 1;
+    const newMod = makeModule(t, newIndex);
+    DB.modules[t].push(newMod);
+    DB.current[t] = newMod.id;
+    saveDB();
+    renderModuleView(t);
+    toast('➕ Yeni '+MODULE_LABELS[t].single.toLowerCase()+' eklendi: '+newMod.name);
+  });
+}
+
+/* ============================================================
+   MODULE NAME EDITOR
+   ============================================================ */
+function renderModName(type){
+  const container = document.getElementById('modName-'+type);
+  const mod = getCurrentModule(type);
+  container.innerHTML = `<input type="text" class="mod-name-input" id="modNameInput-${type}" value="${mod.name.replace(/"/g,'&quot;')}" placeholder="Modül adı (örn. ${MODULE_LABELS[type].single} 1)">`;
+  document.getElementById('modNameInput-'+type).addEventListener('change', (e)=>{
+    mod.name = e.target.value.trim() || mod.name;
+    saveDB();
+    renderSubtabs(type);
+  });
+}
+
+/* ============================================================
+   MODE SELECTOR
+   ============================================================ */
+function renderModeSelect(type){
+  const container = document.getElementById('modeSelect-'+type);
+  const mod = getCurrentModule(type);
+  const descs = {
+    proje: {
+      formalite: 'Öğrencinin Excel\'den aktarılan toplam notu, aşağıdaki kriterlere rastgele ama tutarlı şekilde dağıtılır. Toplam her zaman öğrencinin girilen notuna eşit olur.',
+      gercek: 'Her kriter için puanı siz girersiniz. Toplam not otomatik hesaplanır.'
+    },
+    dersici: {
+      formalite: 'Excel\'den aktarılan toplam not, kriterlere rastgele dağıtılır; toplam her zaman aktarılan nota eşit olur.',
+      gercek: 'Her kriter puanını siz girersiniz, toplam otomatik hesaplanır.'
+    },
+    odev: {
+      formalite: 'Excel\'den aktarılan toplam not, kriterlere rastgele dağıtılır; toplam her zaman aktarılan nota eşit olur.',
+      gercek: 'Her kriter puanını siz girersiniz, toplam otomatik hesaplanır.'
+    }
+  };
+  container.innerHTML = `
+    <div class="mode-card ${mod.mode==='formalite'?'selected':''}" data-mode="formalite">
+      <div class="mc-title">⚡ Hızlı Sonuç <span class="badge b-form">Otomatik Dağıtım</span></div>
+      <div class="mc-desc">${descs[type].formalite}</div>
+    </div>
+    <div class="mode-card ${mod.mode==='gercek'?'selected':''}" data-mode="gercek">
+      <div class="mc-title">🔍 Detaylı İnceleme <span class="badge b-real">Manuel Giriş</span></div>
+      <div class="mc-desc">${descs[type].gercek}</div>
+    </div>
+  `;
+  container.querySelectorAll('.mode-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      container.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      mod.mode = card.dataset.mode;
+      saveDB();
+      renderTable(type);
+    });
+  });
+}
+
+/* ============================================================
+   CRITERIA EDITOR
+   ============================================================ */
+function renderCriteriaEditor(type){
+  const container = document.getElementById('critEditor-'+type);
+  const mod = getCurrentModule(type);
+  let html = '';
+  mod.criteria.forEach((c,i)=>{
+    html += `<div class="crit-row">
+      <span style="font-weight:700;color:var(--moss-d);min-width:24px;">${i+1}.</span>
+      <input class="crit-text" data-idx="${i}" data-field="text" value="${c.text.replace(/"/g,'&quot;')}">
+      <input class="crit-max" type="number" min="1" max="100" data-idx="${i}" data-field="max" value="${c.max}">
+      <span style="font-size:.75rem;color:var(--muted);">puan</span>
+      <button class="btn terracotta crit-del" style="padding:5px 10px;font-size:.7rem;" data-idx="${i}" title="Bu kriteri sil">✕</button>
+    </div>`;
+  });
+  const total = mod.criteria.reduce((a,b)=>a+b.max,0);
+  html += `<div style="margin-top:8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <button class="btn secondary crit-add" style="padding:7px 14px;font-size:.75rem;">➕ Yeni Kriter Ekle</button>
+    <span style="font-size:.8rem;font-weight:700;color:${total===100?'var(--moss)':'var(--terracotta)'};">Toplam: ${total} / 100 ${total!==100?' ⚠️ Toplam 100 olmalıdır':' ✓'}</span>
+  </div>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('change', (e)=>{
+      const idx = +e.target.dataset.idx, field = e.target.dataset.field;
+      if(field==='max'){
+        mod.criteria[idx].max = Math.max(1, parseFloat(e.target.value)||1);
+      } else {
+        mod.criteria[idx].text = e.target.value;
+      }
+      saveDB();
+      renderCriteriaEditor(type);
+      renderTable(type);
+    });
+  });
+
+  container.querySelectorAll('.crit-del').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const idx = +e.target.dataset.idx;
+      if(mod.criteria.length <= 1){ toast('⚠️ En az bir kriter kalmalıdır.'); return; }
+      if(!await confirmDialog('Bu kriteri silmek istediğinize emin misiniz? Bu kritere ait girilen tüm puanlar kaybolacaktır.')) return;
+      mod.criteria.splice(idx,1);
+      Object.keys(mod.scores).forEach(sid=>{
+        if(Array.isArray(mod.scores[sid])) mod.scores[sid].splice(idx,1);
+      });
+      saveDB();
+      renderCriteriaEditor(type);
+      renderTable(type);
+    });
+  });
+
+  container.querySelector('.crit-add').addEventListener('click', ()=>{
+    mod.criteria.push({text:'Yeni Kriter', max:10});
+    const newIdx = mod.criteria.length - 1;
+    Object.keys(mod.scores).forEach(sid=>{
+      if(Array.isArray(mod.scores[sid])) mod.scores[sid][newIdx] = null;
+    });
+    saveDB();
+    renderCriteriaEditor(type);
+    renderTable(type);
+  });
+}
+
+/* ============================================================
+   TABLE RENDERING
+   ============================================================ */
+function renderTable(type){
+  const wrap = document.getElementById('tableWrap-'+type);
+  const mod = getCurrentModule(type);
+  if(DB.students.length===0){
+    wrap.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div>';
+    return;
+  }
+  const criteria = mod.criteria;
+  const mode = mod.mode;
+
+  let html = '<div class="table-wrap"><table><thead><tr><th>No</th><th class="th-name">Adı Soyadı</th>';
+  criteria.forEach((c,i)=>{ html += `<th>${i+1}. ${c.text}<br><span style="opacity:.8">(${c.max} p)</span></th>`; });
+  html += '<th>TOPLAM</th><th>Düzey</th></tr></thead><tbody>';
+
+  DB.students.forEach(st=>{
+    if(!mod.scores[st.id]) mod.scores[st.id] = criteria.map(()=>null);
+    if(mod.scores[st.id].length !== criteria.length){
+      // adjust length if criteria changed externally
+      const arr = mod.scores[st.id];
+      while(arr.length < criteria.length) arr.push(null);
+      while(arr.length > criteria.length) arr.pop();
+    }
+    const scores = mod.scores[st.id];
+    let total = 0, anyVal=false;
+    html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>`;
+    criteria.forEach((c,i)=>{
+      const val = scores[i];
+      if(val!=null){ total += val; anyVal=true; }
+      const disabled = mode==='formalite' ? 'disabled' : '';
+      html += `<td><input type="number" class="score-input" ${disabled} min="0" max="${c.max}" step="0.01"
+        data-sid="${st.id}" data-idx="${i}"
+        value="${val!=null?val:''}"></td>`;
+    });
+    const grade = anyVal ? gradeInfo(total) : null;
+    html += `<td class="total-cell">${anyVal ? fmtNum(total) : '—'}</td>`;
+    html += `<td>${grade ? `<span class="grade-pill ${grade.cls}">${grade.label}</span>` : '—'}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+
+  if(mode==='gercek'){
+    wrap.querySelectorAll('input.score-input').forEach(inp=>{
+      inp.addEventListener('input', (e)=>{
+        const sid = e.target.dataset.sid, idx = +e.target.dataset.idx;
+        let v = e.target.value === '' ? null : parseFloat(e.target.value);
+        const maxV = mod.criteria[idx].max;
+        if(v!=null){ v = Math.max(0, Math.min(maxV, v)); }
+        mod.scores[sid][idx] = v;
+        saveDB();
+        updateRowTotal(e.target.closest('tr'));
+      });
+    });
+  }
+}
+
+function updateRowTotal(tr){
+  const inputs = tr.querySelectorAll('input.score-input');
+  let total = 0, anyVal=false;
+  inputs.forEach(inp=>{
+    const v = inp.value === '' ? null : parseFloat(inp.value);
+    if(v!=null){ total += v; anyVal=true; }
+  });
+  const totalCell = tr.querySelector('.total-cell');
+  const gradeCell = totalCell.nextElementSibling;
+  totalCell.textContent = anyVal ? fmtNum(total) : '—';
+  if(anyVal){
+    const grade = gradeInfo(total);
+    gradeCell.innerHTML = `<span class="grade-pill ${grade.cls}">${grade.label}</span>`;
+  } else {
+    gradeCell.textContent = '—';
+  }
+}
+
+/* ============================================================
+   FULL MODULE VIEW RENDER
+   ============================================================ */
+function renderModuleView(type){
+  renderSubtabs(type);
+  renderModName(type);
+  renderModeSelect(type);
+  renderCriteriaEditor(type);
+  renderTable(type);
+}
+function renderAllModuleViews(){
+  ['proje','dersici','odev'].forEach(type=>renderModuleView(type));
+}
+
+renderAllModuleViews();
+renderStudentTable();
+if(DB.students.length){
+  document.getElementById('importStatus').style.display='flex';
+  document.getElementById('studentCount').textContent = DB.students.length + ' öğrenci';
+}
+
+/* ============================================================
+   APPLY / DISTRIBUTE BUTTONS
+   ============================================================ */
+function applyModule(type){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  const maxes = mod.criteria.map(c=>c.max);
+
+  if(mod.mode==='formalite'){
+    let missing = 0;
+    DB.students.forEach(st=>{
+      let total = mod.totals[st.id];
+      if(total==null || isNaN(total)){
+        total = Math.round((Math.random()*30+65)*100)/100;
+        missing++;
+      }
+      mod.scores[st.id] = distributeScore(total, maxes);
+    });
+    saveDB();
+    renderTable(type);
+    toast(missing>0
+      ? `⚡ Notlar dağıtıldı. ${missing} öğrenci için Excel'de not bulunmadığından rastgele bir toplam not (65–95 arası) atandı.`
+      : '⚡ Tüm notlar kriterlere başarıyla dağıtıldı.');
+  } else {
+    toast('🔍 Detaylı İnceleme modundasınız. Kriter hücrelerine puanları girebilirsiniz.');
+    renderTable(type);
+  }
+}
+
+document.getElementById('btnApply-proje').addEventListener('click', ()=>applyModule('proje'));
+document.getElementById('btnApply-dersici').addEventListener('click', ()=>applyModule('dersici'));
+document.getElementById('btnApply-odev').addEventListener('click', ()=>applyModule('odev'));
+
+/* ============================================================
+   CONFIG SAVE
+   ============================================================ */
+function loadConfigToForm(){
+  document.getElementById('cfgSchool').value = DB.config.school;
+  document.getElementById('cfgYear').value = DB.config.year;
+  document.getElementById('cfgTerm').value = DB.config.term;
+  document.getElementById('cfgCourse').value = DB.config.course;
+  document.getElementById('cfgClass').value = DB.config.cls;
+  document.getElementById('cfgTeacher').value = DB.config.teacher;
+}
+loadConfigToForm();
+
+document.getElementById('btnSaveCfg').addEventListener('click', ()=>{
+  DB.config.school = document.getElementById('cfgSchool').value;
+  DB.config.year = document.getElementById('cfgYear').value;
+  DB.config.term = document.getElementById('cfgTerm').value;
+  DB.config.course = document.getElementById('cfgCourse').value;
+  DB.config.cls = document.getElementById('cfgClass').value;
+  DB.config.teacher = document.getElementById('cfgTeacher').value;
+  saveDB();
+  toast('💾 Form bilgileri kaydedildi.');
+});
+
+const CFG_FIELD_IDS = {
+  school:'cfgSchool', year:'cfgYear', term:'cfgTerm', course:'cfgCourse', cls:'cfgClass', teacher:'cfgTeacher'
+};
+
+function renderFieldArchive(field){
+  const wrap = document.getElementById('archive-'+field);
+  const list = DB.configArchive[field] || [];
+  if(!list.length){ wrap.innerHTML=''; return; }
+  let html = '';
+  list.forEach((val, i)=>{
+    html += `<div class="field-chip" data-field="${field}" data-idx="${i}" title="${val.replace(/"/g,'&quot;')}">
+      <span class="chip-text">${val}</span>
+      <button class="chip-del" data-field="${field}" data-idx="${i}">✕</button>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.field-chip').forEach(chip=>{
+    chip.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('chip-del')) return;
+      const f = chip.dataset.field, idx = +chip.dataset.idx;
+      const val = DB.configArchive[f][idx];
+      document.getElementById(CFG_FIELD_IDS[f]).value = val;
+      DB.config[f] = val;
+      saveDB();
+      toast('📥 Değer uygulandı.');
+    });
+  });
+  wrap.querySelectorAll('.chip-del').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const f = btn.dataset.field, idx = +btn.dataset.idx;
+      const val = DB.configArchive[f][idx];
+      if(!await confirmDialog(`"${val}" arşivden silinecek. Emin misiniz?`)) return;
+      DB.configArchive[f].splice(idx,1);
+      saveDB();
+      renderFieldArchive(f);
+      toast('🗑 Arşivden silindi.');
+    });
+  });
+}
+function renderAllFieldArchives(){
+  Object.keys(CFG_FIELD_IDS).forEach(renderFieldArchive);
+}
+
+document.querySelectorAll('.field-pin').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const field = btn.dataset.field;
+    const val = document.getElementById(CFG_FIELD_IDS[field]).value.trim();
+    if(!val){ toast('⚠️ Önce bu alana bir değer girin.'); return; }
+    if(!DB.configArchive[field]) DB.configArchive[field] = [];
+    if(DB.configArchive[field].includes(val)){
+      toast('ℹ️ Bu değer zaten arşivde var.');
+      return;
+    }
+    DB.configArchive[field].push(val);
+    // also persist as active config value
+    DB.config[field] = val;
+    saveDB();
+    renderFieldArchive(field);
+    toast('📌 Arşive eklendi: '+val);
+  });
+});
+
+renderAllFieldArchives();
+
+/* ============================================================
+   EXCEL EXPORT
+   ============================================================ */
+function exportXlsx(type){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  const criteria = mod.criteria;
+  const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
+
+  const headerRow1 = [DB.config.school + ' | ' + DB.config.year + ' Eğitim Öğretim Yılı ' + DB.config.term + ' ' + DB.config.course + ' | ' + formTitle];
+  const headerRow = ['No','Adı Soyadı', ...criteria.map((c,i)=>`${i+1}. ${c.text} (${c.max} p)`), 'TOPLAM','DÜZEY','MOD'];
+  const rows = [headerRow];
+
+  DB.students.forEach(st=>{
+    const scores = (mod.scores[st.id]) || criteria.map(()=>null);
+    let total = 0, anyVal=false;
+    const rowVals = scores.map(v=>{ if(v!=null){total+=v; anyVal=true;} return v!=null?v:''; });
+    const grade = anyVal ? gradeInfo(total).label : '';
+    rows.push([st.no, st.name, ...rowVals, anyVal?Math.round(total*100)/100:'', grade, mod.mode==='formalite'?'Hızlı Sonuç':'Detaylı İnceleme']);
+  });
+
+  const finalRows = [headerRow1, [], ...rows];
+  const ws2 = XLSX.utils.aoa_to_sheet(finalRows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws2, mod.name.substring(0,28));
+  const filename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase() + '_degerlendirme.xlsx';
+  XLSX.writeFile(wb, filename);
+  toast('📊 Excel dosyası indirildi: '+filename);
+}
+
+document.getElementById('btnXlsx-proje').addEventListener('click', ()=>exportXlsx('proje'));
+document.getElementById('btnXlsx-dersici').addEventListener('click', ()=>exportXlsx('dersici'));
+document.getElementById('btnXlsx-odev').addEventListener('click', ()=>exportXlsx('odev'));
+
+/* ============================================================
+   PDF EXPORT
+   ============================================================ */
+function buildPrintSheet(type){
+  const mod = getCurrentModule(type);
+  const criteria = mod.criteria;
+  const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
+
+  let html = `<div class="print-sheet">`;
+  if(mod.mode==='formalite'){
+    html += `<div class="formality-stamp">RESMİ FORM</div>`;
+  }
+  html += `<div class="ph-head">
+    <div class="school">T.C.</div>
+    <div class="school">${DB.config.school}</div>
+    <div class="meta">${DB.config.year} Eğitim Öğretim Yılı ${DB.config.term} ${DB.config.course}</div>
+    <div class="meta">${DB.config.cls ? 'Sınıf/Şube: '+DB.config.cls+'   ' : ''}${DB.config.teacher ? 'Öğretmen: '+DB.config.teacher : ''}</div>
+    <div class="formtitle">${formTitle}</div>
+  </div>`;
+
+  html += '<table><thead><tr><th>No</th><th>Adı Soyadı</th>';
+  criteria.forEach((c,i)=>{ html += `<th>${i+1}. ${c.text} (${c.max} p)</th>`; });
+  html += '<th>TOPLAM</th><th>Düzey</th></tr></thead><tbody>';
+
+  DB.students.forEach(st=>{
+    const scores = (mod.scores[st.id]) || criteria.map(()=>null);
+    let total = 0, anyVal=false;
+    html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>`;
+    scores.forEach(v=>{
+      if(v!=null){total+=v; anyVal=true;}
+      html += `<td>${v!=null?fmtNum(v):''}</td>`;
+    });
+    html += `<td><b>${anyVal?fmtNum(total):''}</b></td>`;
+    html += `<td>${anyVal?gradeInfo(total).label:''}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+
+  html += `<div class="ph-foot">
+    Not: Bu form, öğrencilerin ${formTitle.toLowerCase()} kapsamında değerlendirilmesi amacıyla hazırlanmıştır. Değerlendirme 100 puan üzerinden yapılmıştır.
+    <div class="ph-grades">
+      <span><b>0-49,99:</b> Geçmez</span>
+      <span><b>50-59,99:</b> Geçer</span>
+      <span><b>60-69,99:</b> Orta</span>
+      <span><b>70-84,99:</b> İyi</span>
+      <span><b>85-100:</b> Pekiyi</span>
+    </div>
+  </div>`;
+  html += `<div style="margin-top:30px;display:flex;justify-content:space-between;font-size:11px;">
+    <div>Öğretmen: ${DB.config.teacher || '………………………………'}<br><br>İmza: ……………………</div>
+    <div>Tarih: ${new Date().toLocaleDateString('tr-TR')}<br><br>Onay: ……………………</div>
+  </div>`;
+  html += '</div>';
+  return html;
+}
+
+async function exportPdf(type){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  showOverlay('PDF oluşturuluyor...');
+  const root = document.getElementById('printRoot');
+  root.innerHTML = buildPrintSheet(type);
+  root.style.position='fixed';
+  root.style.left='-99999px';
+  await new Promise(r=>setTimeout(r,100));
+
+  const filename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase() + '_degerlendirme.pdf';
+
+  try{
+    const sheet = root.querySelector('.print-sheet');
+    const canvas = await html2canvas(sheet, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW = pageW - 40;
+    const imgH = canvas.height * (imgW / canvas.width);
+
+    if(imgH <= pageH - 40){
+      pdf.addImage(imgData, 'PNG', 20, 20, imgW, imgH);
+    } else {
+      let position = 0;
+      let remainingHeight = imgH;
+      const pageContentHeight = pageH - 40;
+      const scaleRatio = canvas.width / imgW;
+      let sourceY = 0;
+      while(remainingHeight > 0){
+        const sliceHeightPx = Math.min(pageContentHeight * scaleRatio, canvas.height - sourceY);
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = sliceHeightPx;
+        const ctx = sliceCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+        const sliceData = sliceCanvas.toDataURL('image/png');
+        const sliceHeightPt = sliceHeightPx / scaleRatio;
+        if(position>0) pdf.addPage();
+        pdf.addImage(sliceData, 'PNG', 20, 20, imgW, sliceHeightPt);
+        sourceY += sliceHeightPx;
+        remainingHeight -= sliceHeightPt;
+        position++;
+      }
+    }
+    pdf.save(filename);
+    toast('📄 PDF indirildi: '+filename);
+  }catch(err){
+    console.error(err);
+    toast('❌ PDF oluşturulurken hata oluştu.');
+  }
+  root.innerHTML='';
+  hideOverlay();
+}
+
+document.getElementById('btnPdf-proje').addEventListener('click', ()=>exportPdf('proje'));
+document.getElementById('btnPdf-dersici').addEventListener('click', ()=>exportPdf('dersici'));
+document.getElementById('btnPdf-odev').addEventListener('click', ()=>exportPdf('odev'));
+
+</script>
+</body>
+</html>
