@@ -96,49 +96,110 @@ body{
 
 /* ===== Tabs ===== */
 .tabs{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
-  gap:10px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
   margin-bottom:24px;
 }
-.tab-btn{
+.tabs-primary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:12px;
+}
+.tabs-secondary{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--paper2);
+  padding:8px;
+  box-shadow:0 1px 2px rgba(40,50,40,.03);
+}
+.tabs-secondary .tabs-sec-label{
   font-family:var(--serif);
-  font-size:.92rem;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--muted);
+  padding:4px 10px 0;
+}
+
+/* Primary (larger, card-style) */
+.tab-btn-primary{
+  font-family:var(--serif);
+  font-size:1.05rem;
   font-weight:700;
   background:var(--paper2);
   border:1.5px solid var(--line);
   border-radius:var(--radius);
-  padding:16px 14px 14px;
+  padding:22px 18px;
   cursor:pointer;
   color:var(--moss-d);
   transition:all .18s ease;
   display:flex;
-  flex-direction:column;
   align-items:center;
-  gap:6px;
-  text-align:center;
+  gap:14px;
+  text-align:left;
   box-shadow:0 1px 2px rgba(40,50,40,.03);
 }
-.tab-btn .tab-icon{
-  font-size:1.5rem;
+.tab-btn-primary .tab-icon{
+  font-size:1.9rem;
   line-height:1;
+  flex-shrink:0;
 }
-.tab-btn .tab-label{
-  letter-spacing:.01em;
+.tab-btn-primary .tab-label-wrap{display:flex;flex-direction:column;gap:2px;}
+.tab-btn-primary .tab-sub{
+  font-family:var(--sans);
+  font-size:.72rem;
+  font-weight:500;
+  color:var(--muted);
+  letter-spacing:.02em;
 }
-.tab-btn:hover{
+.tab-btn-primary:hover{
   border-color:var(--gold);
   transform:translateY(-2px);
-  box-shadow:0 4px 10px rgba(40,50,40,.08);
+  box-shadow:0 4px 12px rgba(40,50,40,.08);
 }
-.tab-btn.active{
+.tab-btn-primary.active{
   background:var(--moss);
   border-color:var(--moss-d);
   color:#fdfbf5;
-  box-shadow:0 4px 12px rgba(61,90,69,.25);
+  box-shadow:0 4px 14px rgba(61,90,69,.25);
 }
-.tab-btn.active .tab-icon{
-  filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));
+.tab-btn-primary.active .tab-sub{color:#d8e6da;}
+.tab-btn-primary.active .tab-icon{filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
+
+/* Secondary (smaller, list-style rows) */
+.tab-btn-secondary{
+  font-family:var(--sans);
+  font-size:.85rem;
+  font-weight:600;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:7px;
+  padding:11px 14px;
+  cursor:pointer;
+  color:var(--moss-d);
+  transition:all .15s ease;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+}
+.tab-btn-secondary .tab-icon{
+  font-size:1.1rem;
+  line-height:1;
+  flex-shrink:0;
+}
+.tab-btn-secondary:hover{
+  background:#f1f0e8;
+  border-color:var(--line);
+}
+.tab-btn-secondary.active{
+  background:var(--moss);
+  color:#fdfbf5;
+  box-shadow:0 2px 8px rgba(61,90,69,.2);
 }
 
 .panel{display:none;}
@@ -540,9 +601,10 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
   .brandbar h1{font-size:1.05rem;}
   .shell{padding:14px;}
   .card{padding:16px;}
-  .tabs{grid-template-columns:repeat(2, 1fr); gap:8px;}
-  .tab-btn{padding:12px 8px; font-size:.78rem;}
-  .tab-btn .tab-icon{font-size:1.3rem;}
+  .tabs-primary{grid-template-columns:1fr; gap:8px;}
+  .tab-btn-primary{padding:16px 14px; font-size:.95rem;}
+  .tab-btn-primary .tab-icon{font-size:1.5rem;}
+  .tab-btn-secondary{padding:10px 12px; font-size:.8rem;}
 }
 </style>
 </head>
@@ -553,7 +615,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.05</div>
+      <div class="version-tag">v1.0.09</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -562,18 +624,29 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 <div class="shell">
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="ogrenci"><span class="tab-icon">👥</span><span class="tab-label">Öğrenci Listesi</span></button>
-    <button class="tab-btn" data-tab="proje"><span class="tab-icon">📁</span><span class="tab-label">Proje Değerlendirme</span></button>
-    <button class="tab-btn" data-tab="dersici"><span class="tab-icon">📝</span><span class="tab-label">Ders İçi Performans</span></button>
-    <button class="tab-btn" data-tab="odev"><span class="tab-icon">📚</span><span class="tab-label">Performans Ödevi</span></button>
-    <button class="tab-btn" data-tab="ayarlar"><span class="tab-icon">⚙️</span><span class="tab-label">Form Bilgileri</span></button>
+    <div class="tabs-primary">
+      <button class="tab-btn-primary active" data-tab="ogrenci">
+        <span class="tab-icon">👥</span>
+        <span class="tab-label-wrap"><span>Öğrenci Bilgileri</span><span class="tab-sub">Listeyi yönet, içe/dışa aktar</span></span>
+      </button>
+      <button class="tab-btn-primary" data-tab="ayarlar">
+        <span class="tab-icon">⚙️</span>
+        <span class="tab-label-wrap"><span>Form Bilgileri</span><span class="tab-sub">Okul, dönem, öğretmen bilgileri</span></span>
+      </button>
+    </div>
+    <div class="tabs-secondary">
+      <div class="tabs-sec-label">Değerlendirme Modülleri</div>
+      <button class="tab-btn-secondary" data-tab="proje"><span class="tab-icon">📁</span><span class="tab-label">Proje Değerlendirme</span></button>
+      <button class="tab-btn-secondary" data-tab="dersici"><span class="tab-icon">📝</span><span class="tab-label">Ders İçi Performans Değerlendirme</span></button>
+      <button class="tab-btn-secondary" data-tab="odev"><span class="tab-icon">📚</span><span class="tab-label">Performans Ödevi Değerlendirme</span></button>
+    </div>
   </div>
 
   <!-- ============ ÖĞRENCİ LİSTESİ ============ -->
   <div class="panel active" id="panel-ogrenci">
     <div class="card">
       <h2><span class="num">1</span> Öğrenci Listesini İçe Aktar</h2>
-      <p class="desc">Excel dosyanızda <b>Numara</b>, <b>Adı Soyadı</b> sütunları bulunmalıdır. İsteğe bağlı olarak <b>Proje 1</b>, <b>Proje 2</b>, <b>Proje 3</b>... veya <b>Ders İçi 1</b>, <b>Performans Ödevi 1</b> gibi sütunlar da ekleyebilirsiniz — bu notlar otomatik olarak ilgili modüllere aktarılacak ve değerlendirme kriterlerine göre dağıtılacaktır.</p>
+      <p class="desc">Excel dosyanızda <b>Numara</b>, <b>Adı Soyadı</b> sütunları bulunmalıdır. İsteğe bağlı olarak <b>Sınıf/Şube</b> (örn. 5/B), <b>Proje 1</b>, <b>Proje 2</b>, <b>Proje 3</b>... veya <b>Ders İçi 1</b>, <b>Performans Ödevi 1</b> gibi sütunlar da ekleyebilirsiniz — bu notlar otomatik olarak ilgili modüllere aktarılacak ve değerlendirme kriterlerine göre dağıtılacaktır.</p>
 
       <div class="file-drop" id="dropzone">
         <span class="icon">📊</span>
@@ -807,8 +880,19 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
   </div>
 </div>
 
+<div class="overlay" id="classExportOverlay">
+  <div class="box" style="flex-direction:column;align-items:stretch;gap:14px;max-width:480px;max-height:80vh;overflow-y:auto;">
+    <div id="classExportBox" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+      <button class="btn secondary" id="classExportCancel">İptal</button>
+      <button class="btn" id="classExportOk">✅ İndir</button>
+    </div>
+  </div>
+</div>
+
 <!-- Hidden print container for PDF generation -->
 <div style="position:fixed; left:-99999px; top:0;" id="printRoot"></div>
+
 
 <script>
 /* ============================================================
@@ -867,7 +951,7 @@ function makeModule(type, index){
 }
 
 let DB = {
-  students: [], // {id, no, name}
+  students: [], // {id, no, name, cls}
   config: {
     school:"…………………………………………… ORTAOKULU",
     year:"2025-2026", term:"I. Dönem",
@@ -875,8 +959,8 @@ let DB = {
     cls:"", teacher:""
   },
   modules: {
-    proje: [makeModule('proje',1), makeModule('proje',2), makeModule('proje',3)],
-    dersici: [makeModule('dersici',1)],
+    proje: [makeModule('proje',1)],
+    dersici: [makeModule('dersici',1), makeModule('dersici',2), makeModule('dersici',3)],
     odev: [makeModule('odev',1)]
   },
   current: { proje:null, dersici:null, odev:null }, // module id currently displayed per type
@@ -975,12 +1059,15 @@ function fmtNum(n){
   return (Math.round(n*100)/100).toString().replace('.', ',');
 }
 
-/* Distribute a total score across criteria with given max values, randomly but proportionally,
-   ensuring sum == total exactly (rounded to 2 decimals), and each value within [0, max]. */
+/* Distribute a total score (integer, 0-100) across criteria with given max values,
+   randomly but proportionally, ensuring sum == total exactly, using only integers,
+   and each value within [0, max]. */
 function distributeScore(total, maxes){
-  total = Math.max(0, Math.min(100, total));
+  total = Math.round(Math.max(0, Math.min(100, total)));
   const n = maxes.length;
   const sumMax = maxes.reduce((a,b)=>a+b,0);
+
+  // proportional baseline with random jitter
   let raw = maxes.map(m => total * (m/sumMax));
   let vals = raw.map((v,i)=>{
     const m = maxes[i];
@@ -990,6 +1077,8 @@ function distributeScore(total, maxes){
     nv = Math.max(0, Math.min(m, nv));
     return nv;
   });
+
+  // renormalize (float) so sum == total, respecting maxes
   for(let iter=0; iter<25; iter++){
     let sum = vals.reduce((a,b)=>a+b,0);
     let diff = total - sum;
@@ -1007,27 +1096,53 @@ function distributeScore(total, maxes){
     }
     vals = vals.map((v,i)=>Math.max(0, Math.min(maxes[i], v)));
   }
-  vals = vals.map(v=>Math.round(v*100)/100);
-  let sum = vals.reduce((a,b)=>a+b,0);
-  let diff = Math.round((total - sum)*100)/100;
-  if(Math.abs(diff) >= 0.01){
-    let idx = 0, best=-1;
-    for(let i=0;i<n;i++){
-      const room = diff>0 ? maxes[i]-vals[i] : vals[i];
-      if(room > best){ best = room; idx = i; }
+
+  // floor each value, then distribute remaining units one-by-one (largest remainder method)
+  let floors = vals.map((v,i)=>Math.max(0, Math.min(maxes[i], Math.floor(v))));
+  let remainders = vals.map((v,i)=>v - floors[i]);
+  let assigned = floors.reduce((a,b)=>a+b,0);
+  let remaining = total - assigned;
+
+  // order indices by remainder desc (with slight random shuffle for ties) to assign +1
+  let order = remainders.map((r,i)=>({i, r:r + Math.random()*0.0001}))
+    .sort((a,b)=>b.r - a.r);
+
+  let result = floors.slice();
+  let oi = 0;
+  while(remaining > 0 && oi < order.length){
+    const idx = order[oi].i;
+    if(result[idx] < maxes[idx]){
+      result[idx] += 1;
+      remaining--;
     }
-    vals[idx] = Math.round((vals[idx]+diff)*100)/100;
-    vals[idx] = Math.max(0, Math.min(maxes[idx], vals[idx]));
+    oi++;
+    if(oi >= order.length && remaining > 0) oi = 0; // wrap if needed (rare)
+    if(oi > order.length*3) break; // safety
   }
-  return vals;
+  // if still remaining (all maxed out), or negative remaining due to overflow, clamp
+  while(remaining > 0){
+    // find any criterion with room
+    let idx = result.findIndex((v,i)=>v < maxes[i]);
+    if(idx === -1) break;
+    result[idx]++;
+    remaining--;
+  }
+  while(remaining < 0){
+    let idx = result.findIndex(v=>v > 0);
+    if(idx === -1) break;
+    result[idx]--;
+    remaining++;
+  }
+
+  return result;
 }
 
 /* ============================================================
    TAB NAVIGATION
    ============================================================ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
+document.querySelectorAll('.tab-btn-primary, .tab-btn-secondary').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn-primary, .tab-btn-secondary').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
@@ -1062,6 +1177,7 @@ function getMappingTargets(){
     {value:'__skip__', label:'— Aktarma —'},
     {value:'no', label:'No / Numara'},
     {value:'name', label:'Adı Soyadı'},
+    {value:'cls', label:'Sınıf / Şube (örn. 5/B)'},
   ];
   ['proje','dersici','odev'].forEach(type=>{
     DB.modules[type].forEach(mod=>{
@@ -1080,6 +1196,7 @@ function guessTarget(header, usedTargets){
   };
   if(['no','numara','okul no'].some(c=>h.includes(c))) return tryPick('no');
   if(['ad soyad','adi soyadi','isim','ogrenci'].some(c=>h.includes(c))) return tryPick('name');
+  if(['sinif','sube','sinif/sube','sinif sube'].some(c=>h.includes(c))) return tryPick('cls');
 
   const baseMap = {
     proje: ['proje'],
@@ -1174,7 +1291,7 @@ document.getElementById('mappingCancel').addEventListener('click', ()=>{
 document.getElementById('mappingOk').addEventListener('click', ()=>{
   const selects = document.querySelectorAll('#mappingRows select');
   const mapping = {}; // colIdx -> target value
-  let idxNo = -1, idxName = -1;
+  let idxNo = -1, idxName = -1, idxCls = -1;
   const modColMap = { proje:{}, dersici:{}, odev:{} };
   const usedTargets = new Set();
   let duplicateTarget = null;
@@ -1187,6 +1304,7 @@ document.getElementById('mappingOk').addEventListener('click', ()=>{
     usedTargets.add(val);
     if(val==='no') idxNo = colIdx;
     else if(val==='name') idxName = colIdx;
+    else if(val==='cls') idxCls = colIdx;
     else {
       const [type, modId] = val.split(':');
       modColMap[type][modId] = colIdx;
@@ -1218,9 +1336,10 @@ document.getElementById('mappingOk').addEventListener('click', ()=>{
     if(!row || row.every(c=>c==='' || c===null || c===undefined)) continue;
     const no = idxNo>=0 ? (row[idxNo]||'').toString().trim() : (count+1).toString();
     const name = idxName>=0 ? (row[idxName]||'').toString().trim() : '';
+    const cls = idxCls>=0 ? (row[idxCls]||'').toString().trim() : '';
     if(!name) continue;
     const sid = 's'+count;
-    DB.students.push({id:sid, no:no, name:name});
+    DB.students.push({id:sid, no:no, name:name, cls:cls});
 
     ['proje','dersici','odev'].forEach(type=>{
       DB.modules[type].forEach(mod=>{
@@ -1254,17 +1373,18 @@ document.getElementById('mappingOk').addEventListener('click', ()=>{
 });
 
 document.getElementById('btnTemplate').addEventListener('click', ()=>{
-  const headers = ['No','Adı Soyadı'];
+  const headers = ['No','Adı Soyadı','Sınıf/Şube'];
   ['proje','dersici','odev'].forEach(type=>{
     DB.modules[type].forEach((mod,i)=>{
       headers.push(mod.name);
     });
   });
+  const classes = ['5/A','5/B','5/C'];
   const wsData = [
     headers,
-    [1,'Ahmet YILMAZ', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
-    [2,'Ayşe DEMİR', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
-    [3,'Mehmet KAYA', ...headers.slice(2).map(()=>Math.floor(Math.random()*30+65))],
+    [1,'Ahmet YILMAZ', classes[0], ...headers.slice(3).map(()=>Math.floor(Math.random()*30+65))],
+    [2,'Ayşe DEMİR', classes[1], ...headers.slice(3).map(()=>Math.floor(Math.random()*30+65))],
+    [3,'Mehmet KAYA', classes[2], ...headers.slice(3).map(()=>Math.floor(Math.random()*30+65))],
   ];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   const wb = XLSX.utils.book_new();
@@ -1276,8 +1396,9 @@ document.getElementById('btnAddManual').addEventListener('click', ()=>{
   const name = prompt('Öğrenci Adı Soyadı:');
   if(!name) return;
   const no = prompt('Öğrenci Numarası:', (DB.students.length+1).toString()) || (DB.students.length+1).toString();
+  const cls = prompt('Sınıf / Şube (örn. 5/B) — boş bırakılabilir:', '') || '';
   const sid = 's'+Date.now()+Math.floor(Math.random()*1000);
-  DB.students.push({id:sid, no:no, name:name});
+  DB.students.push({id:sid, no:no, name:name, cls:cls.trim()});
   saveDB();
   renderStudentTable();
   renderAllModuleViews();
@@ -1309,11 +1430,12 @@ function renderStudentTable(){
     DB.modules[type].forEach(mod=>cols.push({type, mod}));
   });
 
-  let html = '<div class="table-wrap"><table><thead><tr><th>No</th><th class="th-name">Adı Soyadı</th>';
+  let html = '<div class="table-wrap"><table><thead><tr><th>No</th><th class="th-name">Adı Soyadı</th><th>Sınıf/Şube</th>';
   cols.forEach(c=>{ html += `<th>${c.mod.name}</th>`; });
   html += '<th>İşlem</th></tr></thead><tbody>';
   DB.students.forEach(st=>{
-    html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>`;
+    html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>
+      <td><input type="text" class="score-input cls-input" style="width:64px;" data-sid="${st.id}" value="${(st.cls||'').replace(/"/g,'&quot;')}" placeholder="5/B"></td>`;
     cols.forEach(c=>{
       const v = c.mod.totals[st.id];
       html += `<td>${v!=null ? fmtNum(v) : '—'}</td>`;
@@ -1322,6 +1444,13 @@ function renderStudentTable(){
   });
   html += '</tbody></table></div>';
   wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.cls-input').forEach(inp=>{
+    inp.addEventListener('change', (e)=>{
+      const st = DB.students.find(s=>s.id===e.target.dataset.sid);
+      if(st){ st.cls = e.target.value.trim(); saveDB(); }
+    });
+  });
 }
 
 async function removeStudent(sid){
@@ -1617,15 +1746,16 @@ function applyModule(type){
     DB.students.forEach(st=>{
       let total = mod.totals[st.id];
       if(total==null || isNaN(total)){
-        total = Math.round((Math.random()*30+65)*100)/100;
+        mod.scores[st.id] = mod.criteria.map(()=>null);
         missing++;
+        return;
       }
       mod.scores[st.id] = distributeScore(total, maxes);
     });
     saveDB();
     renderTable(type);
     toast(missing>0
-      ? `⚡ Notlar dağıtıldı. ${missing} öğrenci için Excel'de not bulunmadığından rastgele bir toplam not (65–95 arası) atandı.`
+      ? `⚡ Notlar dağıtıldı. ${missing} öğrenci için Excel'de not bulunmadığından bu öğrencilerin satırı boş bırakıldı.`
       : '⚡ Tüm notlar kriterlere başarıyla dağıtıldı.');
   } else {
     toast('🔍 Detaylı İnceleme modundasınız. Kriter hücrelerine puanları girebilirsiniz.');
@@ -1728,64 +1858,183 @@ document.querySelectorAll('.field-pin').forEach(btn=>{
 renderAllFieldArchives();
 
 /* ============================================================
+   SINIF/ŞUBE BAZLI DIŞA AKTARMA SEÇİMİ
+   ============================================================ */
+function getDistinctClasses(){
+  const set = new Set();
+  let hasUnassigned = false;
+  DB.students.forEach(st=>{
+    const c = (st.cls||'').trim();
+    if(c) set.add(c); else hasUnassigned = true;
+  });
+  const arr = Array.from(set).sort((a,b)=>a.localeCompare(b,'tr'));
+  if(hasUnassigned) arr.push('__none__');
+  return arr;
+}
+function classLabel(c){ return c==='__none__' ? '(Sınıfsız)' : c; }
+
+let pendingExport = null; // {type, format}
+
+function openClassExportModal(type, format){
+  const classes = getDistinctClasses();
+  pendingExport = {type, format};
+  const box = document.getElementById('classExportBox');
+
+  if(classes.length <= 1){
+    // No meaningful class grouping needed — export directly with all students
+    document.getElementById('classExportOverlay').classList.remove('show');
+    runExport(type, format, DB.students, null);
+    return;
+  }
+
+  let html = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;">🏷️ Sınıf Seçimi</div>
+  <div style="font-size:.82rem;color:var(--muted);line-height:1.5;font-family:var(--sans);">Hangi sınıf(lar)ın ${format==='pdf'?'PDF':'Excel'} dosyasını indirmek istiyorsunuz?</div>
+  <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--sans);">
+    <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;">
+      <input type="checkbox" id="classAll" checked> Tümü (${DB.students.length} öğrenci)
+    </label>
+    <div id="classCheckList" style="display:flex;flex-direction:column;gap:4px;margin-left:20px;">`;
+  classes.forEach(c=>{
+    const cnt = DB.students.filter(s=>(s.cls||'').trim() === (c==='__none__'?'':c)).length;
+    html += `<label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
+      <input type="checkbox" class="classCheckbox" value="${c}" checked> ${classLabel(c)} (${cnt} öğrenci)
+    </label>`;
+  });
+  html += `</div>
+    <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Çıktı biçimi:</div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
+      <input type="radio" name="exportMode" value="single" checked> Toplu dosya (her sınıf yeni sayfadan/sekmeden başlar)
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
+      <input type="radio" name="exportMode" value="separate"> Her sınıf için ayrı dosya
+    </label>
+  </div>`;
+
+  box.innerHTML = html;
+  document.getElementById('classExportOverlay').classList.add('show');
+
+  document.getElementById('classAll').addEventListener('change', (e)=>{
+    box.querySelectorAll('.classCheckbox').forEach(cb=>cb.checked = e.target.checked);
+  });
+  box.querySelectorAll('.classCheckbox').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const all = Array.from(box.querySelectorAll('.classCheckbox')).every(c=>c.checked);
+      document.getElementById('classAll').checked = all;
+    });
+  });
+}
+
+document.getElementById('classExportCancel').addEventListener('click', ()=>{
+  document.getElementById('classExportOverlay').classList.remove('show');
+  pendingExport = null;
+});
+
+document.getElementById('classExportOk').addEventListener('click', ()=>{
+  const box = document.getElementById('classExportBox');
+  const selected = Array.from(box.querySelectorAll('.classCheckbox:checked')).map(cb=>cb.value);
+  if(selected.length===0){ toast('⚠️ En az bir sınıf seçmelisiniz.'); return; }
+  const mode = box.querySelector('input[name="exportMode"]:checked').value;
+
+  document.getElementById('classExportOverlay').classList.remove('show');
+  const {type, format} = pendingExport;
+
+  if(mode==='separate'){
+    // one export per class
+    selected.forEach(c=>{
+      const studs = DB.students.filter(s=> (c==='__none__' ? !(s.cls||'').trim() : (s.cls||'').trim()===c) );
+      if(studs.length) runExport(type, format, studs, classLabel(c));
+    });
+  } else {
+    // single export, grouped by class
+    const groups = selected.map(c=>({
+      label: classLabel(c),
+      students: DB.students.filter(s=> (c==='__none__' ? !(s.cls||'').trim() : (s.cls||'').trim()===c) )
+    })).filter(g=>g.students.length);
+    runExport(type, format, null, null, groups);
+  }
+  pendingExport = null;
+});
+
+function runExport(type, format, studentsList, classSuffix, groups){
+  if(format==='pdf') exportPdf(type, studentsList, classSuffix, groups);
+  else exportXlsx(type, studentsList, classSuffix, groups);
+}
+
+/* ============================================================
    EXCEL EXPORT
    ============================================================ */
-function exportXlsx(type){
-  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+function buildSheetRows(type, studentsList){
   const mod = getCurrentModule(type);
   const criteria = mod.criteria;
   const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
 
   const headerRow1 = [DB.config.school + ' | ' + DB.config.year + ' Eğitim Öğretim Yılı ' + DB.config.term + ' ' + DB.config.course + ' | ' + formTitle];
-  const headerRow = ['No','Adı Soyadı', ...criteria.map((c,i)=>`${i+1}. ${c.text} (${c.max} p)`), 'TOPLAM','DÜZEY','MOD'];
+  const headerRow = ['No','Adı Soyadı','Sınıf/Şube', ...criteria.map((c,i)=>`${i+1}. ${c.text} (${c.max} p)`), 'TOPLAM'];
   const rows = [headerRow];
 
-  DB.students.forEach(st=>{
+  studentsList.forEach(st=>{
     const scores = (mod.scores[st.id]) || criteria.map(()=>null);
     let total = 0, anyVal=false;
     const rowVals = scores.map(v=>{ if(v!=null){total+=v; anyVal=true;} return v!=null?v:''; });
-    const grade = anyVal ? gradeInfo(total).label : '';
-    rows.push([st.no, st.name, ...rowVals, anyVal?Math.round(total*100)/100:'', grade, mod.mode==='formalite'?'Hızlı Sonuç':'Detaylı İnceleme']);
+    rows.push([st.no, st.name, st.cls||'', ...rowVals, anyVal?Math.round(total*100)/100:'']);
   });
 
-  const finalRows = [headerRow1, [], ...rows];
-  const ws2 = XLSX.utils.aoa_to_sheet(finalRows);
+  return { headerRow1, rows };
+}
+
+function exportXlsx(type, studentsList, classSuffix, groups){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  const baseFilename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase();
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws2, mod.name.substring(0,28));
-  const filename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase() + '_degerlendirme.xlsx';
+
+  if(groups && groups.length){
+    groups.forEach(g=>{
+      const {headerRow1, rows} = buildSheetRows(type, g.students);
+      const finalRows = [headerRow1, [], ...rows];
+      const ws = XLSX.utils.aoa_to_sheet(finalRows);
+      const sheetName = (g.label || 'Sınıf').substring(0,28).replace(/[\\\/\?\*\[\]]/g,'-');
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+  } else {
+    const list = studentsList || DB.students;
+    const {headerRow1, rows} = buildSheetRows(type, list);
+    const finalRows = [headerRow1, [], ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(finalRows);
+    XLSX.utils.book_append_sheet(wb, ws, mod.name.substring(0,28));
+  }
+
+  const filename = baseFilename + (classSuffix ? ('_'+classSuffix.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\/]/g,'').replace(/\//g,'-')) : '') + '_degerlendirme.xlsx';
   XLSX.writeFile(wb, filename);
   toast('📊 Excel dosyası indirildi: '+filename);
 }
 
-document.getElementById('btnXlsx-proje').addEventListener('click', ()=>exportXlsx('proje'));
-document.getElementById('btnXlsx-dersici').addEventListener('click', ()=>exportXlsx('dersici'));
-document.getElementById('btnXlsx-odev').addEventListener('click', ()=>exportXlsx('odev'));
+document.getElementById('btnXlsx-proje').addEventListener('click', ()=>openClassExportModal('proje','xlsx'));
+document.getElementById('btnXlsx-dersici').addEventListener('click', ()=>openClassExportModal('dersici','xlsx'));
+document.getElementById('btnXlsx-odev').addEventListener('click', ()=>openClassExportModal('odev','xlsx'));
 
 /* ============================================================
    PDF EXPORT
    ============================================================ */
-function buildPrintSheet(type){
+function buildPrintSheetSection(type, studentsList, groupLabel, pageBreak){
   const mod = getCurrentModule(type);
   const criteria = mod.criteria;
   const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
 
-  let html = `<div class="print-sheet">`;
-  if(mod.mode==='formalite'){
-    html += `<div class="formality-stamp">RESMİ FORM</div>`;
-  }
+  let html = `<div class="print-sheet"${pageBreak ? ' style="page-break-before:always;"' : ''}>`;
   html += `<div class="ph-head">
     <div class="school">T.C.</div>
     <div class="school">${DB.config.school}</div>
     <div class="meta">${DB.config.year} Eğitim Öğretim Yılı ${DB.config.term} ${DB.config.course}</div>
-    <div class="meta">${DB.config.cls ? 'Sınıf/Şube: '+DB.config.cls+'   ' : ''}${DB.config.teacher ? 'Öğretmen: '+DB.config.teacher : ''}</div>
+    <div class="meta">${groupLabel ? 'Sınıf/Şube: '+groupLabel+'   ' : (DB.config.cls ? 'Sınıf/Şube: '+DB.config.cls+'   ' : '')}${DB.config.teacher ? 'Öğretmen: '+DB.config.teacher : ''}</div>
     <div class="formtitle">${formTitle}</div>
   </div>`;
 
   html += '<table><thead><tr><th>No</th><th>Adı Soyadı</th>';
   criteria.forEach((c,i)=>{ html += `<th>${i+1}. ${c.text} (${c.max} p)</th>`; });
-  html += '<th>TOPLAM</th><th>Düzey</th></tr></thead><tbody>';
+  html += '<th>TOPLAM</th></tr></thead><tbody>';
 
-  DB.students.forEach(st=>{
+  studentsList.forEach(st=>{
     const scores = (mod.scores[st.id]) || criteria.map(()=>null);
     let total = 0, anyVal=false;
     html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>`;
@@ -1794,7 +2043,6 @@ function buildPrintSheet(type){
       html += `<td>${v!=null?fmtNum(v):''}</td>`;
     });
     html += `<td><b>${anyVal?fmtNum(total):''}</b></td>`;
-    html += `<td>${anyVal?gradeInfo(total).label:''}</td>`;
     html += '</tr>';
   });
   html += '</tbody></table>';
@@ -1817,66 +2065,91 @@ function buildPrintSheet(type){
   return html;
 }
 
-async function exportPdf(type){
-  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
-  const mod = getCurrentModule(type);
-  showOverlay('PDF oluşturuluyor...');
+async function renderPdfFromHtml(html, filename){
   const root = document.getElementById('printRoot');
-  root.innerHTML = buildPrintSheet(type);
+  root.innerHTML = html;
   root.style.position='fixed';
   root.style.left='-99999px';
-  await new Promise(r=>setTimeout(r,100));
-
-  const filename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase() + '_degerlendirme.pdf';
+  root.style.top='0';
+  await new Promise(r=>setTimeout(r,150));
 
   try{
-    const sheet = root.querySelector('.print-sheet');
-    const canvas = await html2canvas(sheet, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
-    const imgData = canvas.toDataURL('image/png');
+    const sheets = root.querySelectorAll('.print-sheet');
+    if(!sheets.length) throw new Error('Yazdırılacak içerik bulunamadı.');
+
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     const imgW = pageW - 40;
-    const imgH = canvas.height * (imgW / canvas.width);
 
-    if(imgH <= pageH - 40){
-      pdf.addImage(imgData, 'PNG', 20, 20, imgW, imgH);
-    } else {
-      let position = 0;
-      let remainingHeight = imgH;
-      const pageContentHeight = pageH - 40;
-      const scaleRatio = canvas.width / imgW;
-      let sourceY = 0;
-      while(remainingHeight > 0){
-        const sliceHeightPx = Math.min(pageContentHeight * scaleRatio, canvas.height - sourceY);
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = sliceHeightPx;
-        const ctx = sliceCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
-        const sliceData = sliceCanvas.toDataURL('image/png');
-        const sliceHeightPt = sliceHeightPx / scaleRatio;
-        if(position>0) pdf.addPage();
-        pdf.addImage(sliceData, 'PNG', 20, 20, imgW, sliceHeightPt);
-        sourceY += sliceHeightPx;
-        remainingHeight -= sliceHeightPt;
-        position++;
+    for(let s=0; s<sheets.length; s++){
+      const sheet = sheets[s];
+      const canvas = await html2canvas(sheet, {scale:2, useCORS:true, backgroundColor:'#ffffff', windowWidth: sheet.scrollWidth});
+      const imgData = canvas.toDataURL('image/png');
+      const imgH = canvas.height * (imgW / canvas.width);
+
+      if(s>0) pdf.addPage();
+
+      if(imgH <= pageH - 40){
+        pdf.addImage(imgData, 'PNG', 20, 20, imgW, imgH);
+      } else {
+        let remainingHeight = imgH;
+        const pageContentHeight = pageH - 40;
+        const scaleRatio = canvas.width / imgW;
+        let sourceY = 0;
+        let firstSlice = true;
+        while(remainingHeight > 0){
+          const sliceHeightPx = Math.min(pageContentHeight * scaleRatio, canvas.height - sourceY);
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = sliceHeightPx;
+          const ctx = sliceCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+          const sliceData = sliceCanvas.toDataURL('image/png');
+          const sliceHeightPt = sliceHeightPx / scaleRatio;
+          if(!firstSlice) pdf.addPage();
+          pdf.addImage(sliceData, 'PNG', 20, 20, imgW, sliceHeightPt);
+          sourceY += sliceHeightPx;
+          remainingHeight -= sliceHeightPt;
+          firstSlice = false;
+        }
       }
     }
     pdf.save(filename);
     toast('📄 PDF indirildi: '+filename);
   }catch(err){
-    console.error(err);
-    toast('❌ PDF oluşturulurken hata oluştu.');
+    console.error('PDF oluşturma hatası:', err);
+    toast('❌ PDF oluşturulurken hata oluştu: '+(err && err.message ? err.message : 'Bilinmeyen hata'));
   }
   root.innerHTML='';
   hideOverlay();
 }
 
-document.getElementById('btnPdf-proje').addEventListener('click', ()=>exportPdf('proje'));
-document.getElementById('btnPdf-dersici').addEventListener('click', ()=>exportPdf('dersici'));
-document.getElementById('btnPdf-odev').addEventListener('click', ()=>exportPdf('odev'));
+async function exportPdf(type, studentsList, classSuffix, groups){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  showOverlay('PDF oluşturuluyor...');
+
+  const baseFilename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase();
+  const filename = baseFilename + (classSuffix ? ('_'+classSuffix.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\/]/g,'').replace(/\//g,'-')) : '') + '_degerlendirme.pdf';
+
+  let html = '';
+  if(groups && groups.length){
+    groups.forEach((g,i)=>{
+      html += buildPrintSheetSection(type, g.students, g.label, i>0);
+    });
+  } else {
+    const list = studentsList || DB.students;
+    html = buildPrintSheetSection(type, list, classSuffix, false);
+  }
+
+  await renderPdfFromHtml(html, filename);
+}
+
+document.getElementById('btnPdf-proje').addEventListener('click', ()=>openClassExportModal('proje','pdf'));
+document.getElementById('btnPdf-dersici').addEventListener('click', ()=>openClassExportModal('dersici','pdf'));
+document.getElementById('btnPdf-odev').addEventListener('click', ()=>openClassExportModal('odev','pdf'));
 
 </script>
 </body>
