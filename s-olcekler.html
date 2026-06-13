@@ -615,7 +615,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.09</div>
+      <div class="version-tag">v1.0.10</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -2082,17 +2082,18 @@ async function renderPdfFromHtml(html, filename){
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     const imgW = pageW - 40;
+    const canvasScale = Math.min(2, Math.max(1, window.devicePixelRatio ? 1.5 : 2));
 
     for(let s=0; s<sheets.length; s++){
       const sheet = sheets[s];
-      const canvas = await html2canvas(sheet, {scale:2, useCORS:true, backgroundColor:'#ffffff', windowWidth: sheet.scrollWidth});
-      const imgData = canvas.toDataURL('image/png');
+      const canvas = await html2canvas(sheet, {scale:canvasScale, useCORS:true, backgroundColor:'#ffffff', windowWidth: sheet.scrollWidth, logging:false, imageTimeout:15000});
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const imgH = canvas.height * (imgW / canvas.width);
 
       if(s>0) pdf.addPage();
 
       if(imgH <= pageH - 40){
-        pdf.addImage(imgData, 'PNG', 20, 20, imgW, imgH);
+        pdf.addImage(imgData, 'JPEG', 20, 20, imgW, imgH);
       } else {
         let remainingHeight = imgH;
         const pageContentHeight = pageH - 40;
@@ -2105,11 +2106,13 @@ async function renderPdfFromHtml(html, filename){
           sliceCanvas.width = canvas.width;
           sliceCanvas.height = sliceHeightPx;
           const ctx = sliceCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0,0,sliceCanvas.width, sliceCanvas.height);
           ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
-          const sliceData = sliceCanvas.toDataURL('image/png');
+          const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
           const sliceHeightPt = sliceHeightPx / scaleRatio;
           if(!firstSlice) pdf.addPage();
-          pdf.addImage(sliceData, 'PNG', 20, 20, imgW, sliceHeightPt);
+          pdf.addImage(sliceData, 'JPEG', 20, 20, imgW, sliceHeightPt);
           sourceY += sliceHeightPx;
           remainingHeight -= sliceHeightPt;
           firstSlice = false;
