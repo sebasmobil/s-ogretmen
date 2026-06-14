@@ -623,7 +623,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.14</div>
+      <div class="version-tag">v1.0.15</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -2168,15 +2168,11 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     const headerBottom = tableTop + headerRowH;
     let x = margin;
 
-    pdf.setDrawColor(120,120,120);
+    pdf.setDrawColor(0,0,0);
     pdf.setLineWidth(0.5);
 
-    // Header cell fill
-    pdf.setFillColor(61,90,69); // moss
-    pdf.rect(margin, tableTop, availW, headerRowH, 'F');
-
     // No / Adı Soyadı / TOPLAM headers (horizontal, centered vertically)
-    pdf.setTextColor(255,255,255);
+    pdf.setTextColor(0,0,0);
     pdf.setFont('RC','bold');
     pdf.setFontSize(8);
     pdf.text('No', margin + colNo/2, headerBottom - 6, {align:'center', angle:90});
@@ -2202,7 +2198,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     pdf.text('TOPLAM', margin + colNo + colName + critAreaW + colTotal/2, headerBottom/2 + tableTop/2, {align:'center'});
 
     // header borders
-    pdf.setDrawColor(120,120,120);
+    pdf.setDrawColor(0,0,0);
     pdf.rect(margin, tableTop, colNo, headerRowH);
     pdf.rect(margin+colNo, tableTop, colName, headerRowH);
     for(let i=0;i<=criteria.length;i++){
@@ -2211,7 +2207,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     pdf.rect(margin+colNo+colName+critAreaW, tableTop, colTotal, headerRowH);
 
     // ---- Table rows ----
-    pdf.setTextColor(30,40,35);
+    pdf.setTextColor(0,0,0);
     const startIdx = pageIdx*rowsPerPage;
     const endIdx = Math.min(studentsList.length, startIdx+rowsPerPage);
     let ry = headerBottom;
@@ -2221,12 +2217,6 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       const scores = (mod.scores[st.id]) || criteria.map(()=>null);
       let total = 0, anyVal=false;
       scores.forEach(v=>{ if(v!=null){ total+=v; anyVal=true; } });
-
-      // alternate row shading
-      if((i-startIdx) % 2 === 1){
-        pdf.setFillColor(248,247,243);
-        pdf.rect(margin, ry, availW, rowH, 'F');
-      }
 
       pdf.setFont('RC','normal');
       pdf.setFontSize(8);
@@ -2267,7 +2257,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     for(let i=0;i<=(endIdx-startIdx);i++){
       pdf.line(margin, headerBottom+i*rowH, margin+availW, headerBottom+i*rowH);
     }
-    pdf.setDrawColor(120,120,120);
+    pdf.setDrawColor(0,0,0);
     pdf.setLineWidth(0.5);
     pdf.rect(margin, tableTop, availW, tableBottom-tableTop);
 
@@ -2277,7 +2267,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       if(fy > pageH - 50) fy = pageH - 50; // safety
       pdf.setFont('RC','normal');
       pdf.setFontSize(7.5);
-      pdf.setTextColor(80,80,80);
+      pdf.setTextColor(0,0,0);
       const noteText = `Not: Bu form, öğrencilerin ${formTitle.toLowerCase()} kapsamında değerlendirilmesi amacıyla hazırlanmıştır. Değerlendirme 100 puan üzerinden yapılmıştır.`;
       const noteLines = pdfWrapText(pdf, noteText, availW, 'normal', 7.5);
       noteLines.forEach((line,i)=>pdf.text(line, margin, fy+i*9));
@@ -2297,7 +2287,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
 
       pdf.setFont('RC','normal');
       pdf.setFontSize(8.5);
-      pdf.setTextColor(30,40,35);
+      pdf.setTextColor(0,0,0);
       pdf.text('Öğretmen: '+(DB.config.teacher || '………………………………'), margin, fy);
       pdf.text('Tarih: '+new Date().toLocaleDateString('tr-TR'), pageW - margin, fy, {align:'right'});
       fy += 18;
