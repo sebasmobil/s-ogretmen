@@ -624,7 +624,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.19</div>
+      <div class="version-tag">v1.0.20</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -1891,11 +1891,13 @@ function openClassExportModal(type, format){
     <div style="font-size:.82rem;color:var(--muted);line-height:1.5;font-family:var(--sans);">PDF dosyasını hangi yönde oluşturmak istiyorsunuz?</div>
     <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--sans);">
       <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;">
-        <input type="radio" name="exportOrient" value="landscape" checked> Yatay (geniş tablo, çok kriter için uygun)
+        <input type="radio" name="exportOrient" value="landscape"> Yatay (geniş tablo, çok kriter için uygun)
       </label>
       <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;">
-        <input type="radio" name="exportOrient" value="portrait"> Dikey
+        <input type="radio" name="exportOrient" value="portrait" checked> Dikey
       </label>
+      <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Rapor Tarihi:</div>
+      <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;width:100%;max-width:220px;">
     </div>`;
     box.innerHTML = phtml;
     document.getElementById('classExportOverlay').classList.add('show');
@@ -1928,11 +1930,13 @@ function openClassExportModal(type, format){
     html += `
     <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Sayfa Yönü:</div>
     <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportOrient" value="landscape" checked> Yatay (geniş tablo, çok kriter için uygun)
+      <input type="radio" name="exportOrient" value="landscape"> Yatay (geniş tablo, çok kriter için uygun)
     </label>
     <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportOrient" value="portrait"> Dikey
-    </label>`;
+      <input type="radio" name="exportOrient" value="portrait" checked> Dikey
+    </label>
+    <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Rapor Tarihi:</div>
+    <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;width:100%;max-width:220px;">`;
   }
 
   html += `</div>`;
@@ -1960,13 +1964,15 @@ document.getElementById('classExportOk').addEventListener('click', ()=>{
   const box = document.getElementById('classExportBox');
   const {type, format} = pendingExport;
   const orientRadio = box.querySelector('input[name="exportOrient"]:checked');
-  const orientation = orientRadio ? orientRadio.value : 'landscape';
+  const orientation = orientRadio ? orientRadio.value : 'portrait';
+  const dateInput = box.querySelector('#exportDateInput');
+  const reportDate = dateInput ? dateInput.value : new Date().toISOString().slice(0,10);
 
   const classCheckboxes = box.querySelectorAll('.classCheckbox');
   if(classCheckboxes.length === 0){
     // single-class PDF case: only orientation was asked
     document.getElementById('classExportOverlay').classList.remove('show');
-    runExport(type, format, DB.students, null, null, orientation);
+    runExport(type, format, DB.students, null, null, orientation, reportDate);
     pendingExport = null;
     return;
   }
@@ -1978,31 +1984,29 @@ document.getElementById('classExportOk').addEventListener('click', ()=>{
   document.getElementById('classExportOverlay').classList.remove('show');
 
   if(mode==='separate'){
-    // one export per class
     selected.forEach(c=>{
       const studs = DB.students.filter(s=> (c==='__none__' ? !(s.cls||'').trim() : (s.cls||'').trim()===c) );
-      if(studs.length) runExport(type, format, studs, classLabel(c), null, orientation);
+      if(studs.length) runExport(type, format, studs, classLabel(c), null, orientation, reportDate);
     });
   } else {
-    // single export, grouped by class
     const groups = selected.map(c=>({
       label: classLabel(c),
       students: DB.students.filter(s=> (c==='__none__' ? !(s.cls||'').trim() : (s.cls||'').trim()===c) )
     })).filter(g=>g.students.length);
-    runExport(type, format, null, null, groups, orientation);
+    runExport(type, format, null, null, groups, orientation, reportDate);
   }
   pendingExport = null;
 });
 
-function runExport(type, format, studentsList, classSuffix, groups, orientation){
-  if(format==='pdf') exportPdf(type, studentsList, classSuffix, groups, orientation);
-  else exportXlsx(type, studentsList, classSuffix, groups);
+function runExport(type, format, studentsList, classSuffix, groups, orientation, reportDate){
+  if(format==='pdf') exportPdf(type, studentsList, classSuffix, groups, orientation, reportDate);
+  else exportXlsx(type, studentsList, classSuffix, groups, reportDate);
 }
 
 /* ============================================================
    EXCEL EXPORT
    ============================================================ */
-async function exportXlsx(type, studentsList, classSuffix, groups){
+async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
   if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
   showOverlay('Excel hazırlanıyor...');
   const mod = getCurrentModule(type);
@@ -2127,7 +2131,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups){
     ws.addRow([]);
     const signRow = ws.addRow(Array(totalCols).fill(''));
     const teacherVal = DB.config.teacher ? `Öğretmen: ${DB.config.teacher}` : '';
-    const tarih = `Tarih: ${new Date().toLocaleDateString('tr-TR')}`;
+    const tarih = `Tarih: ${reportDate ? new Date(reportDate).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR')}`;
     const imza = 'İmza: ……………………………';
     if(teacherVal){
       signRow.getCell(totalCols-2).value = teacherVal;
@@ -2213,7 +2217,7 @@ function pdfWrapText(pdf, text, maxWidth, fontStyle, fontSize){
 }
 
 /* Render one class/group as one or more PDF pages onto `pdf` */
-function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOverall, orientation){
+function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOverall, orientation, dateStr){
   const mod = getCurrentModule(type);
   const criteria = mod.criteria;
   const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
@@ -2397,18 +2401,19 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
         pdf.text('Öğretmen Adı Soyadı: '+DB.config.teacher, pageW - margin, fy, {align:'right'});
         fy += 14;
       }
-      pdf.text('Tarih: '+new Date().toLocaleDateString('tr-TR'), pageW - margin, fy, {align:'right'});
+      pdf.text('Tarih: '+(dateStr||new Date().toLocaleDateString('tr-TR')), pageW - margin, fy, {align:'right'});
       fy += 18;
       pdf.text('İmza: ……………………', pageW - margin, fy, {align:'right'});
     }
   }
 }
 
-async function exportPdf(type, studentsList, classSuffix, groups, orientation){
+async function exportPdf(type, studentsList, classSuffix, groups, orientation, reportDate){
   if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
   const mod = getCurrentModule(type);
   showOverlay('PDF oluşturuluyor...');
-  orientation = orientation || 'landscape';
+  orientation = orientation || 'portrait';
+  const dateStr = reportDate ? new Date(reportDate).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
 
   try{
     const { jsPDF } = window.jspdf;
@@ -2421,12 +2426,12 @@ async function exportPdf(type, studentsList, classSuffix, groups, orientation){
     let isFirst = true;
     if(groups && groups.length){
       groups.forEach(g=>{
-        renderGroupToPdf(pdf, type, g.students, g.label, isFirst, orientation);
+        renderGroupToPdf(pdf, type, g.students, g.label, isFirst, orientation, dateStr);
         isFirst = false;
       });
     } else {
       const list = studentsList || DB.students;
-      renderGroupToPdf(pdf, type, list, classSuffix, isFirst, orientation);
+      renderGroupToPdf(pdf, type, list, classSuffix, isFirst, orientation, dateStr);
     }
 
     pdf.save(filename);
