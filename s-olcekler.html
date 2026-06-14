@@ -624,7 +624,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.20</div>
+      <div class="version-tag">v1.0.21</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -2306,8 +2306,9 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     pdf.setFontSize(8);
     pdf.text('TOPLAM', margin + colNo + colName + critAreaW + colTotal/2, headerBottom/2 + tableTop/2, {align:'center'});
 
-    // header borders
-    pdf.setDrawColor(0,0,0);
+    // header borders — same weight as grid
+    pdf.setDrawColor(80,80,80);
+    pdf.setLineWidth(0.6);
     pdf.rect(margin, tableTop, colNo, headerRowH);
     pdf.rect(margin+colNo, tableTop, colName, headerRowH);
     for(let i=0;i<=criteria.length;i++){
@@ -2327,10 +2328,19 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       let total = 0, anyVal=false;
       scores.forEach(v=>{ if(v!=null){ total+=v; anyVal=true; } });
 
+      // Zebra fill — even rows white, odd rows very light grey
+      if((i-startIdx) % 2 === 1){
+        pdf.setFillColor(245,245,245);
+        pdf.rect(margin, ry, availW, rowH, 'F');
+      } else {
+        pdf.setFillColor(255,255,255);
+        pdf.rect(margin, ry, availW, rowH, 'F');
+      }
+
+      pdf.setTextColor(0,0,0);
       pdf.setFont('RC','normal');
       pdf.setFontSize(8);
       pdf.text(String(st.no), margin + colNo/2, ry + rowH/2 + 2.5, {align:'center'});
-      // name: truncate/fit
       let nameText = st.name;
       const maxNameW = colName - 8;
       while(pdf.getTextWidth(nameText) > maxNameW && nameText.length > 3){
@@ -2349,25 +2359,24 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       ry += rowH;
     }
 
-    // outer + grid borders for rows
-    pdf.setDrawColor(180,180,180);
-    pdf.setLineWidth(0.3);
+    // Grid borders — all same color and weight
     const tableBottom = headerBottom + (endIdx-startIdx)*rowH;
-    // vertical lines
-    pdf.line(margin, headerBottom, margin, tableBottom);
+    pdf.setDrawColor(160,160,160);
+    pdf.setLineWidth(0.4);
+    // vertical lines (inner)
     pdf.line(margin+colNo, headerBottom, margin+colNo, tableBottom);
     pdf.line(margin+colNo+colName, headerBottom, margin+colNo+colName, tableBottom);
     for(let i=1;i<criteria.length;i++){
       pdf.line(margin+colNo+colName+colCrit*i, headerBottom, margin+colNo+colName+colCrit*i, tableBottom);
     }
     pdf.line(margin+colNo+colName+critAreaW, headerBottom, margin+colNo+colName+critAreaW, tableBottom);
-    pdf.line(margin+availW, headerBottom, margin+availW, tableBottom);
     // horizontal lines per row
-    for(let i=0;i<=(endIdx-startIdx);i++){
+    for(let i=1;i<(endIdx-startIdx);i++){
       pdf.line(margin, headerBottom+i*rowH, margin+availW, headerBottom+i*rowH);
     }
-    pdf.setDrawColor(0,0,0);
-    pdf.setLineWidth(0.5);
+    // outer border — slightly thicker
+    pdf.setDrawColor(80,80,80);
+    pdf.setLineWidth(0.6);
     pdf.rect(margin, tableTop, availW, tableBottom-tableTop);
 
     // ---- Footer (legend + signatures) on last page of group ----
