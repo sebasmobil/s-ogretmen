@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.36
+  S-Değerlendirme Ölçekleri — Pro 1.0.37
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -150,16 +150,16 @@
 
 /* ---- KARANLIK MOD ---- */
 [data-mode="dark"]{
-  --ink:#e8edf2;
-  --paper:#141c24;
-  --paper2:#1a2535;
-  --card-bg:#1e2d3d;
-  --card-border:#2a3d52;
-  --input-bg:#1a2535;
-  --input-border:#2a3d52;
-  --muted:#7090a8;
-  --line:#2a3d52;
-  --overlay-bg:rgba(0,5,15,.7);
+  --ink:#f0f4f8;
+  --paper:#111820;
+  --paper2:#16212e;
+  --card-bg:#1c2a38;
+  --card-border:#2e4258;
+  --input-bg:#16212e;
+  --input-border:#2e4258;
+  --muted:#a0b8cc;
+  --line:#2e4258;
+  --overlay-bg:rgba(0,5,15,.75);
   --geçmez:#e07060;
   --geçer:#d4a840;
   --orta:#5aaad0;
@@ -168,10 +168,70 @@
 }
 [data-mode="dark"] .topbar{
   background:rgba(0,0,0,.35);
-  color:rgba(255,255,255,.5);
+  color:rgba(255,255,255,.6);
 }
-[data-mode="dark"] .topbar a{ color:rgba(255,255,255,.5); }
-[data-mode="dark"] .topbar a:hover{ color:rgba(255,255,255,.85); }
+[data-mode="dark"] .topbar a{ color:rgba(255,255,255,.6); }
+[data-mode="dark"] .topbar a:hover{ color:#fff; }
+
+/* Dark mode — explicit text clarity */
+[data-mode="dark"] td,
+[data-mode="dark"] .card h2,
+[data-mode="dark"] .card .desc,
+[data-mode="dark"] label,
+[data-mode="dark"] .mc-title,
+[data-mode="dark"] .tab-btn-primary,
+[data-mode="dark"] .tab-btn-secondary,
+[data-mode="dark"] .subtabs-sec-label,
+[data-mode="dark"] .crit-row,
+[data-mode="dark"] .mod-name-input,
+[data-mode="dark"] .school-id label,
+[data-mode="dark"] .status-line,
+[data-mode="dark"] .legend,
+[data-mode="dark"] .note-box,
+[data-mode="dark"] p,
+[data-mode="dark"] span:not(.grade-pill):not(.pill):not(.badge):not(.sep):not(.tab-icon):not(.version-tag){
+  color:var(--ink);
+}
+[data-mode="dark"] td.name-cell{
+  background:var(--card-bg);
+  color:var(--ink);
+}
+[data-mode="dark"] tr:nth-child(even) td:not(.name-cell){
+  background:var(--input-bg);
+}
+[data-mode="dark"] input,
+[data-mode="dark"] select{
+  color:var(--ink) !important;
+  background:var(--input-bg) !important;
+  border-color:var(--input-border) !important;
+}
+[data-mode="dark"] .total-cell{
+  color:var(--moss) !important;
+  background:var(--input-bg) !important;
+}
+[data-mode="dark"] .card h2{
+  color:var(--moss);
+}
+[data-mode="dark"] .tab-btn-primary.active,
+[data-mode="dark"] .tab-btn-secondary.active{
+  color:#fff !important;
+}
+[data-mode="dark"] .btn{
+  color:#fff;
+}
+[data-mode="dark"] .btn.secondary{
+  color:var(--moss);
+}
+[data-mode="dark"] .overlay .box{
+  background:var(--card-bg);
+  color:var(--ink);
+}
+[data-mode="dark"] .archive-item .ai-title{
+  color:var(--ink);
+}
+[data-mode="dark"] .archive-item .ai-sub{
+  color:var(--muted);
+}
 
 [data-mode="dark"][data-theme="blue"]{
   --moss:#5b9ec9;
@@ -831,7 +891,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.36</span>
+  <span>Pro 1.0.37</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
