@@ -1,4 +1,36 @@
 <!DOCTYPE html>
+<!--
+  S-Değerlendirme Ölçekleri — Pro 1.0.30
+  Copyright (C) 2025 sebasmobil
+
+  Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
+  GNU Affero General Public License'ın 3. sürümü (ya da tercihinize göre
+  daha sonraki bir sürümü) koşullarında yeniden dağıtabilir ve/veya
+  değiştirebilirsiniz.
+
+  Bu program yararlı olacağı umuduyla dağıtılmaktadır, ancak HİÇBİR GARANTİ
+  YOKTUR; hatta SATILABİLİRLİK veya BELİRLİ BİR AMACA UYGUNLUK için zımni
+  garanti bile verilmemektedir. Daha fazla ayrıntı için GNU Affero General
+  Public License'a bakınız.
+
+  Bu programla birlikte GNU Affero General Public License'ın bir kopyasını
+  almış olmalısınız. Almadıysanız, <https://www.gnu.org/licenses/> adresine bakınız.
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+  
+  SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -17,36 +49,196 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-:root{
-  --ink:#1f2a24;
-  --paper:#f6f3ec;
-  --paper2:#fffdf8;
-  --moss:#3d5a45;
-  --moss-d:#2a4032;
-  --terracotta:#bd5d3a;
+/* ===== Top info bar ===== */
+.topbar{
+  background:var(--primary-d);
+  color:rgba(255,255,255,.75);
+  font-family:var(--sans);
+  font-size:.7rem;
+  letter-spacing:.04em;
+  padding:5px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  user-select:none;
+}
+.topbar span{ display:flex; align-items:center; gap:5px; }
+.topbar .sep{ opacity:.35; font-size:.9em; }
+.topbar a{
+  color:rgba(255,255,255,.75);
+  text-decoration:none;
+  cursor:pointer;
+  transition:color .15s;
+}
+.topbar a:hover{ color:#fff; }
+
+/* ============================================================
+   TEMA SİSTEMİ — Pastel renk temaları + Aydınlık/Karanlık mod
+   ============================================================ */
+
+/* ---- PASTEL MAVİ (varsayılan) ---- */
+:root,[data-theme="blue"]{
+  --primary:#4a7fa5;
+  --primary-d:#2f5c7e;
+  --primary-bg:#eef4f9;
+  --primary-bg2:#f5f9fc;
   --gold:#c9a14a;
-  --line:#d8d2c2;
-  --muted:#8a8475;
+  --terracotta:#bd5d3a;
+  --line:#cdd9e5;
+  --radius:10px;
+  --serif:'Georgia','Times New Roman',serif;
+  --sans:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+[data-theme="green"]{
+  --primary:#3d5a45;
+  --primary-d:#2a4032;
+  --primary-bg:#eef3ec;
+  --primary-bg2:#f5faf5;
+  --gold:#c9a14a;
+  --terracotta:#bd5d3a;
+  --line:#c8d8c8;
+}
+[data-theme="purple"]{
+  --primary:#6d5b9a;
+  --primary-d:#4e3f72;
+  --primary-bg:#f0ecf8;
+  --primary-bg2:#f7f5fc;
+  --gold:#c9a14a;
+  --terracotta:#bd5d3a;
+  --line:#d5cce8;
+}
+[data-theme="rose"]{
+  --primary:#a05470;
+  --primary-d:#7a3a53;
+  --primary-bg:#f9eef2;
+  --primary-bg2:#fdf5f7;
+  --gold:#c9a14a;
+  --terracotta:#c0634a;
+  --line:#e8d0d9;
+}
+[data-theme="teal"]{
+  --primary:#3a7a7a;
+  --primary-d:#255858;
+  --primary-bg:#ecf5f5;
+  --primary-bg2:#f3fafa;
+  --gold:#c9a14a;
+  --terracotta:#bd5d3a;
+  --line:#c5dada;
+}
+
+/* ---- AYDINLIK MOD ---- */
+:root, [data-mode="light"]{
+  --ink:#1a2530;
+  --paper:var(--primary-bg);
+  --paper2:var(--primary-bg2);
+  --moss:var(--primary);
+  --moss-d:var(--primary-d);
+  --muted:#778899;
+  --card-bg:#ffffff;
+  --card-border:var(--line);
+  --input-bg:#ffffff;
+  --input-border:var(--line);
+  --overlay-bg:rgba(10,20,40,.5);
   --geçmez:#c0594a;
   --geçer:#cf9b3a;
   --orta:#4f8fb0;
   --iyi:#5a8f5a;
   --pekiyi:#3d5a45;
-  --radius:10px;
-  --serif: 'Georgia', 'Times New Roman', serif;
-  --sans: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
-*{box-sizing:border-box;}
+
+/* ---- KARANLIK MOD ---- */
+[data-mode="dark"]{
+  --ink:#e8edf2;
+  --paper:#141c24;
+  --paper2:#1a2535;
+  --card-bg:#1e2d3d;
+  --card-border:#2a3d52;
+  --input-bg:#1a2535;
+  --input-border:#2a3d52;
+  --muted:#7090a8;
+  --line:#2a3d52;
+  --overlay-bg:rgba(0,5,15,.7);
+  --geçmez:#e07060;
+  --geçer:#d4a840;
+  --orta:#5aaad0;
+  --iyi:#6aaf6a;
+  --pekiyi:#5a9f7a;
+}
+[data-mode="dark"] .topbar{
+  background:rgba(0,0,0,.35);
+  color:rgba(255,255,255,.5);
+}
+[data-mode="dark"] .topbar a{ color:rgba(255,255,255,.5); }
+[data-mode="dark"] .topbar a:hover{ color:rgba(255,255,255,.85); }
+
+[data-mode="dark"][data-theme="blue"]{
+  --moss:#5b9ec9;
+  --moss-d:#3d7aa0;
+  --primary-bg:#141c24;
+  --primary-bg2:#1a2535;
+  --gold:#d4b060;
+}
+[data-mode="dark"][data-theme="green"]{
+  --moss:#5a8f6a;
+  --moss-d:#3d6a4a;
+  --gold:#d4b060;
+}
+[data-mode="dark"][data-theme="purple"]{
+  --moss:#9080c0;
+  --moss-d:#6a5a9a;
+  --gold:#d4b060;
+}
+[data-mode="dark"][data-theme="rose"]{
+  --moss:#c07090;
+  --moss-d:#9a5070;
+  --gold:#d4b060;
+}
+[data-mode="dark"][data-theme="teal"]{
+  --moss:#50a0a0;
+  --moss-d:#357878;
+  --gold:#d4b060;
+}
+
+/* Body background transition */
+*{box-sizing:border-box; transition:background-color .2s ease, border-color .2s ease, color .1s ease;}
 html,body{margin:0;padding:0;}
 body{
   font-family:var(--sans);
-  background:
-    radial-gradient(circle at 10% 0%, #fbf7ee 0%, transparent 40%),
-    var(--paper);
+  background:var(--paper);
   color:var(--ink);
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
+
+/* ===== Theme picker + mode toggle ===== */
+.theme-picker{
+  display:flex;gap:6px;align-items:center;
+}
+.theme-dot{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);
+  cursor:pointer;transition:all .15s ease;
+  padding:0;
+}
+.theme-dot.active{
+  border-color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 0 0 2px rgba(255,255,255,.5);
+}
+.theme-dot:hover:not(.active){border-color:rgba(255,255,255,.7);transform:scale(1.1);}
+.mode-toggle{
+  background:rgba(255,255,255,.15);
+  border:1.5px solid rgba(255,255,255,.3);
+  border-radius:20px;
+  padding:6px 14px;
+  font-size:1.1rem;
+  cursor:pointer;
+  transition:all .15s ease;
+  color:#fff;
+}
+.mode-toggle:hover{background:rgba(255,255,255,.25);}
 
 /* ===== Top bar / brand ===== */
 .brandbar{
@@ -76,18 +268,6 @@ body{
   letter-spacing:.12em;
   text-transform:uppercase;
   margin-top:2px;
-}
-.version-tag{
-  display:inline-block;
-  margin-top:6px;
-  font-size:.68rem;
-  font-family:var(--sans);
-  font-weight:700;
-  letter-spacing:.06em;
-  color:var(--moss-d);
-  background:var(--gold);
-  padding:2px 9px;
-  border-radius:20px;
 }
 .brandbar .tag{
   font-family:var(--serif);
@@ -202,7 +382,7 @@ body{
   flex-shrink:0;
 }
 .tab-btn-secondary:hover{
-  background:#f1f0e8;
+  background:var(--primary-bg);
   border-color:var(--line);
 }
 .tab-btn-secondary.active{
@@ -217,12 +397,12 @@ body{
 
 /* ===== Cards ===== */
 .card{
-  background:var(--paper2);
-  border:1px solid var(--line);
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
   border-radius:var(--radius);
   padding:22px;
   margin-bottom:18px;
-  box-shadow:0 1px 3px rgba(40,50,40,.04);
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
 .card h2{
   font-family:var(--serif);
@@ -283,11 +463,11 @@ input[type=file]{display:none;}
   text-align:center;
   cursor:pointer;
   transition:all .15s ease;
-  background:#fcfaf4;
+  background:var(--card-bg);
 }
 .file-drop:hover, .file-drop.drag{
   border-color:var(--moss);
-  background:#f1f5ee;
+  background:var(--primary-bg);
 }
 .file-drop .icon{font-size:2rem;margin-bottom:8px;display:block;}
 .file-drop .title{font-weight:700;color:var(--moss-d);font-family:var(--serif);font-size:1.05rem;}
@@ -304,7 +484,7 @@ input[type=file]{display:none;}
   padding:16px;
   cursor:pointer;
   transition:all .15s ease;
-  background:#fcfaf4;
+  background:var(--card-bg);
 }
 .mode-card:hover{border-color:var(--gold);}
 .mode-card.selected{
@@ -331,7 +511,7 @@ table{
   border-collapse:collapse;
   width:100%;
   font-size:.82rem;
-  background:#fff;
+  background:var(--card-bg);
 }
 th,td{
   border:1px solid var(--line);
@@ -352,11 +532,11 @@ td.name-cell{
   font-weight:600;
   white-space:normal;
   min-width:140px;
-  background:#fbf8f0;
+  background:var(--primary-bg);
   position:sticky;left:0;
 }
 th.th-name{position:sticky;left:0;z-index:2;}
-tr:nth-child(even) td:not(.name-cell){background:#fafaf6;}
+tr:nth-child(even) td:not(.name-cell){background:var(--primary-bg);}
 input.score-input{
   width:56px;
   padding:4px;
@@ -365,10 +545,12 @@ input.score-input{
   border-radius:4px;
   font-size:16px;
   font-family:var(--sans);
+  background:var(--input-bg);
+  color:var(--ink);
 }
 input.score-input:focus{outline:2px solid var(--moss);border-color:var(--moss);}
-input.score-input:disabled{background:#f0efe8;color:var(--muted);}
-.total-cell{font-weight:800;color:var(--moss-d);background:#eef3ec !important;}
+input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
+.total-cell{font-weight:800;color:var(--moss-d);background:var(--primary-bg) !important;}
 .grade-pill{
   display:inline-block;padding:2px 8px;border-radius:20px;
   font-size:.68rem;font-weight:700;color:#fff;letter-spacing:.03em;
@@ -402,20 +584,20 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
   border:1.5px solid var(--line);
   border-radius:20px;overflow:hidden;
   transition:all .15s ease;
-  background:#fff;
+  background:var(--card-bg);
 }
 .subtab-pill.active{border-color:var(--moss);}
 .subtab-btn{
   font-size:.8rem;font-weight:700;
   border:none;
-  background:#fff;color:var(--moss-d);
+  background:var(--card-bg);color:var(--moss-d);
   padding:8px 14px;cursor:pointer;
   transition:all .15s ease;
 }
 .subtab-pill.active .subtab-btn{background:var(--moss);color:#fff;}
 .subtab-btn:hover:not(.active-btn){opacity:.85;}
 .subtab-del{
-  border:none;background:#fff;color:var(--terracotta);
+  border:none;background:var(--card-bg);color:var(--terracotta);
   padding:8px 10px;cursor:pointer;font-size:.8rem;font-weight:700;
   border-left:1px solid var(--line);
   transition:all .15s ease;
@@ -456,11 +638,11 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 
 /* ===== Footer note / printable header ===== */
 .note-box{
-  background:#f1ece0;
+  background:var(--primary-bg);
   border-left:4px solid var(--gold);
   padding:12px 16px;
   font-size:.8rem;
-  color:#5a523f;
+  color:var(--muted);
   border-radius:0 6px 6px 0;
   margin-top:14px;
   line-height:1.6;
@@ -507,7 +689,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 .archive-item{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;
-  background:#fcfaf4;
+  background:var(--card-bg);
 }
 .archive-item .ai-info{flex:1 1 240px;}
 .archive-item .ai-title{font-family:var(--serif);font-weight:700;color:var(--moss-d);font-size:.95rem;}
@@ -518,7 +700,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 .crit-row{
   display:flex;gap:10px;align-items:center;flex-wrap:wrap;
   padding:8px 10px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;
-  background:#fcfaf4;font-size:.82rem;
+  background:var(--card-bg);font-size:.82rem;
 }
 .crit-row .crit-text{flex:1 1 160px; min-width:0; font-size:16px; padding:4px 6px; border:1px solid var(--line); border-radius:4px;}
 .crit-row .crit-max{
@@ -547,14 +729,14 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 }
 .overlay.show{display:flex;}
 .overlay .box{
-  background:#fff;padding:24px 32px;border-radius:10px;
+  background:var(--card-bg);padding:24px 32px;border-radius:10px;
   font-family:var(--serif);color:var(--moss-d);font-size:1rem;
   display:flex;align-items:center;gap:12px;
 }
 .map-row{
   display:flex;align-items:center;gap:10px;
   padding:8px 10px;border:1px solid var(--line);border-radius:6px;
-  background:#fcfaf4;flex-wrap:wrap;
+  background:var(--card-bg);flex-wrap:wrap;
 }
 .map-row .map-col-name{
   flex:1 1 160px;font-weight:700;color:var(--moss-d);font-size:.85rem;
@@ -578,7 +760,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 /* ===== Print sheet (hidden, used for pdf rendering) ===== */
 .print-sheet{
   width:1000px;
-  background:#fff;
+  background:var(--card-bg);
   padding:40px;
   font-family:var(--sans);
   color:#1a1a1a;
@@ -619,15 +801,31 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
 </head>
 <body>
 
+<div class="topbar">
+  <span>Pro 1.0.30</span>
+  <span class="sep">|</span>
+  <span>© sebasmobil</span>
+  <span class="sep">|</span>
+  <span><a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+</div>
+
 <div class="brandbar">
   <div class="crest">
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.21</div>
     </div>
   </div>
-  <div class="tag">"Ölç, değerlendir, geliştir."</div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div class="theme-picker" id="themePicker">
+      <button class="theme-dot active" data-theme="blue" title="Pastel Mavi" style="background:#4a7fa5;"></button>
+      <button class="theme-dot" data-theme="green" title="Yeşil" style="background:#3d5a45;"></button>
+      <button class="theme-dot" data-theme="purple" title="Mor" style="background:#6d5b9a;"></button>
+      <button class="theme-dot" data-theme="rose" title="Gül" style="background:#a05470;"></button>
+      <button class="theme-dot" data-theme="teal" title="Teal" style="background:#3a7a7a;"></button>
+    </div>
+    <button class="mode-toggle" id="modeToggle" title="Tema değiştir">☀️</button>
+  </div>
 </div>
 
 <div class="shell">
@@ -902,6 +1100,38 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
    DB.modules: { proje:[ {id, name, mode, criteria:[{text,max}], scores:{sid:[..]}, totals:{sid:val} }, ... ],
                  dersici:[...], odev:[...] }
    ============================================================ */
+/* ============================================================
+   TEMA & MOD YÖNETİMİ
+   ============================================================ */
+(function(){
+  const savedTheme = localStorage.getItem('olcek_theme') || 'blue';
+  const savedMode  = localStorage.getItem('olcek_mode')  || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.documentElement.setAttribute('data-mode',  savedMode);
+  // mark active dot
+  document.querySelectorAll('.theme-dot').forEach(d=>{
+    d.classList.toggle('active', d.dataset.theme === savedTheme);
+  });
+  document.getElementById('modeToggle').textContent = savedMode==='dark' ? '🌙' : '☀️';
+})();
+
+document.getElementById('modeToggle').addEventListener('click', ()=>{
+  const html = document.documentElement;
+  const next = html.getAttribute('data-mode')==='dark' ? 'light' : 'dark';
+  html.setAttribute('data-mode', next);
+  localStorage.setItem('olcek_mode', next);
+  document.getElementById('modeToggle').textContent = next==='dark' ? '🌙' : '☀️';
+});
+
+document.querySelectorAll('.theme-dot').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const theme = btn.dataset.theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('olcek_theme', theme);
+    document.querySelectorAll('.theme-dot').forEach(d=>d.classList.toggle('active', d===btn));
+  });
+});
+
 const STORAGE_KEY = 'hayme_degerlendirme_v2';
 
 const DEFAULT_CRITERIA = {
