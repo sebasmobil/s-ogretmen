@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Ölçekler">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -623,7 +624,7 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
     <div>
       <h1>S-Değerlendirme Ölçekleri</h1>
       <div class="sub">Performans &amp; Proje Değerlendirme Uygulaması</div>
-      <div class="version-tag">v1.0.15</div>
+      <div class="version-tag">v1.0.19</div>
     </div>
   </div>
   <div class="tag">"Ölç, değerlendir, geliştir."</div>
@@ -829,14 +830,6 @@ input.score-input:disabled{background:#f0efe8;color:var(--muted);}
           <div class="field-archive" id="archive-course"></div>
         </div>
         <div class="school-id">
-          <label>Sınıf / Şube</label>
-          <div class="field-row">
-            <input type="text" id="cfgClass" value="">
-            <button class="btn gold field-pin" data-field="cls" title="Bu değeri arşive kaydet">📌</button>
-          </div>
-          <div class="field-archive" id="archive-cls"></div>
-        </div>
-        <div class="school-id">
           <label>Öğretmen Adı Soyadı</label>
           <div class="field-row">
             <input type="text" id="cfgTeacher" value="">
@@ -1004,7 +997,7 @@ function loadDB(){
   if(!DB.configArchive || typeof DB.configArchive !== 'object' || Array.isArray(DB.configArchive)){
     DB.configArchive = { school:[], year:[], term:[], course:[], cls:[], teacher:[] };
   }
-  ['school','year','term','course','cls','teacher'].forEach(f=>{
+  ['school','year','term','course','teacher'].forEach(f=>{
     if(!Array.isArray(DB.configArchive[f])) DB.configArchive[f] = [];
   });
 }
@@ -1783,7 +1776,6 @@ function loadConfigToForm(){
   document.getElementById('cfgYear').value = DB.config.year;
   document.getElementById('cfgTerm').value = DB.config.term;
   document.getElementById('cfgCourse').value = DB.config.course;
-  document.getElementById('cfgClass').value = DB.config.cls;
   document.getElementById('cfgTeacher').value = DB.config.teacher;
 }
 loadConfigToForm();
@@ -1793,14 +1785,13 @@ document.getElementById('btnSaveCfg').addEventListener('click', ()=>{
   DB.config.year = document.getElementById('cfgYear').value;
   DB.config.term = document.getElementById('cfgTerm').value;
   DB.config.course = document.getElementById('cfgCourse').value;
-  DB.config.cls = document.getElementById('cfgClass').value;
   DB.config.teacher = document.getElementById('cfgTeacher').value;
   saveDB();
   toast('💾 Form bilgileri kaydedildi.');
 });
 
 const CFG_FIELD_IDS = {
-  school:'cfgSchool', year:'cfgYear', term:'cfgTerm', course:'cfgCourse', cls:'cfgClass', teacher:'cfgTeacher'
+  school:'cfgSchool', year:'cfgYear', term:'cfgTerm', course:'cfgCourse', teacher:'cfgTeacher'
 };
 
 function renderFieldArchive(field){
@@ -2011,50 +2002,167 @@ function runExport(type, format, studentsList, classSuffix, groups, orientation)
 /* ============================================================
    EXCEL EXPORT
    ============================================================ */
-function buildSheetRows(type, studentsList){
-  const mod = getCurrentModule(type);
-  const criteria = mod.criteria;
-  const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
-
-  const headerRow1 = [DB.config.school + ' | ' + DB.config.year + ' Eğitim Öğretim Yılı ' + DB.config.term + ' ' + DB.config.course + ' | ' + formTitle];
-  const headerRow = ['No','Adı Soyadı','Sınıf/Şube', ...criteria.map((c,i)=>`${i+1}. ${c.text} (${c.max} p)`), 'TOPLAM'];
-  const rows = [headerRow];
-
-  studentsList.forEach(st=>{
-    const scores = (mod.scores[st.id]) || criteria.map(()=>null);
-    let total = 0, anyVal=false;
-    const rowVals = scores.map(v=>{ if(v!=null){total+=v; anyVal=true;} return v!=null?v:''; });
-    rows.push([st.no, st.name, st.cls||'', ...rowVals, anyVal?Math.round(total*100)/100:'']);
-  });
-
-  return { headerRow1, rows };
-}
-
-function exportXlsx(type, studentsList, classSuffix, groups){
+async function exportXlsx(type, studentsList, classSuffix, groups){
   if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  showOverlay('Excel hazırlanıyor...');
   const mod = getCurrentModule(type);
   const baseFilename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase();
-  const wb = XLSX.utils.book_new();
-
-  if(groups && groups.length){
-    groups.forEach(g=>{
-      const {headerRow1, rows} = buildSheetRows(type, g.students);
-      const finalRows = [headerRow1, [], ...rows];
-      const ws = XLSX.utils.aoa_to_sheet(finalRows);
-      const sheetName = (g.label || 'Sınıf').substring(0,28).replace(/[\\\/\?\*\[\]]/g,'-');
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    });
-  } else {
-    const list = studentsList || DB.students;
-    const {headerRow1, rows} = buildSheetRows(type, list);
-    const finalRows = [headerRow1, [], ...rows];
-    const ws = XLSX.utils.aoa_to_sheet(finalRows);
-    XLSX.utils.book_append_sheet(wb, ws, mod.name.substring(0,28));
-  }
-
   const filename = baseFilename + (classSuffix ? ('_'+classSuffix.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\/]/g,'').replace(/\//g,'-')) : '') + '_degerlendirme.xlsx';
-  XLSX.writeFile(wb, filename);
-  toast('📊 Excel dosyası indirildi: '+filename);
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'S-Değerlendirme Ölçekleri';
+  wb.created = new Date();
+
+  const buildSheet = (label, list)=>{
+    const criteria = mod.criteria;
+    const formTitle = mod.name.toUpperCase() + ' DEĞERLENDİRME ÖLÇEĞİ';
+    const sheetName = (label||mod.name).substring(0,28).replace(/[\\\/\?\*\[\]:]/g,'-');
+    const ws = wb.addWorksheet(sheetName, {
+      pageSetup:{ paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 },
+      views:[{state:'frozen', xSplit:2, ySplit:3}]
+    });
+
+    const totalCols = 3 + criteria.length + 1; // No + Adı Soyadı + Sınıf + criteria + Toplam
+
+    /* --- ROW 1: Title (merged) --- */
+    ws.mergeCells(1,1,1,totalCols);
+    const titleCell = ws.getCell(1,1);
+    titleCell.value = DB.config.school;
+    titleCell.font = {name:'Calibri', bold:true, size:13, color:{argb:'FF1A1A1A'}};
+    titleCell.alignment = {horizontal:'center', vertical:'middle'};
+    titleCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF6F3EC'}};
+    ws.getRow(1).height = 22;
+
+    /* --- ROW 2: Sub-info (merged) --- */
+    ws.mergeCells(2,1,2,totalCols);
+    const subCell = ws.getCell(2,1);
+    const subParts = [
+      `${DB.config.year} Eğitim Öğretim Yılı ${DB.config.term}`,
+      DB.config.course,
+      label ? `Sınıf/Şube: ${label}` : ''
+    ].filter(Boolean).join('   |   ');
+    subCell.value = subParts;
+    subCell.font = {name:'Calibri', size:10, italic:true, color:{argb:'FF444444'}};
+    subCell.alignment = {horizontal:'center', vertical:'middle'};
+    subCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF6F3EC'}};
+    ws.getRow(2).height = 18;
+
+    /* --- ROW 3: Form title (merged) --- */
+    ws.mergeCells(3,1,3,totalCols);
+    const ftCell = ws.getCell(3,1);
+    ftCell.value = formTitle;
+    ftCell.font = {name:'Calibri', bold:true, size:12, color:{argb:'FF000000'}};
+    ftCell.alignment = {horizontal:'center', vertical:'middle'};
+    ftCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFE8E8E8'}};
+    ftCell.border = {bottom:{style:'medium', color:{argb:'FF888888'}}};
+    ws.getRow(3).height = 22;
+
+    /* --- ROW 4: Column headers --- */
+    const headerRow = ws.getRow(4);
+    headerRow.height = 90;
+    const headers = ['No','Adı Soyadı','Sınıf/Şube', ...criteria.map((c,i)=>`${i+1}. ${c.text} (${c.max}p)`), 'TOPLAM'];
+    headers.forEach((h,ci)=>{
+      const cell = headerRow.getCell(ci+1);
+      cell.value = h;
+      cell.font = {name:'Calibri', bold:true, size:9, color:{argb:'FF000000'}};
+      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFD9D9D9'}};
+      cell.border = {
+        top:{style:'thin'}, bottom:{style:'medium'},
+        left:{style:'thin'}, right:{style:'thin'}
+      };
+      const isCrit = ci >= 3 && ci < 3+criteria.length;
+      cell.alignment = {
+        horizontal:'center', vertical:'bottom',
+        wrapText:true,
+        textRotation: isCrit ? 90 : 0
+      };
+    });
+
+    /* --- Column widths --- */
+    ws.getColumn(1).width = 6;   // No
+    ws.getColumn(2).width = 22;  // Adı Soyadı
+    ws.getColumn(3).width = 10;  // Sınıf
+    criteria.forEach((_,i)=>{ ws.getColumn(4+i).width = 6; });
+    ws.getColumn(4+criteria.length).width = 9; // Toplam
+
+    /* --- Data rows --- */
+    list.forEach((st, ri)=>{
+      const scores = (mod.scores[st.id]) || criteria.map(()=>null);
+      let total = 0, anyVal=false;
+      const rowVals = scores.map(v=>{ if(v!=null){total+=v; anyVal=true;} return v!=null?v:''; });
+      const rowData = [st.no, st.name, st.cls||'', ...rowVals, anyVal?Math.round(total*100)/100:''];
+      const exRow = ws.addRow(rowData);
+      exRow.height = 16;
+      const isEven = ri%2===1;
+      exRow.eachCell({includeEmpty:true}, (cell, colNumber)=>{
+        cell.font = {name:'Calibri', size:9, bold: colNumber===rowData.length};
+        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb: isEven ? 'FFF5F5F5' : 'FFFFFFFF'}};
+        cell.border = {
+          top:{style:'hair'}, bottom:{style:'hair'},
+          left:{style:'thin'}, right:{style:'thin'}
+        };
+        cell.alignment = {horizontal: colNumber===2 ? 'left' : 'center', vertical:'middle'};
+      });
+    });
+
+    /* --- Outer border on data block --- */
+    const lastRow = 4 + list.length;
+    for(let r=4; r<=lastRow; r++){
+      ws.getCell(r,1).border = {...ws.getCell(r,1).border, left:{style:'medium'}};
+      ws.getCell(r,totalCols).border = {...ws.getCell(r,totalCols).border, right:{style:'medium'}};
+    }
+    for(let c=1; c<=totalCols; c++){
+      ws.getCell(lastRow,c).border = {...ws.getCell(lastRow,c).border, bottom:{style:'medium'}};
+    }
+
+    /* --- Footer rows --- */
+    ws.addRow([]);
+    const noteRow = ws.addRow(['Not: Bu form 100 puan üzerinden değerlendirme amacıyla hazırlanmıştır.']);
+    ws.mergeCells(noteRow.number, 1, noteRow.number, Math.floor(totalCols/2));
+    noteRow.getCell(1).font = {name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}};
+
+    const legendRow = ws.addRow(['','','','0-49,99: Geçmez','50-59,99: Geçer','60-69,99: Orta','70-84,99: İyi','85-100: Pekiyi']);
+    legendRow.eachCell(cell=>{ cell.font={name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}}; });
+
+    ws.addRow([]);
+    const signRow = ws.addRow(Array(totalCols).fill(''));
+    const teacherVal = DB.config.teacher ? `Öğretmen: ${DB.config.teacher}` : '';
+    const tarih = `Tarih: ${new Date().toLocaleDateString('tr-TR')}`;
+    const imza = 'İmza: ……………………………';
+    if(teacherVal){
+      signRow.getCell(totalCols-2).value = teacherVal;
+      signRow.getCell(totalCols-2).font = {name:'Calibri', size:9, bold:true};
+      signRow.getCell(totalCols-2).alignment = {horizontal:'right'};
+    }
+    signRow.getCell(totalCols-1).value = tarih;
+    signRow.getCell(totalCols-1).font = {name:'Calibri', size:9, bold:true};
+    signRow.getCell(totalCols-1).alignment = {horizontal:'right'};
+    signRow.getCell(totalCols).value = imza;
+    signRow.getCell(totalCols).font = {name:'Calibri', size:9, bold:true};
+    signRow.getCell(totalCols).alignment = {horizontal:'right'};
+  };
+
+  try{
+    if(groups && groups.length){
+      groups.forEach(g=>buildSheet(g.label, g.students));
+    } else {
+      buildSheet(classSuffix||'', studentsList||DB.students);
+    }
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('📊 Excel dosyası indirildi: '+filename);
+  }catch(err){
+    console.error(err);
+    toast('❌ Excel oluşturulurken hata oluştu: '+(err&&err.message?err.message:''));
+  }
+  hideOverlay();
 }
 
 document.getElementById('btnXlsx-proje').addEventListener('click', ()=>openClassExportModal('proje','xlsx'));
@@ -2139,8 +2247,6 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     // ---- Title block ----
     pdf.setFont('RC','bold');
     pdf.setFontSize(10);
-    pdf.text('T.C.', pageW/2, y, {align:'center'});
-    y += 13;
     pdf.text(DB.config.school, pageW/2, y, {align:'center'});
     y += 13;
     pdf.setFont('RC','normal');
@@ -2149,8 +2255,7 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     y += 12;
     const metaParts = [];
     if(groupLabel) metaParts.push('Sınıf/Şube: '+groupLabel);
-    else if(DB.config.cls) metaParts.push('Sınıf/Şube: '+DB.config.cls);
-    if(DB.config.teacher) metaParts.push('Öğretmen: '+DB.config.teacher);
+
     if(metaParts.length) pdf.text(metaParts.join('     '), pageW/2, y, {align:'center'});
     y += 14;
     pdf.setFont('RC','bold');
@@ -2288,11 +2393,13 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       pdf.setFont('RC','normal');
       pdf.setFontSize(8.5);
       pdf.setTextColor(0,0,0);
-      pdf.text('Öğretmen: '+(DB.config.teacher || '………………………………'), margin, fy);
+      if(DB.config.teacher){
+        pdf.text('Öğretmen Adı Soyadı: '+DB.config.teacher, pageW - margin, fy, {align:'right'});
+        fy += 14;
+      }
       pdf.text('Tarih: '+new Date().toLocaleDateString('tr-TR'), pageW - margin, fy, {align:'right'});
       fy += 18;
-      pdf.text('İmza: ……………………', margin, fy);
-      pdf.text('Onay: ……………………', pageW - margin, fy, {align:'right'});
+      pdf.text('İmza: ……………………', pageW - margin, fy, {align:'right'});
     }
   }
 }
