@@ -802,7 +802,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.30</span>
+  <span>Pro 1.0.34</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -2359,21 +2359,23 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     legendRow.eachCell(cell=>{ cell.font={name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}}; });
 
     ws.addRow([]);
-    const signRow = ws.addRow(Array(totalCols).fill(''));
-    const teacherVal = DB.config.teacher ? `Öğretmen: ${DB.config.teacher}` : '';
-    const tarih = `Tarih: ${reportDate ? new Date(reportDate).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR')}`;
-    const imza = 'İmza: ……………………………';
-    if(teacherVal){
-      signRow.getCell(totalCols-2).value = teacherVal;
-      signRow.getCell(totalCols-2).font = {name:'Calibri', size:9, bold:true};
-      signRow.getCell(totalCols-2).alignment = {horizontal:'right'};
-    }
-    signRow.getCell(totalCols-1).value = tarih;
-    signRow.getCell(totalCols-1).font = {name:'Calibri', size:9, bold:true};
-    signRow.getCell(totalCols-1).alignment = {horizontal:'right'};
-    signRow.getCell(totalCols).value = imza;
-    signRow.getCell(totalCols).font = {name:'Calibri', size:9, bold:true};
-    signRow.getCell(totalCols).alignment = {horizontal:'right'};
+    const teacherVal = DB.config.teacher || '………………………………';
+    const tarihVal = reportDate ? new Date(reportDate).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
+
+    // Her biri ayrı satır, sağa hizalı, son 3 sütun birleştirilmiş
+    const addSignRow = (text) => {
+      const r = ws.addRow(Array(totalCols).fill(''));
+      r.height = 16;
+      ws.mergeCells(r.number, totalCols-2, r.number, totalCols);
+      const cell = r.getCell(totalCols-2);
+      cell.value = text;
+      cell.font = {name:'Calibri', size:9};
+      cell.alignment = {horizontal:'right', vertical:'middle'};
+    };
+
+    addSignRow(teacherVal);
+    addSignRow('Tarih: ' + tarihVal);
+    addSignRow('İmza: ……………………………');
   };
 
   try{
@@ -2514,7 +2516,8 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     pdf.setTextColor(0,0,0);
     pdf.setFont('RC','bold');
     pdf.setFontSize(8);
-    pdf.text('No', margin + colNo/2, headerBottom - 6, {align:'center', angle:90});
+    // No — centered horizontally and vertically in its column
+    pdf.text('No', margin + colNo/2, (tableTop + headerBottom)/2 + 3, {align:'center'});
     pdf.text('Adı Soyadı', margin + colNo + colName/2, headerBottom/2 + tableTop/2, {align:'center'});
 
     // Criteria headers rotated 90 degrees (bottom-to-top)
@@ -2523,7 +2526,6 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       const cx = margin + colNo + colName + colCrit*i + colCrit/2;
       const label = `${i+1}. ${c.text} (${c.max}p)`;
       const lines = pdfWrapText(pdf, label, headerRowH - 10, 'bold', 7);
-      // draw rotated: each line offset along x slightly so multiple lines stack side by side
       const lineWidth = 8.5;
       const totalLinesWidth = lines.length * lineWidth;
       let lx = cx - totalLinesWidth/2 + lineWidth/2;
@@ -2533,8 +2535,9 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       });
     });
 
+    // TOPLAM — rotated 90° like criteria
     pdf.setFontSize(8);
-    pdf.text('TOPLAM', margin + colNo + colName + critAreaW + colTotal/2, headerBottom/2 + tableTop/2, {align:'center'});
+    pdf.text('TOPLAM', margin + colNo + colName + critAreaW + colTotal/2, headerBottom - 5, {align:'center', angle:90});
 
     // header borders — same weight as grid
     pdf.setDrawColor(80,80,80);
@@ -2636,10 +2639,8 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       pdf.setFont('RC','normal');
       pdf.setFontSize(8.5);
       pdf.setTextColor(0,0,0);
-      if(DB.config.teacher){
-        pdf.text('Öğretmen Adı Soyadı: '+DB.config.teacher, pageW - margin, fy, {align:'right'});
-        fy += 14;
-      }
+      pdf.text(DB.config.teacher || '………………………………', pageW - margin, fy, {align:'right'});
+      fy += 14;
       pdf.text('Tarih: '+(dateStr||new Date().toLocaleDateString('tr-TR')), pageW - margin, fy, {align:'right'});
       fy += 18;
       pdf.text('İmza: ……………………', pageW - margin, fy, {align:'right'});
