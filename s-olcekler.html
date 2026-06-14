@@ -629,6 +629,35 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 }
 .mod-name-input:focus{outline:2px solid var(--moss); border-color:var(--moss);}
 
+/* ===== Sınıf filtre çubuğu ===== */
+.cls-filter-bar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.cls-filter-btn{
+  font-family:var(--sans);
+  font-size:.78rem;
+  font-weight:600;
+  padding:6px 14px;
+  border-radius:20px;
+  border:1.5px solid var(--line);
+  background:var(--card-bg);
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.cls-filter-btn:hover{
+  border-color:var(--moss);
+  color:var(--moss);
+}
+.cls-filter-btn.active{
+  background:var(--moss);
+  border-color:var(--moss);
+  color:#fff;
+}
+
 /* ===== Empty state ===== */
 .empty-state{
   text-align:center;padding:40px 20px;color:var(--muted);
@@ -877,6 +906,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
     <div class="card">
       <h2><span class="num">2</span> Öğrenci Listesi</h2>
       <p class="desc">Yüklenen veya eklenen öğrenciler. Bu liste tüm değerlendirme modüllerinde otomatik olarak kullanılır.</p>
+      <div id="studentFilterBar"></div>
       <div id="studentTableWrap"><div class="empty-state"><span class="icon">📭</span><div class="et">Henüz öğrenci eklenmedi</div>Excel dosyası yükleyin ya da manuel ekleyin.</div></div>
     </div>
   </div>
@@ -1649,13 +1679,52 @@ document.getElementById('btnClearAll').addEventListener('click', async ()=>{
   toast('🗑 Tüm veriler temizlendi.');
 });
 
+let studentClassFilter = '__all__';
+
+function renderStudentClassFilter(){
+  const wrap = document.getElementById('studentFilterBar');
+  if(!wrap) return;
+  const classes = [];
+  DB.students.forEach(st=>{ const c=(st.cls||'').trim(); if(c && !classes.includes(c)) classes.push(c); });
+  classes.sort((a,b)=>a.localeCompare(b,'tr'));
+
+  if(classes.length === 0){ wrap.innerHTML=''; return; }
+
+  // ensure filter value is still valid
+  if(studentClassFilter !== '__all__' && !classes.includes(studentClassFilter)) studentClassFilter = '__all__';
+
+  let html = '<div class="cls-filter-bar">';
+  html += `<button class="cls-filter-btn ${studentClassFilter==='__all__'?'active':''}" data-cls="__all__">Tümü (${DB.students.length})</button>`;
+  classes.forEach(c=>{
+    const cnt = DB.students.filter(s=>(s.cls||'').trim()===c).length;
+    html += `<button class="cls-filter-btn ${studentClassFilter===c?'active':''}" data-cls="${c}">${c} (${cnt})</button>`;
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.cls-filter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      studentClassFilter = btn.dataset.cls;
+      renderStudentClassFilter();
+      renderStudentTable();
+    });
+  });
+}
+
 function renderStudentTable(){
   const wrap = document.getElementById('studentTableWrap');
   if(DB.students.length === 0){
     wrap.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="et">Henüz öğrenci eklenmedi</div>Excel dosyası yükleyin ya da manuel ekleyin.</div>';
+    renderStudentClassFilter();
     return;
   }
-  // build dynamic columns: one per module instance
+
+  renderStudentClassFilter();
+
+  const filtered = studentClassFilter==='__all__'
+    ? DB.students
+    : DB.students.filter(s=>(s.cls||'').trim()===studentClassFilter);
+
   const cols = [];
   ['proje','dersici','odev'].forEach(type=>{
     DB.modules[type].forEach(mod=>cols.push({type, mod}));
@@ -1664,7 +1733,7 @@ function renderStudentTable(){
   let html = '<div class="table-wrap"><table><thead><tr><th>No</th><th class="th-name">Adı Soyadı</th><th>Sınıf/Şube</th>';
   cols.forEach(c=>{ html += `<th>${c.mod.name}</th>`; });
   html += '<th>İşlem</th></tr></thead><tbody>';
-  DB.students.forEach(st=>{
+  filtered.forEach(st=>{
     html += `<tr><td>${st.no}</td><td class="name-cell">${st.name}</td>
       <td><input type="text" class="score-input cls-input" style="width:64px;" data-sid="${st.id}" value="${(st.cls||'').replace(/"/g,'&quot;')}" placeholder="5/B"></td>`;
     cols.forEach(c=>{
@@ -1673,13 +1742,16 @@ function renderStudentTable(){
     });
     html += `<td><button class="btn terracotta" style="padding:5px 10px;font-size:.7rem;" onclick="removeStudent('${st.id}')">Sil</button></td></tr>`;
   });
+  if(filtered.length === 0){
+    html += `<tr><td colspan="${3+cols.length+1}" style="text-align:center;color:var(--muted);padding:18px;">Bu sınıfta öğrenci bulunamadı.</td></tr>`;
+  }
   html += '</tbody></table></div>';
   wrap.innerHTML = html;
 
   wrap.querySelectorAll('.cls-input').forEach(inp=>{
     inp.addEventListener('change', (e)=>{
       const st = DB.students.find(s=>s.id===e.target.dataset.sid);
-      if(st){ st.cls = e.target.value.trim(); saveDB(); }
+      if(st){ st.cls = e.target.value.trim(); saveDB(); renderStudentClassFilter(); }
     });
   });
 }
