@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.45
+  S-Değerlendirme Ölçekleri — Pro 1.0.46
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -975,7 +975,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.45</span>
+  <span>Pro 1.0.46</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -1100,6 +1100,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
     <div class="card">
       <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableFilterBar-proje"></div>
       <div id="tableWrap-proje"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
     </div>
   </div>
@@ -1149,6 +1150,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
     <div class="card">
       <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableFilterBar-dersici"></div>
       <div id="tableWrap-dersici"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
     </div>
   </div>
@@ -1198,6 +1200,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
     <div class="card">
       <h2><span class="num">📊</span> Notlar Tablosu</h2>
+      <div id="tableFilterBar-odev"></div>
       <div id="tableWrap-odev"><div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div></div>
     </div>
   </div>
@@ -2116,13 +2119,48 @@ function renderCriteriaEditor(type){
 /* ============================================================
    TABLE RENDERING
    ============================================================ */
+const moduleClassFilter = { proje:'__all__', dersici:'__all__', odev:'__all__' };
+
+function renderTableFilterBar(type){
+  const bar = document.getElementById('tableFilterBar-'+type);
+  if(!bar) return;
+  const classes = [];
+  DB.students.forEach(st=>{ const c=(st.cls||'').trim(); if(c && !classes.includes(c)) classes.push(c); });
+  classes.sort((a,b)=>a.localeCompare(b,'tr'));
+  if(classes.length === 0){ bar.innerHTML=''; return; }
+  if(moduleClassFilter[type] !== '__all__' && !classes.includes(moduleClassFilter[type])) moduleClassFilter[type] = '__all__';
+  let html = '<div class="cls-filter-bar">';
+  html += `<button class="cls-filter-btn ${moduleClassFilter[type]==='__all__'?'active':''}" data-type="${type}" data-cls="__all__">Tümü (${DB.students.length})</button>`;
+  classes.forEach(c=>{
+    const cnt = DB.students.filter(s=>(s.cls||'').trim()===c).length;
+    html += `<button class="cls-filter-btn ${moduleClassFilter[type]===c?'active':''}" data-type="${type}" data-cls="${c}">${c} (${cnt})</button>`;
+  });
+  html += '</div>';
+  bar.innerHTML = html;
+  bar.querySelectorAll('.cls-filter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      moduleClassFilter[btn.dataset.type] = btn.dataset.cls;
+      renderTableFilterBar(type);
+      renderTable(type);
+    });
+  });
+}
+
 function renderTable(type){
   const wrap = document.getElementById('tableWrap-'+type);
   const mod = getCurrentModule(type);
   if(DB.students.length===0){
     wrap.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="et">Önce öğrenci listesi yükleyin</div></div>';
+    renderTableFilterBar(type);
     return;
   }
+  renderTableFilterBar(type);
+
+  const filter = moduleClassFilter[type];
+  const students = filter==='__all__'
+    ? DB.students
+    : DB.students.filter(s=>(s.cls||'').trim()===filter);
+
   const criteria = mod.criteria;
   const mode = mod.mode;
 
@@ -2130,10 +2168,13 @@ function renderTable(type){
   criteria.forEach((c,i)=>{ html += `<th>${i+1}. ${c.text}<br><span style="opacity:.8">(${c.max} p)</span></th>`; });
   html += '<th>TOPLAM</th><th>Düzey</th></tr></thead><tbody>';
 
-  DB.students.forEach(st=>{
+  if(students.length===0){
+    html += `<tr><td colspan="${2+criteria.length+2}" style="text-align:center;color:var(--muted);padding:18px;">Bu sınıfta öğrenci bulunamadı.</td></tr>`;
+  }
+
+  students.forEach(st=>{
     if(!mod.scores[st.id]) mod.scores[st.id] = criteria.map(()=>null);
     if(mod.scores[st.id].length !== criteria.length){
-      // adjust length if criteria changed externally
       const arr = mod.scores[st.id];
       while(arr.length < criteria.length) arr.push(null);
       while(arr.length > criteria.length) arr.pop();
