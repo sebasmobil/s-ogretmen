@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.42
+  S-Değerlendirme Ölçekleri — Pro 1.0.43
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -891,7 +891,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.42</span>
+  <span>Pro 1.0.43</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -2423,7 +2423,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     ftCell.value = formTitle;
     ftCell.font = {name:'Calibri', bold:true, size:12, color:{argb:'FF000000'}};
     ftCell.alignment = {horizontal:'center', vertical:'middle'};
-    ftCell.border = {bottom:{style:'medium', color:{argb:'FF000000'}}};
+    ftCell.border = {bottom:{style:'thin', color:{argb:'FF000000'}}};
     ws.getRow(3).height = 22;
 
     /* --- ROW 4: Column headers --- */
@@ -2435,7 +2435,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
       cell.value = h;
       cell.font = {name:'Calibri', bold:true, size:9, color:{argb:'FF000000'}};
       cell.border = {
-        top:{style:'thin'}, bottom:{style:'medium'},
+        top:{style:'thin'}, bottom:{style:'thin'},
         left:{style:'thin'}, right:{style:'thin'}
       };
       const isCrit = ci >= 3 && ci < 3+criteria.length;
@@ -2453,7 +2453,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     criteria.forEach((_,i)=>{ ws.getColumn(4+i).width = 6; });
     ws.getColumn(4+criteria.length).width = 9;
 
-    /* --- Data rows — zebra: white / very light grey --- */
+    /* --- Data rows — zebra: white / very light grey, uniform thin borders --- */
     list.forEach((st, ri)=>{
       const scores = (mod.scores[st.id]) || criteria.map(()=>null);
       let total = 0, anyVal=false;
@@ -2466,22 +2466,12 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
         cell.font = {name:'Calibri', size:9, bold: colNumber===rowData.length, color:{argb:'FF000000'}};
         cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb: isEven ? 'FFF5F5F5' : 'FFFFFFFF'}};
         cell.border = {
-          top:{style:'hair'}, bottom:{style:'hair'},
+          top:{style:'thin'}, bottom:{style:'thin'},
           left:{style:'thin'}, right:{style:'thin'}
         };
         cell.alignment = {horizontal: colNumber===2 ? 'left' : 'center', vertical:'middle'};
       });
     });
-
-    /* --- Outer border on data block --- */
-    const lastRow = 4 + list.length;
-    for(let r=4; r<=lastRow; r++){
-      ws.getCell(r,1).border = {...ws.getCell(r,1).border, left:{style:'medium'}};
-      ws.getCell(r,totalCols).border = {...ws.getCell(r,totalCols).border, right:{style:'medium'}};
-    }
-    for(let c=1; c<=totalCols; c++){
-      ws.getCell(lastRow,c).border = {...ws.getCell(lastRow,c).border, bottom:{style:'medium'}};
-    }
 
     /* --- Footer rows --- */
     ws.addRow([]);
