@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.43
+  S-Değerlendirme Ölçekleri — Pro 1.0.45
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -689,6 +689,90 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 }
 .mod-name-input:focus{outline:2px solid var(--moss); border-color:var(--moss);}
 
+/* ===== Aksiyon alanı — Dağıt + İndir ===== */
+.action-area{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:14px;
+}
+.action-distribute{
+  width:100%;
+  background:var(--moss);
+  border:none;
+  border-radius:var(--radius);
+  color:#fff;
+  padding:16px 22px;
+  font-family:var(--serif);
+  font-size:1.05rem;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  transition:all .18s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.action-distribute:hover{
+  background:var(--moss-d);
+  transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.action-distribute .dist-sub{
+  font-family:var(--sans);
+  font-size:.75rem;
+  font-weight:400;
+  opacity:.85;
+  display:block;
+  margin-top:2px;
+}
+.action-exports{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.action-export-btn{
+  border-radius:var(--radius);
+  padding:14px 16px;
+  font-family:var(--sans);
+  font-size:.88rem;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  transition:all .18s ease;
+  border:1.5px solid var(--line);
+}
+.action-export-btn .exp-icon{font-size:1.5rem;line-height:1;}
+.action-export-btn .exp-label{font-size:.78rem;font-weight:700;}
+.action-export-btn .exp-sub{font-size:.68rem;opacity:.75;font-weight:400;}
+.action-export-btn.pdf-btn{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:#2a1e08;
+}
+.action-export-btn.pdf-btn:hover{
+  background:#b88f3c;
+  border-color:#b88f3c;
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.14);
+}
+.action-export-btn.xlsx-btn{
+  background:var(--card-bg);
+  border-color:var(--line);
+  color:var(--moss-d);
+}
+.action-export-btn.xlsx-btn:hover{
+  border-color:var(--moss);
+  background:var(--primary-bg);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+[data-mode="dark"] .action-export-btn.xlsx-btn{color:var(--ink);}
+
 /* ===== Sınıf filtre çubuğu ===== */
 .cls-filter-bar{
   display:flex;
@@ -891,7 +975,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.43</span>
+  <span>Pro 1.0.45</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -981,10 +1065,23 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
       <div class="mode-select" id="modeSelect-proje"></div>
 
-      <div class="btn-row">
-        <button class="btn" id="btnApply-proje">⚡ Notları Kriterlere Dağıt / Uygula</button>
-        <button class="btn gold" id="btnPdf-proje">📄 PDF Olarak İndir</button>
-        <button class="btn secondary" id="btnXlsx-proje">📊 Excel Olarak İndir</button>
+      <div class="action-area">
+        <button class="action-distribute" id="btnApply-proje">
+          <span>⚡</span>
+          <span><span style="display:block;">Notları Kriterlere Dağıt</span><span class="dist-sub">Hızlı Sonuç modunda otomatik dağıtım yapar</span></span>
+        </button>
+        <div class="action-exports">
+          <button class="action-export-btn pdf-btn" id="btnPdf-proje">
+            <span class="exp-icon">📄</span>
+            <span class="exp-label">PDF İndir</span>
+            <span class="exp-sub">Resmi form çıktısı</span>
+          </button>
+          <button class="action-export-btn xlsx-btn" id="btnXlsx-proje">
+            <span class="exp-icon">📊</span>
+            <span class="exp-label">Excel İndir</span>
+            <span class="exp-sub">Tablo çıktısı</span>
+          </button>
+        </div>
       </div>
       <div class="legend">
         <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
@@ -1017,10 +1114,23 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
       <div class="mode-select" id="modeSelect-dersici"></div>
 
-      <div class="btn-row">
-        <button class="btn" id="btnApply-dersici">⚡ Notları Kriterlere Dağıt / Uygula</button>
-        <button class="btn gold" id="btnPdf-dersici">📄 PDF Olarak İndir</button>
-        <button class="btn secondary" id="btnXlsx-dersici">📊 Excel Olarak İndir</button>
+      <div class="action-area">
+        <button class="action-distribute" id="btnApply-dersici">
+          <span>⚡</span>
+          <span><span style="display:block;">Notları Kriterlere Dağıt</span><span class="dist-sub">Hızlı Sonuç modunda otomatik dağıtım yapar</span></span>
+        </button>
+        <div class="action-exports">
+          <button class="action-export-btn pdf-btn" id="btnPdf-dersici">
+            <span class="exp-icon">📄</span>
+            <span class="exp-label">PDF İndir</span>
+            <span class="exp-sub">Resmi form çıktısı</span>
+          </button>
+          <button class="action-export-btn xlsx-btn" id="btnXlsx-dersici">
+            <span class="exp-icon">📊</span>
+            <span class="exp-label">Excel İndir</span>
+            <span class="exp-sub">Tablo çıktısı</span>
+          </button>
+        </div>
       </div>
       <div class="legend">
         <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
@@ -1053,10 +1163,23 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 
       <div class="mode-select" id="modeSelect-odev"></div>
 
-      <div class="btn-row">
-        <button class="btn" id="btnApply-odev">⚡ Notları Kriterlere Dağıt / Uygula</button>
-        <button class="btn gold" id="btnPdf-odev">📄 PDF Olarak İndir</button>
-        <button class="btn secondary" id="btnXlsx-odev">📊 Excel Olarak İndir</button>
+      <div class="action-area">
+        <button class="action-distribute" id="btnApply-odev">
+          <span>⚡</span>
+          <span><span style="display:block;">Notları Kriterlere Dağıt</span><span class="dist-sub">Hızlı Sonuç modunda otomatik dağıtım yapar</span></span>
+        </button>
+        <div class="action-exports">
+          <button class="action-export-btn pdf-btn" id="btnPdf-odev">
+            <span class="exp-icon">📄</span>
+            <span class="exp-label">PDF İndir</span>
+            <span class="exp-sub">Resmi form çıktısı</span>
+          </button>
+          <button class="action-export-btn xlsx-btn" id="btnXlsx-odev">
+            <span class="exp-icon">📊</span>
+            <span class="exp-label">Excel İndir</span>
+            <span class="exp-sub">Tablo çıktısı</span>
+          </button>
+        </div>
       </div>
       <div class="legend">
         <span><i style="background:var(--geçmez)"></i> 0–49,99 Geçmez</span>
@@ -1100,14 +1223,6 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
             <button class="btn gold field-pin" data-field="year" title="Bu değeri arşive kaydet">📌</button>
           </div>
           <div class="field-archive" id="archive-year"></div>
-        </div>
-        <div class="school-id">
-          <label>Dönem</label>
-          <div class="field-row">
-            <input type="text" id="cfgTerm" value="I. Dönem">
-            <button class="btn gold field-pin" data-field="term" title="Bu değeri arşive kaydet">📌</button>
-          </div>
-          <div class="field-archive" id="archive-term"></div>
         </div>
         <div class="school-id">
           <label>Ders Adı</label>
@@ -1164,7 +1279,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
     <div id="confirmMsg" style="font-family:var(--sans);font-size:.9rem;color:var(--ink);text-align:center;line-height:1.5;"></div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button class="btn secondary" id="confirmCancel">İptal</button>
-      <button class="btn terracotta" id="confirmOk">Evet, Sil</button>
+      <button class="btn terracotta" id="confirmOk">✓ Onayla</button>
     </div>
   </div>
 </div>
@@ -1317,7 +1432,7 @@ function loadDB(){
   if(!DB.configArchive || typeof DB.configArchive !== 'object' || Array.isArray(DB.configArchive)){
     DB.configArchive = { school:[], year:[], term:[], course:[], cls:[], teacher:[] };
   }
-  ['school','year','term','course','teacher'].forEach(f=>{
+  ['school','year','course','teacher'].forEach(f=>{
     if(!Array.isArray(DB.configArchive[f])) DB.configArchive[f] = [];
   });
 }
@@ -2099,12 +2214,23 @@ if(DB.students.length){
 /* ============================================================
    APPLY / DISTRIBUTE BUTTONS
    ============================================================ */
-function applyModule(type){
+async function applyModule(type){
   if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
   const mod = getCurrentModule(type);
   const maxes = mod.criteria.map(c=>c.max);
 
   if(mod.mode==='formalite'){
+    // Check if any student already has scores distributed
+    const hasExisting = Object.values(mod.scores).some(arr =>
+      Array.isArray(arr) && arr.some(v => v !== null)
+    );
+    if(hasExisting){
+      const ok = await confirmDialog(
+        `"${mod.name}" için daha önce not dağıtımı yapılmış.\n\nMevcut tüm puanlar silinecek ve yeniden dağıtılacak. Devam etmek istiyor musunuz?`
+      );
+      if(!ok) return;
+    }
+
     let missing = 0;
     DB.students.forEach(st=>{
       let total = mod.totals[st.id];
@@ -2118,7 +2244,7 @@ function applyModule(type){
     saveDB();
     renderTable(type);
     toast(missing>0
-      ? `⚡ Notlar dağıtıldı. ${missing} öğrenci için Excel'de not bulunmadığından bu öğrencilerin satırı boş bırakıldı.`
+      ? `⚡ Notlar dağıtıldı. ${missing} öğrenci için not bulunmadığından satırları boş bırakıldı.`
       : '⚡ Tüm notlar kriterlere başarıyla dağıtıldı.');
   } else {
     toast('🔍 Detaylı İnceleme modundasınız. Kriter hücrelerine puanları girebilirsiniz.');
@@ -2136,7 +2262,6 @@ document.getElementById('btnApply-odev').addEventListener('click', ()=>applyModu
 function loadConfigToForm(){
   document.getElementById('cfgSchool').value = DB.config.school;
   document.getElementById('cfgYear').value = DB.config.year;
-  document.getElementById('cfgTerm').value = DB.config.term;
   document.getElementById('cfgCourse').value = DB.config.course;
   document.getElementById('cfgTeacher').value = DB.config.teacher;
 }
@@ -2145,7 +2270,6 @@ loadConfigToForm();
 document.getElementById('btnSaveCfg').addEventListener('click', ()=>{
   DB.config.school = document.getElementById('cfgSchool').value;
   DB.config.year = document.getElementById('cfgYear').value;
-  DB.config.term = document.getElementById('cfgTerm').value;
   DB.config.course = document.getElementById('cfgCourse').value;
   DB.config.teacher = document.getElementById('cfgTeacher').value;
   saveDB();
@@ -2153,7 +2277,7 @@ document.getElementById('btnSaveCfg').addEventListener('click', ()=>{
 });
 
 const CFG_FIELD_IDS = {
-  school:'cfgSchool', year:'cfgYear', term:'cfgTerm', course:'cfgCourse', teacher:'cfgTeacher'
+  school:'cfgSchool', year:'cfgYear', course:'cfgCourse', teacher:'cfgTeacher'
 };
 
 function renderFieldArchive(field){
@@ -2241,43 +2365,56 @@ function openClassExportModal(type, format){
   pendingExport = {type, format};
   const box = document.getElementById('classExportBox');
 
+  // Term selector — always shown, no default, required
+  const termHtml = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--moss-d);margin-bottom:6px;">📅 Dönem <span style="color:var(--terracotta);font-size:.75rem;">* zorunlu</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;padding:10px 18px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:var(--card-bg);transition:all .15s ease;" id="termLabel1">
+        <input type="radio" name="exportTerm" value="I. Dönem" id="termRadio1" style="accent-color:var(--moss);"> I. Dönem
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;padding:10px 18px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:var(--card-bg);transition:all .15s ease;" id="termLabel2">
+        <input type="radio" name="exportTerm" value="II. Dönem" id="termRadio2" style="accent-color:var(--moss);"> II. Dönem
+      </label>
+    </div>`;
+
   if(classes.length <= 1){
     if(format!=='pdf'){
-      // Excel single class: ask for date
-      let ehtml = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;">📊 Excel İndir</div>
-      <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--sans);">
-        <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);">Rapor Tarihi:</div>
-        <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">
+      box.innerHTML = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">📊 Excel İndir</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
+        ${termHtml}
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Rapor Tarihi:</div>
+          <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">
+        </div>
       </div>`;
-      box.innerHTML = ehtml;
-      document.getElementById('classExportOverlay').classList.add('show');
-      return;
+    } else {
+      box.innerHTML = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">📄 PDF Seçenekleri</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
+        ${termHtml}
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Sayfa Yönü:</div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;"><input type="radio" name="exportOrient" value="landscape"> Yatay</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;margin-top:4px;"><input type="radio" name="exportOrient" value="portrait" checked> Dikey</label>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Rapor Tarihi:</div>
+          <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">
+        </div>
+      </div>`;
     }
-    // PDF: ask for orientation + date
-    let phtml = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;">📄 PDF Seçenekleri</div>
-    <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--sans);">
-      <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);">Sayfa Yönü:</div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;">
-        <input type="radio" name="exportOrient" value="landscape"> Yatay
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;">
-        <input type="radio" name="exportOrient" value="portrait" checked> Dikey
-      </label>
-      <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Rapor Tarihi:</div>
-      <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">
-    </div>`;
-    box.innerHTML = phtml;
     document.getElementById('classExportOverlay').classList.add('show');
     return;
   }
 
-  let html = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;">🏷️ Sınıf Seçimi</div>
-  <div style="font-size:.82rem;color:var(--muted);line-height:1.5;font-family:var(--sans);">Hangi sınıf(lar)ın ${format==='pdf'?'PDF':'Excel'} dosyasını indirmek istiyorsunuz?</div>
-  <div style="display:flex;flex-direction:column;gap:6px;font-family:var(--sans);">
-    <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;">
-      <input type="checkbox" id="classAll" checked> Tümü (${DB.students.length} öğrenci)
-    </label>
-    <div id="classCheckList" style="display:flex;flex-direction:column;gap:4px;margin-left:20px;">`;
+  let html = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">🏷️ İndirme Seçenekleri</div>
+  <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
+    ${termHtml}
+    <div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Sınıf Seçimi:</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;">
+        <input type="checkbox" id="classAll" checked> Tümü (${DB.students.length} öğrenci)
+      </label>
+      <div id="classCheckList" style="display:flex;flex-direction:column;gap:4px;margin-left:20px;margin-top:4px;">`;
   classes.forEach(c=>{
     const cnt = DB.students.filter(s=>(s.cls||'').trim() === (c==='__none__'?'':c)).length;
     html += `<label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
@@ -2285,29 +2422,27 @@ function openClassExportModal(type, format){
     </label>`;
   });
   html += `</div>
-    <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Çıktı biçimi:</div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportMode" value="single" checked> Toplu dosya (her sınıf yeni sayfadan/sekmeden başlar)
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportMode" value="separate"> Her sınıf için ayrı dosya
-    </label>`;
+    </div>
+    <div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Çıktı biçimi:</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;"><input type="radio" name="exportMode" value="single" checked> Toplu dosya (her sınıf yeni sayfadan başlar)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;margin-top:4px;"><input type="radio" name="exportMode" value="separate"> Her sınıf için ayrı dosya</label>
+    </div>`;
 
   if(format==='pdf'){
     html += `
-    <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Sayfa Yönü:</div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportOrient" value="landscape"> Yatay (geniş tablo, çok kriter için uygun)
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;">
-      <input type="radio" name="exportOrient" value="portrait" checked> Dikey
-    </label>`;
+    <div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Sayfa Yönü:</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;"><input type="radio" name="exportOrient" value="landscape"> Yatay</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;margin-top:4px;"><input type="radio" name="exportOrient" value="portrait" checked> Dikey</label>
+    </div>`;
   }
   html += `
-    <div style="margin-top:8px;font-size:.85rem;font-weight:700;color:var(--moss-d);">Rapor Tarihi:</div>
-    <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">`;
-
-  html += `</div>`;
+    <div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--moss-d);margin-bottom:4px;">Rapor Tarihi:</div>
+      <input type="date" id="exportDateInput" value="${new Date().toISOString().slice(0,10)}" style="font-size:16px;padding:7px 10px;border:1px solid var(--input-border,#ccc);border-radius:6px;width:100%;max-width:220px;background:var(--input-bg);color:var(--ink);">
+    </div>
+  </div>`;
 
   box.innerHTML = html;
   document.getElementById('classExportOverlay').classList.add('show');
@@ -2331,6 +2466,13 @@ document.getElementById('classExportCancel').addEventListener('click', ()=>{
 document.getElementById('classExportOk').addEventListener('click', ()=>{
   const box = document.getElementById('classExportBox');
   const {type, format} = pendingExport;
+
+  // Dönem zorunlu
+  const termRadio = box.querySelector('input[name="exportTerm"]:checked');
+  if(!termRadio){ toast('⚠️ Lütfen dönem seçiniz (I. Dönem veya II. Dönem).'); return; }
+  const selectedTerm = termRadio.value;
+  DB.config.term = selectedTerm; // form bilgilerine aktar
+
   const orientRadio = box.querySelector('input[name="exportOrient"]:checked');
   const orientation = orientRadio ? orientRadio.value : 'portrait';
   const dateInput = box.querySelector('#exportDateInput');
@@ -2338,7 +2480,6 @@ document.getElementById('classExportOk').addEventListener('click', ()=>{
 
   const classCheckboxes = box.querySelectorAll('.classCheckbox');
   if(classCheckboxes.length === 0){
-    // single-class PDF case: only orientation was asked
     document.getElementById('classExportOverlay').classList.remove('show');
     runExport(type, format, DB.students, null, null, orientation, reportDate);
     pendingExport = null;
