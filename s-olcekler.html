@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.41
+  S-Değerlendirme Ölçekleri — Pro 1.0.42
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -891,7 +891,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.41</span>
+  <span>Pro 1.0.42</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -2394,15 +2394,14 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
       views:[{state:'frozen', xSplit:2, ySplit:3, showGridLines:false}]
     });
 
-    const totalCols = 3 + criteria.length + 1; // No + Adı Soyadı + Sınıf + criteria + Toplam
+    const totalCols = 3 + criteria.length + 1;
 
     /* --- ROW 1: Title (merged) --- */
     ws.mergeCells(1,1,1,totalCols);
     const titleCell = ws.getCell(1,1);
     titleCell.value = DB.config.school;
-    titleCell.font = {name:'Calibri', bold:true, size:13, color:{argb:'FF1A1A1A'}};
+    titleCell.font = {name:'Calibri', bold:true, size:13, color:{argb:'FF000000'}};
     titleCell.alignment = {horizontal:'center', vertical:'middle'};
-    titleCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF6F3EC'}};
     ws.getRow(1).height = 22;
 
     /* --- ROW 2: Sub-info (merged) --- */
@@ -2414,9 +2413,8 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
       label ? `Sınıf/Şube: ${label}` : ''
     ].filter(Boolean).join('   |   ');
     subCell.value = subParts;
-    subCell.font = {name:'Calibri', size:10, italic:true, color:{argb:'FF444444'}};
+    subCell.font = {name:'Calibri', size:10, color:{argb:'FF000000'}};
     subCell.alignment = {horizontal:'center', vertical:'middle'};
-    subCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF6F3EC'}};
     ws.getRow(2).height = 18;
 
     /* --- ROW 3: Form title (merged) --- */
@@ -2425,8 +2423,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     ftCell.value = formTitle;
     ftCell.font = {name:'Calibri', bold:true, size:12, color:{argb:'FF000000'}};
     ftCell.alignment = {horizontal:'center', vertical:'middle'};
-    ftCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFE8E8E8'}};
-    ftCell.border = {bottom:{style:'medium', color:{argb:'FF888888'}}};
+    ftCell.border = {bottom:{style:'medium', color:{argb:'FF000000'}}};
     ws.getRow(3).height = 22;
 
     /* --- ROW 4: Column headers --- */
@@ -2437,7 +2434,6 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
       const cell = headerRow.getCell(ci+1);
       cell.value = h;
       cell.font = {name:'Calibri', bold:true, size:9, color:{argb:'FF000000'}};
-      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFD9D9D9'}};
       cell.border = {
         top:{style:'thin'}, bottom:{style:'medium'},
         left:{style:'thin'}, right:{style:'thin'}
@@ -2451,13 +2447,13 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     });
 
     /* --- Column widths --- */
-    ws.getColumn(1).width = 6;   // No
-    ws.getColumn(2).width = 22;  // Adı Soyadı
-    ws.getColumn(3).width = 10;  // Sınıf
+    ws.getColumn(1).width = 6;
+    ws.getColumn(2).width = 22;
+    ws.getColumn(3).width = 10;
     criteria.forEach((_,i)=>{ ws.getColumn(4+i).width = 6; });
-    ws.getColumn(4+criteria.length).width = 9; // Toplam
+    ws.getColumn(4+criteria.length).width = 9;
 
-    /* --- Data rows --- */
+    /* --- Data rows — zebra: white / very light grey --- */
     list.forEach((st, ri)=>{
       const scores = (mod.scores[st.id]) || criteria.map(()=>null);
       let total = 0, anyVal=false;
@@ -2467,7 +2463,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
       exRow.height = 16;
       const isEven = ri%2===1;
       exRow.eachCell({includeEmpty:true}, (cell, colNumber)=>{
-        cell.font = {name:'Calibri', size:9, bold: colNumber===rowData.length};
+        cell.font = {name:'Calibri', size:9, bold: colNumber===rowData.length, color:{argb:'FF000000'}};
         cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb: isEven ? 'FFF5F5F5' : 'FFFFFFFF'}};
         cell.border = {
           top:{style:'hair'}, bottom:{style:'hair'},
@@ -2491,20 +2487,19 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     ws.addRow([]);
     const noteRow = ws.addRow(['Not: Bu form 100 puan üzerinden değerlendirme amacıyla hazırlanmıştır.']);
     ws.mergeCells(noteRow.number, 1, noteRow.number, Math.floor(totalCols/2));
-    noteRow.getCell(1).font = {name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}};
+    noteRow.getCell(1).font = {name:'Calibri', size:8, color:{argb:'FF000000'}};
 
     ws.addRow([]);
     const teacherVal = DB.config.teacher || '………………………………';
     const tarihVal = reportDate ? new Date(reportDate).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
 
-    // Her biri ayrı satır, sağa hizalı, son 3 sütun birleştirilmiş
     const addSignRow = (text) => {
       const r = ws.addRow(Array(totalCols).fill(''));
       r.height = 16;
       ws.mergeCells(r.number, totalCols-2, r.number, totalCols);
       const cell = r.getCell(totalCols-2);
       cell.value = text;
-      cell.font = {name:'Calibri', size:9};
+      cell.font = {name:'Calibri', size:9, color:{argb:'FF000000'}};
       cell.alignment = {horizontal:'right', vertical:'middle'};
     };
 
