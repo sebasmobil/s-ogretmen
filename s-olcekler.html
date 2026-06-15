@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.46
+  S-Değerlendirme Ölçekleri — Pro 1.0.47
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -729,8 +729,11 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 }
 .action-exports{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr;
   gap:10px;
+}
+@media(max-width:500px){
+  .action-exports{grid-template-columns:1fr 1fr;}
 }
 .action-export-btn{
   border-radius:var(--radius);
@@ -772,6 +775,17 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
   box-shadow:0 4px 12px rgba(0,0,0,.1);
 }
 [data-mode="dark"] .action-export-btn.xlsx-btn{color:var(--ink);}
+.action-export-btn.blank-btn{
+  background:var(--card-bg);
+  border-color:var(--line);
+  color:var(--muted);
+}
+.action-export-btn.blank-btn:hover{
+  border-color:var(--terracotta);
+  color:var(--terracotta);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
 
 /* ===== Sınıf filtre çubuğu ===== */
 .cls-filter-bar{
@@ -975,7 +989,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.46</span>
+  <span>Pro 1.0.47</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -1081,6 +1095,11 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
             <span class="exp-label">Excel İndir</span>
             <span class="exp-sub">Tablo çıktısı</span>
           </button>
+          <button class="action-export-btn blank-btn" id="btnBlank-proje">
+            <span class="exp-icon">📋</span>
+            <span class="exp-label">Boş Form</span>
+            <span class="exp-sub">Elle doldurmak için</span>
+          </button>
         </div>
       </div>
       <div class="legend">
@@ -1131,6 +1150,11 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
             <span class="exp-label">Excel İndir</span>
             <span class="exp-sub">Tablo çıktısı</span>
           </button>
+          <button class="action-export-btn blank-btn" id="btnBlank-dersici">
+            <span class="exp-icon">📋</span>
+            <span class="exp-label">Boş Form</span>
+            <span class="exp-sub">Elle doldurmak için</span>
+          </button>
         </div>
       </div>
       <div class="legend">
@@ -1180,6 +1204,11 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
             <span class="exp-icon">📊</span>
             <span class="exp-label">Excel İndir</span>
             <span class="exp-sub">Tablo çıktısı</span>
+          </button>
+          <button class="action-export-btn blank-btn" id="btnBlank-odev">
+            <span class="exp-icon">📋</span>
+            <span class="exp-label">Boş Form</span>
+            <span class="exp-sub">Elle doldurmak için</span>
           </button>
         </div>
       </div>
@@ -2508,9 +2537,23 @@ document.getElementById('classExportOk').addEventListener('click', ()=>{
   const box = document.getElementById('classExportBox');
   const {type, format} = pendingExport;
 
-  // Dönem zorunlu
+  // Dönem zorunlu — inline hata göster
   const termRadio = box.querySelector('input[name="exportTerm"]:checked');
-  if(!termRadio){ toast('⚠️ Lütfen dönem seçiniz (I. Dönem veya II. Dönem).'); return; }
+  if(!termRadio){
+    let errDiv = box.querySelector('.term-error');
+    if(!errDiv){
+      errDiv = document.createElement('div');
+      errDiv.className = 'term-error';
+      errDiv.style.cssText = 'background:#fdecea;border:1.5px solid #c0594a;color:#a0382a;border-radius:7px;padding:10px 14px;font-size:.85rem;font-weight:700;margin-top:8px;text-align:center;';
+      errDiv.textContent = '⚠️ Devam etmeden önce dönem seçmelisiniz!';
+      // Insert after term selector
+      const termBlock = box.querySelector('[id^="termLabel1"]')?.closest('div')?.parentElement;
+      if(termBlock) termBlock.after(errDiv);
+      else box.prepend(errDiv);
+    }
+    errDiv.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
   const selectedTerm = termRadio.value;
   DB.config.term = selectedTerm; // form bilgilerine aktar
 
@@ -2973,6 +3016,40 @@ async function exportPdf(type, studentsList, classSuffix, groups, orientation, r
 document.getElementById('btnPdf-proje').addEventListener('click', ()=>openClassExportModal('proje','pdf'));
 document.getElementById('btnPdf-dersici').addEventListener('click', ()=>openClassExportModal('dersici','pdf'));
 document.getElementById('btnPdf-odev').addEventListener('click', ()=>openClassExportModal('odev','pdf'));
+
+/* ============================================================
+   BOŞ FORM PDF
+   ============================================================ */
+async function exportBlankPdf(type){
+  if(DB.students.length===0){ toast('Önce öğrenci listesi yükleyin.'); return; }
+  const mod = getCurrentModule(type);
+  showOverlay('Boş form oluşturuluyor...');
+  try{
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
+    registerPdfFonts(pdf);
+
+    // temporarily clear scores so renderGroupToPdf draws empty cells
+    const backup = JSON.parse(JSON.stringify(mod.scores));
+    mod.scores = {};
+
+    renderGroupToPdf(pdf, type, DB.students, null, true, 'portrait', new Date().toLocaleDateString('tr-TR'));
+
+    mod.scores = backup; // restore
+
+    const filename = mod.name.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'').replace(/\s+/g,'_').toLowerCase() + '_bos_form.pdf';
+    pdf.save(filename);
+    toast('📋 Boş form indirildi: '+filename);
+  }catch(err){
+    console.error(err);
+    toast('❌ Boş form oluşturulurken hata oluştu: '+(err&&err.message?err.message:''));
+  }
+  hideOverlay();
+}
+
+document.getElementById('btnBlank-proje').addEventListener('click', ()=>exportBlankPdf('proje'));
+document.getElementById('btnBlank-dersici').addEventListener('click', ()=>exportBlankPdf('dersici'));
+document.getElementById('btnBlank-odev').addEventListener('click', ()=>exportBlankPdf('odev'));
 
 </script>
 </body>
