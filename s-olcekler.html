@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.37
+  S-Değerlendirme Ölçekleri — Pro 1.0.41
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -891,7 +891,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.37</span>
+  <span>Pro 1.0.41</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -2391,7 +2391,7 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     const sheetName = (label||mod.name).substring(0,28).replace(/[\\\/\?\*\[\]:]/g,'-');
     const ws = wb.addWorksheet(sheetName, {
       pageSetup:{ paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 },
-      views:[{state:'frozen', xSplit:2, ySplit:3}]
+      views:[{state:'frozen', xSplit:2, ySplit:3, showGridLines:false}]
     });
 
     const totalCols = 3 + criteria.length + 1; // No + Adı Soyadı + Sınıf + criteria + Toplam
@@ -2492,9 +2492,6 @@ async function exportXlsx(type, studentsList, classSuffix, groups, reportDate){
     const noteRow = ws.addRow(['Not: Bu form 100 puan üzerinden değerlendirme amacıyla hazırlanmıştır.']);
     ws.mergeCells(noteRow.number, 1, noteRow.number, Math.floor(totalCols/2));
     noteRow.getCell(1).font = {name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}};
-
-    const legendRow = ws.addRow(['','','','0-49,99: Geçmez','50-59,99: Geçer','60-69,99: Orta','70-84,99: İyi','85-100: Pekiyi']);
-    legendRow.eachCell(cell=>{ cell.font={name:'Calibri', size:8, italic:true, color:{argb:'FF666666'}}; });
 
     ws.addRow([]);
     const teacherVal = DB.config.teacher || '………………………………';
@@ -2626,15 +2623,11 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
     pdf.setFont('RC','normal');
     pdf.setFontSize(8.5);
     pdf.text(`${DB.config.year} Eğitim Öğretim Yılı ${DB.config.term} ${DB.config.course}`, pageW/2, y, {align:'center'});
-    y += 12;
-    const metaParts = [];
-    if(groupLabel) metaParts.push('Sınıf/Şube: '+groupLabel);
-
-    if(metaParts.length) pdf.text(metaParts.join('     '), pageW/2, y, {align:'center'});
     y += 14;
     pdf.setFont('RC','bold');
     pdf.setFontSize(10.5);
-    pdf.text(formTitle, pageW/2, y, {align:'center'});
+    const formTitleWithClass = groupLabel ? `${formTitle} (${groupLabel})` : formTitle;
+    pdf.text(formTitleWithClass, pageW/2, y, {align:'center'});
     if(totalPages>1){
       pdf.setFont('RC','normal');
       pdf.setFontSize(8);
@@ -2755,24 +2748,13 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       let fy = tableBottom + 16;
       if(fy > pageH - 50) fy = pageH - 50; // safety
       pdf.setFont('RC','normal');
+      pdf.setFont('RC','normal');
       pdf.setFontSize(7.5);
       pdf.setTextColor(0,0,0);
-      const noteText = `Not: Bu form, öğrencilerin ${formTitle.toLowerCase()} kapsamında değerlendirilmesi amacıyla hazırlanmıştır. Değerlendirme 100 puan üzerinden yapılmıştır.`;
+      const noteText = `Not: Bu form, öğrencilerin ${formTitleWithClass.toLowerCase()} kapsamında değerlendirilmesi amacıyla hazırlanmıştır. Değerlendirme 100 puan üzerinden yapılmıştır.`;
       const noteLines = pdfWrapText(pdf, noteText, availW, 'normal', 7.5);
       noteLines.forEach((line,i)=>pdf.text(line, margin, fy+i*9));
-      fy += noteLines.length*9 + 4;
-
-      pdf.setFont('RC','bold');
-      const legend = [['0-49,99:','Geçmez'],['50-59,99:','Geçer'],['60-69,99:','Orta'],['70-84,99:','İyi'],['85-100:','Pekiyi']];
-      let lx2 = margin;
-      legend.forEach(([a,b])=>{
-        pdf.text(a, lx2, fy);
-        pdf.setFont('RC','normal');
-        pdf.text(' '+b+'    ', lx2 + pdf.getTextWidth(a), fy);
-        lx2 += pdf.getTextWidth(a+' '+b+'    ')+10;
-        pdf.setFont('RC','bold');
-      });
-      fy += 22;
+      fy += noteLines.length*9 + 10;
 
       pdf.setFont('RC','normal');
       pdf.setFontSize(8.5);
