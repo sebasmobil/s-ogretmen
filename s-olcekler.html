@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.50
+  S-Değerlendirme Ölçekleri — Pro 1.0.51
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -1053,7 +1053,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.50</span>
+  <span>Pro 1.0.51</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -1501,9 +1501,26 @@ let DB = {
     cls:"", teacher:""
   },
   modules: {
-    proje: [makeModule('proje',1)],
-    dersici: [makeModule('dersici',1), makeModule('dersici',2), makeModule('dersici',3)],
-    odev: [makeModule('odev',1)]
+    proje: [
+      {...makeModule('proje',1), name:'1. Dönem 1. Proje'},
+      {...makeModule('proje',2), name:'2. Dönem 1. Proje'}
+    ],
+    dersici: [
+      {...makeModule('dersici',1), name:'1. Dönem - Ders İçi Performans 1'},
+      {...makeModule('dersici',2), name:'1. Dönem - Ders İçi Performans 2'},
+      {...makeModule('dersici',3), name:'1. Dönem - Ders İçi Performans 3'},
+      {...makeModule('dersici',4), name:'2. Dönem - Ders İçi Performans 1'},
+      {...makeModule('dersici',5), name:'2. Dönem - Ders İçi Performans 2'},
+      {...makeModule('dersici',6), name:'2. Dönem - Ders İçi Performans 3'}
+    ],
+    odev: [
+      {...makeModule('odev',1), name:'1. Dönem - Performans Ödevi 1'},
+      {...makeModule('odev',2), name:'1. Dönem - Performans Ödevi 2'},
+      {...makeModule('odev',3), name:'1. Dönem - Performans Ödevi 3'},
+      {...makeModule('odev',4), name:'2. Dönem - Performans Ödevi 1'},
+      {...makeModule('odev',5), name:'2. Dönem - Performans Ödevi 2'},
+      {...makeModule('odev',6), name:'2. Dönem - Performans Ödevi 3'}
+    ]
   },
   current: { proje:null, dersici:null, odev:null }, // module id currently displayed per type
   configArchive: { school:[], year:[], term:[], course:[], cls:[], teacher:[] } // each: array of strings
