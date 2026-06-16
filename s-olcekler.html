@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.49
+  S-Değerlendirme Ölçekleri — Pro 1.0.50
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -1053,7 +1053,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.49</span>
+  <span>Pro 1.0.50</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -3024,8 +3024,8 @@ function renderGroupToPdf(pdf, type, studentsList, groupLabel, isFirstPageOveral
       pdf.line(margin+colNo+colName+colCrit*i, headerBottom, margin+colNo+colName+colCrit*i, tableBottom);
     }
     pdf.line(margin+colNo+colName+critAreaW, headerBottom, margin+colNo+colName+critAreaW, tableBottom);
-    // horizontal lines per row
-    for(let i=1;i<(endIdx-startIdx);i++){
+    // horizontal lines per row (i=0 = top border of first data row)
+    for(let i=0;i<=(endIdx-startIdx);i++){
       pdf.line(margin, headerBottom+i*rowH, margin+availW, headerBottom+i*rowH);
     }
     // outer border — slightly thicker
