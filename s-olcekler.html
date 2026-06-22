@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.51
+  S-Değerlendirme Ölçekleri — Pro 1.0.52
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -1053,7 +1053,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.51</span>
+  <span>Pro 1.0.52</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -2530,6 +2530,17 @@ function openClassExportModal(type, format){
   const classes = getDistinctClasses();
   pendingExport = {type, format};
   const box = document.getElementById('classExportBox');
+  const mod = getCurrentModule(type);
+
+  // Format label
+  const formatLabel = {pdf:'PDF', xlsx:'Excel', blank:'Boş Form PDF'}[format] || format.toUpperCase();
+
+  // Module name header
+  const modHeaderHtml = `
+    <div style="background:var(--primary-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:4px;">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;">${formatLabel} olarak indiriliyor</div>
+      <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--moss-d);margin-top:2px;">${mod.name}</div>
+    </div>`;
 
   // Term selector — always shown, no default, required
   const termHtml = `
@@ -2545,7 +2556,7 @@ function openClassExportModal(type, format){
 
   if(classes.length <= 1){
     if(format==='xlsx'){
-      box.innerHTML = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">📊 Excel İndir</div>
+      box.innerHTML = `${modHeaderHtml}
       <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
         ${termHtml}
         <div>
@@ -2554,7 +2565,7 @@ function openClassExportModal(type, format){
         </div>
       </div>`;
     } else {
-      box.innerHTML = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">${format==='blank'?'📋 Boş Form':'📄 PDF Seçenekleri'}</div>
+      box.innerHTML = `${modHeaderHtml}
       <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
         ${termHtml}
         <div>
@@ -2572,7 +2583,7 @@ function openClassExportModal(type, format){
     return;
   }
 
-  let html = `<div style="font-family:var(--serif);font-size:1.1rem;color:var(--moss-d);font-weight:700;margin-bottom:10px;">${format==='blank'?'📋 Boş Form':'🏷️ İndirme Seçenekleri'}</div>
+  let html = `${modHeaderHtml}
   <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);">
     ${termHtml}
     <div>
