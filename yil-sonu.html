@@ -397,12 +397,12 @@ fieldset{border:none;margin:0;padding:0;}
 
 /* ============================= PREVIEW OVERLAY ============================= */
 .preview-overlay{
-  position:fixed;inset:0;background:rgba(15,18,17,.6);z-index:50;
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;
   display:flex;flex-direction:column;align-items:center;padding:30px 16px 50px;overflow-y:auto;
 }
 .preview-overlay[hidden]{display:none;}
 .preview-toolbar{
-  position:sticky;top:0;background:var(--paper);border:1px solid var(--border);border-radius:50px;
+  position:sticky;top:0;background:#f0f2ee;border:1px solid #cdd1cc;border-radius:50px;
   box-shadow:var(--shadow-lift);padding:8px 10px;display:flex;gap:8px;margin-bottom:22px;z-index:2;flex-wrap:wrap;justify-content:center;
 }
 
@@ -479,7 +479,7 @@ table.data-table input[type=number]{width:84px;}
 </head>
 <body data-theme="light">
 
-<div class="top-bar" id="topBar">Pro 1.0.15 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
+<div class="top-bar" id="topBar">Pro 1.0.16 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
 
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="drawer" id="drawer" aria-hidden="true">
@@ -616,7 +616,7 @@ table.data-table input[type=number]{width:84px;}
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" id="t_previewBtn">🖨️ Önizle &amp; Dışa Aktar</button>
+      <button class="btn" id="t_previewBtn">👁 Önizle</button><button class="btn btn-primary" id="t_pdfBtn">⭳ PDF</button><button class="btn btn-secondary" id="t_xlsxBtn">⭳ Excel</button>
       <button class="btn btn-ghost" id="t_clearBtn">Taslağı Temizle</button>
     </div>
   </section>
@@ -687,7 +687,7 @@ table.data-table input[type=number]{width:84px;}
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" id="k_previewBtn">🖨️ Önizle &amp; Dışa Aktar</button>
+      <button class="btn" id="k_previewBtn">👁 Önizle</button><button class="btn btn-primary" id="k_pdfBtn">⭳ PDF</button><button class="btn btn-secondary" id="k_xlsxBtn">⭳ Excel</button>
       <button class="btn btn-ghost" id="k_clearBtn">Taslağı Temizle</button>
     </div>
   </section>
@@ -772,9 +772,7 @@ table.data-table input[type=number]{width:84px;}
 <div class="preview-overlay" id="previewOverlay" hidden>
   <div class="preview-toolbar">
     <button class="btn" id="pv_closeBtn">✕ Kapat</button>
-    <button class="btn" id="pv_printBtn">🖨️ Yazdır</button>
-    <button class="btn btn-primary" id="pv_pdfBtn">⭳ PDF İndir</button>
-    <button class="btn btn-secondary" id="pv_xlsxBtn">⭳ Excel İndir</button>
+    <button class="btn btn-primary" id="pv_printBtn">🖨️ Yazdır / PDF</button>
   </div>
   <div class="resmi-belge" id="previewDoc"></div>
 </div>
@@ -1528,15 +1526,31 @@ function openPreview(type){
   document.getElementById('previewDoc').innerHTML = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();
   document.getElementById('previewOverlay').hidden = false;
 }
+function printDoc(type){
+  currentPreviewType = type;
+  document.getElementById('previewDoc').innerHTML = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();
+  document.getElementById('previewOverlay').hidden = false;
+  setTimeout(function(){ window.print(); }, 120);
+}
+function xlsxDoc(type){
+  currentPreviewType = type;
+  var aoa = type==='teslim' ? buildTeslimAOA() : buildKesimAOA();
+  var bytes = aoaToXlsx(aoa);
+  var blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (type==='teslim' ? 'Yazili_Kagidi_Teslim_Tutanagi' : 'Ders_Kesim_Raporu') + '.xlsx';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
 document.getElementById('t_previewBtn').addEventListener('click', function(){ openPreview('teslim'); });
 document.getElementById('k_previewBtn').addEventListener('click', function(){ openPreview('kesim'); });
+document.getElementById('t_pdfBtn').addEventListener('click', function(){ printDoc('teslim'); });
+document.getElementById('k_pdfBtn').addEventListener('click', function(){ printDoc('kesim'); });
+document.getElementById('t_xlsxBtn').addEventListener('click', function(){ xlsxDoc('teslim'); });
+document.getElementById('k_xlsxBtn').addEventListener('click', function(){ xlsxDoc('kesim'); });
 document.getElementById('pv_closeBtn').addEventListener('click', function(){ document.getElementById('previewOverlay').hidden = true; });
 document.getElementById('pv_printBtn').addEventListener('click', function(){ window.print(); });
-
-/* ----- PDF export (tarayıcı yazdır/PDF kaydet) ----- */
-document.getElementById('pv_pdfBtn').addEventListener('click', function(){
-  window.print();
-});
 
 /* ----- Excel export (minimal inline XLSX) ----- */
 function aoaToXlsx(aoa){
@@ -1641,16 +1655,7 @@ function aoaToXlsx(aoa){
   return u8concat(lhParts.concat([cdBuf,eocd]));
 }
 
-document.getElementById('pv_xlsxBtn').addEventListener('click', function(){
-  var aoa = currentPreviewType==='teslim' ? buildTeslimAOA() : buildKesimAOA();
-  var bytes = aoaToXlsx(aoa);
-  var blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = (currentPreviewType==='teslim' ? 'Yazili_Kagidi_Teslim_Tutanagi' : 'Ders_Kesim_Raporu') + '.xlsx';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
-});
+
 function buildTeslimAOA(){
   var aoa = [];
   aoa.push([settings.okulAdi||'']);
