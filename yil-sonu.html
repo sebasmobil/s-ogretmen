@@ -407,34 +407,43 @@ fieldset{border:none;margin:0;padding:0;}
 }
 
 /* ----- the official document itself: always light, serif, paper-styled ----- */
+/* A4: 210mm = 794px @96dpi; yan boşluk 75px (~20mm) */
 .resmi-belge{
-  background:#ffffff;color:#15181a;width:760px;max-width:100%;padding:54px 56px;
+  background:#ffffff;color:#15181a;
+  width:794px;max-width:100%;
+  padding:56px 75px;
   font-family:'Times New Roman',Times,'Liberation Serif',serif;
   box-shadow:0 4px 8px rgba(0,0,0,.18),0 20px 50px rgba(0,0,0,.22);
-  line-height:1.5;
+  font-size:12px;line-height:1.45;
+  box-sizing:border-box;
 }
-.rb-title{text-align:center;font-size:1.18rem;font-weight:700;letter-spacing:.12em;margin-bottom:26px;text-transform:uppercase;}
-.rb-to{font-weight:700;font-size:1rem;margin:0;}
-.rb-to-sub{font-weight:700;font-size:1rem;margin:2px 0 18px;}
-.rb-body{font-size:.97rem;margin:0 0 12px;text-align:justify;}
-.rb-date-right{text-align:right;font-size:.95rem;margin:18px 0 4px;}
-.rb-sig-inline{text-align:right;font-size:.95rem;margin:0 0 18px;}
-.rb-sig-inline .rb-sig-role{display:block;font-size:.85rem;}
-table.rb-table{width:100%;border-collapse:collapse;margin:18px 0 14px;font-size:.86rem;}
-table.rb-table th,table.rb-table td{border:1px solid #15181a;padding:6px 7px;text-align:center;}
-table.rb-table th{font-weight:700;font-size:.78rem;}
+.rb-title{text-align:center;font-size:13px;font-weight:700;letter-spacing:.1em;
+  margin-bottom:10px;text-transform:uppercase;}
+.rb-to{font-weight:700;font-size:12px;margin:0 0 1px;}
+.rb-to-sub{font-weight:700;font-size:12px;margin:0 0 8px;}
+.rb-body{font-size:12px;margin:0 0 6px;text-align:justify;}
+.rb-date-right{text-align:right;font-size:12px;margin:8px 0 2px;}
+.rb-sig-inline{text-align:right;font-size:12px;margin:0 0 8px;}
+.rb-sig-inline .rb-sig-role{display:block;font-size:11px;}
+table.rb-table{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:11px;}
+table.rb-table th,table.rb-table td{border:1px solid #15181a;padding:3px 5px;text-align:center;}
+table.rb-table th{font-weight:700;font-size:10px;}
 table.rb-table td.rb-left{text-align:left;}
 table.rb-table tfoot td{font-weight:700;}
-.rb-total-line{font-size:.95rem;margin:14px 0 36px;}
-.rb-signatures{display:flex;justify-content:space-between;gap:30px;margin-top:30px;}
-.rb-sig-box{flex:1;text-align:center;}
-.rb-sig-label{font-size:.82rem;font-style:italic;margin-bottom:34px;}
-.rb-sig-line{border-top:1px solid #15181a;width:80%;margin:0 auto 8px;}
-.rb-sig-name{font-weight:700;font-size:.95rem;}
-.rb-sig-role{font-size:.9rem;}
-.rb-sig-date{font-size:.86rem;margin-top:6px;color:#3a3f3f;}
+.rb-total-line{font-size:12px;margin:4px 0 10px;}
+/* İmzalar: alt hizaları eşit — flexbox + align-items:flex-end */
+.rb-signatures{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:20px;margin-top:16px;
+}
+.rb-sig-box{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.rb-sig-label{font-size:11px;font-style:italic;margin-bottom:28px;}
+.rb-sig-line{border-top:1px solid #15181a;width:85%;margin:0 auto 4px;}
+.rb-sig-name{font-weight:700;font-size:12px;}
+.rb-sig-role{font-size:11px;margin-top:1px;}
+.rb-sig-date{font-size:11px;margin-top:2px;color:#3a3f3f;}
 .rb-signatures-single{justify-content:flex-end;}
-.rb-signatures-single .rb-sig-box{flex:none;width:260px;}
+.rb-signatures-single .rb-sig-box{flex:none;width:220px;}
 
 /* ============================= PRINT ============================= */
 @media print {
@@ -449,7 +458,7 @@ table.rb-table tfoot td{font-weight:700;}
   .preview-box { box-shadow: none !important; max-width: 100% !important; }
   .pv-toolbar { display: none !important; }
   #previewDoc { padding: 0 !important; }
-  .resmi-belge { box-shadow: none; margin: 0 auto; }
+  .resmi-belge { box-shadow:none !important; width:100% !important; max-width:100% !important; margin:0 !important; padding:15mm 20mm !important; }
 }
 
 /* ============================= TOAST ============================= */
@@ -477,7 +486,7 @@ table.data-table input[type=number]{width:84px;}
 </head>
 <body data-theme="light">
 
-<div class="top-bar" id="topBar">Pro 1.0.17 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
+<div class="top-bar" id="topBar">Pro 1.0.18 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
 
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="drawer" id="drawer" aria-hidden="true">
@@ -1466,57 +1475,76 @@ var currentPreviewType = null;
 function generateTeslimDocHTML(){
   var sum1=0,sum2=0;
   var rowsHtml = teslimState.rows.map(function(r, idx){
-    var toplam = clampInt(r.donem1)+clampInt(r.donem2);
-    sum1 += clampInt(r.donem1); sum2 += clampInt(r.donem2);
+    var d1=clampInt(r.donem1),d2=clampInt(r.donem2);
+    sum1+=d1; sum2+=d2;
     return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td><td class="rb-left">'+escapeHtml(r.ders)+'</td>'
-      + '<td>'+(clampInt(r.donem1))+'</td><td>'+(clampInt(r.donem2))+'</td><td>'+toplam+'</td></tr>';
+      +'<td>'+d1+'</td><td>'+d2+'</td><td>'+(d1+d2)+'</td></tr>';
   }).join('');
-  var sumTotal = sum1+sum2;
-  if(!rowsHtml) rowsHtml = '<tr><td colspan="6" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
-  return ''
-    + '<div class="rb-title">Yazılı Kâğıdı Teslim Tutanağı</div>'
-    + '<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞÜNE')+'</p>'
-    + '<p class="rb-to-sub">'+escapeHtml(settings.semt||'')+'</p>'
-    + '<p class="rb-body">'+escapeHtml(settings.egitimYili)+' Eğitim-Öğretim yılı içerisinde okutmuş olduğum derslerden yapmış olduğum yazılı sınavlarına ait sınav kâğıtlarının teslim alınması için;</p>'
-    + '<p class="rb-body">Gereğini bilgilerinize arz ederim.</p>'
-    + '<p class="rb-date-right">'+isoToTR(teslimState.tarih)+'</p>'
-    + '<table class="rb-table"><thead><tr><th>Sıra No</th><th>Sınıf</th><th>Dersin Adı</th><th>1.Dönem Yazılı Kâğıdı<br>(Top Sayısı)</th><th>2.Dönem Yazılı Kâğıdı<br>(Top Sayısı)</th><th>Toplam Yazılı Kâğıdı<br>(Top Sayısı)</th></tr></thead>'
-    + '<tbody>'+rowsHtml+'</tbody>'
-    + '<tfoot><tr><td colspan="3">TOPLAM</td><td>'+sum1+'</td><td>'+sum2+'</td><td>'+sumTotal+'</td></tr></tfoot></table>'
-    + '<p class="rb-total-line">Toplam '+sumTotal+' ( '+sumTotal+' ) top sınav kâğıdı teslim edilmiştir.</p>'
-    + '<div class="rb-signatures">'
-      + '<div class="rb-sig-box"><div class="rb-sig-label">Teslim Eden</div><div class="rb-sig-line"></div>'
-        + '<div class="rb-sig-name">'+escapeHtml(teslimState.ogretmenAdi||'Ad Soyad')+'</div>'
-        + '<div class="rb-sig-role">'+escapeHtml(teslimState.teslimEdenUnvan||'Öğretmeni')+'</div>'
-        + '<div class="rb-sig-date">Tarih: '+isoToTR(teslimState.tarih)+'</div></div>'
-      + '<div class="rb-sig-box"><div class="rb-sig-label">Teslim Alan</div><div class="rb-sig-line"></div>'
-        + '<div class="rb-sig-name">'+escapeHtml(teslimState.teslimAlanAd||'Ad Soyad')+'</div>'
-        + '<div class="rb-sig-role">'+escapeHtml(teslimState.teslimAlanUnvan||'Unvan')+'</div>'
-        + '<div class="rb-sig-date">Tarih: '+isoToTR(teslimState.tarih)+'</div></div>'
-    + '</div>';
+  var sumTotal=sum1+sum2;
+  if(!rowsHtml) rowsHtml='<tr><td colspan="6" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
+  var tarih=isoToTR(teslimState.tarih);
+  return '<div class="rb-title">Yazılı Kâğıdı Teslim Tutanağı</div>'
+    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞE')+'</p>'
+    +(settings.semt?'<p class="rb-to-sub">'+escapeHtml(settings.semt)+'</p>':'')
+    +'<p class="rb-body">'+escapeHtml(settings.egitimYili||'')+' Eğitim-Öğretim yılı içerisinde okutmuş olduğum derslerden yapmış olduğum yazılı sınavlarına ait sınav kâğıtlarının teslim alınması için;</p>'
+    +'<p class="rb-body">Gereğini bilgilerinize arz ederim.</p>'
+    +'<p class="rb-date-right">'+tarih+'</p>'
+    +'<table class="rb-table"><thead><tr>'
+      +'<th style="width:36px">No</th><th>Sınıf</th><th>Dersin Adı</th>'
+      +'<th>1.Dönem<br>(Top)</th><th>2.Dönem<br>(Top)</th><th>Toplam<br>(Top)</th>'
+    +'</tr></thead><tbody>'+rowsHtml+'</tbody>'
+    +'<tfoot><tr><td colspan="3" style="text-align:right;padding-right:8px;">TOPLAM</td>'
+      +'<td>'+sum1+'</td><td>'+sum2+'</td><td>'+sumTotal+'</td></tr></tfoot></table>'
+    +'<p class="rb-total-line">Toplam <strong>'+sumTotal+'</strong> top sınav kâğıdı teslim edilmiştir.</p>'
+    +'<div class="rb-signatures">'
+      +'<div class="rb-sig-box">'
+        +'<div class="rb-sig-label">Teslim Eden</div>'
+        +'<div class="rb-sig-line"></div>'
+        +'<div class="rb-sig-name">'+escapeHtml(teslimState.ogretmenAdi||'Ad Soyad')+'</div>'
+        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimEdenUnvan||'Öğretmeni')+'</div>'
+        +'<div class="rb-sig-date">'+tarih+'</div>'
+      +'</div>'
+      +'<div class="rb-sig-box">'
+        +'<div class="rb-sig-label">Teslim Alan</div>'
+        +'<div class="rb-sig-line"></div>'
+        +'<div class="rb-sig-name">'+escapeHtml(teslimState.teslimAlanAd||'Ad Soyad')+'</div>'
+        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimAlanUnvan||'Unvan')+'</div>'
+        +'<div class="rb-sig-date">'+tarih+'</div>'
+      +'</div>'
+    +'</div>';
 }
-
 function generateKesimDocHTML(){
   var rowsHtml = kesimState.rows.map(function(r, idx){
-    var durumCell = escapeHtml(r.durum) + (r.neden ? '<br><small style="color:#c00;font-size:.82em;"><em>Neden: '+escapeHtml(r.neden)+'</em></small>' : '');
-    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td><td class="rb-left">'+escapeHtml(r.ders)+'</td><td class="rb-left">'+durumCell+'</td></tr>';
+    var durumCell = escapeHtml(r.durum)+(r.neden?'<br><em style="color:#c00;font-size:10px;">Neden: '+escapeHtml(r.neden)+'</em>':'');
+    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td>'
+      +'<td class="rb-left">'+escapeHtml(r.ders)+'</td><td class="rb-left">'+durumCell+'</td></tr>';
   }).join('');
-  if(!rowsHtml) rowsHtml = '<tr><td colspan="4" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
-  return ''
-    + '<div class="rb-title">Ders Kesim Raporu</div>'
-    + '<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞÜNE')+'</p>'
-    + '<p class="rb-body">'+escapeHtml((settings.egitimYili||'').replace('/','-'))+' Eğitim-Öğretim yılında ders verdiğim sınıflara ait ders kesim durumu, sınıflar bazında ayrıntılı olarak aşağıdaki tabloda gösterilmiştir.</p>'
-    + '<p class="rb-body">Bilgilerinize arz ederim.</p>'
-    + '<p class="rb-date-right">'+isoToTR(kesimState.tarih)+'</p>'
-    + '<p class="rb-sig-inline">'+escapeHtml(kesimState.dersOgretmeniAdi||'Ad Soyad')+'<span class="rb-sig-role">Ders Öğretmeni</span></p>'
-    + '<table class="rb-table"><thead><tr><th>Sıra No</th><th>Sınıf / Şube</th><th>Dersin Adı</th><th>Ders Kesim Durumu</th></tr></thead>'
-    + '<tbody>'+rowsHtml+'</tbody></table>'
-    + '<div class="rb-signatures rb-signatures-single">'
-      + '<div class="rb-sig-box"><div class="rb-sig-label">Onaylayan</div><div class="rb-sig-line"></div>'
-        + '<div class="rb-sig-name">'+escapeHtml(kesimState.onaylayanAd||'Ad Soyad')+'</div>'
-        + '<div class="rb-sig-role">'+escapeHtml(kesimState.onaylayanUnvan||'Unvan')+'</div>'
-        + '<div class="rb-sig-date">Tarih: '+isoToTR(kesimState.tarih)+'</div></div>'
-    + '</div>';
+  if(!rowsHtml) rowsHtml='<tr><td colspan="4" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
+  var tarih=isoToTR(kesimState.tarih);
+  return '<div class="rb-title">Ders Kesim Raporu</div>'
+    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞÜNE')+'</p>'
+    +'<p class="rb-body">'+escapeHtml((settings.egitimYili||'').replace('/','-'))+' Eğitim-Öğretim yılında ders verdiğim sınıflara ait ders kesim durumu, sınıflar bazında ayrıntılı olarak aşağıdaki tabloda gösterilmiştir.</p>'
+    +'<p class="rb-body">Bilgilerinize arz ederim.</p>'
+    +'<table class="rb-table"><thead><tr>'
+      +'<th style="width:36px">No</th><th style="width:70px">Sınıf / Şube</th>'
+      +'<th>Dersin Adı</th><th>Ders Kesim Durumu</th>'
+    +'</tr></thead><tbody>'+rowsHtml+'</tbody></table>'
+    +'<div class="rb-signatures">'
+      +'<div class="rb-sig-box">'
+        +'<div class="rb-sig-label">Ders Öğretmeni</div>'
+        +'<div class="rb-sig-line"></div>'
+        +'<div class="rb-sig-name">'+escapeHtml(kesimState.dersOgretmeniAdi||'Ad Soyad')+'</div>'
+        +'<div class="rb-sig-role">Öğretmen</div>'
+        +'<div class="rb-sig-date">'+tarih+'</div>'
+      +'</div>'
+      +'<div class="rb-sig-box">'
+        +'<div class="rb-sig-label">Onaylayan</div>'
+        +'<div class="rb-sig-line"></div>'
+        +'<div class="rb-sig-name">'+escapeHtml(kesimState.onaylayanAd||'Ad Soyad')+'</div>'
+        +'<div class="rb-sig-role">'+escapeHtml(kesimState.onaylayanUnvan||'Unvan')+'</div>'
+        +'<div class="rb-sig-date">'+tarih+'</div>'
+      +'</div>'
+    +'</div>';
 }
 
 function openPreview(type){
