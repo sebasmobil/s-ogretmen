@@ -1,39 +1,7 @@
 <!DOCTYPE html>
-<!--
-  Yıl Sonu İşlemleri
-  Yazılı Kâğıdı Teslim Tutanağı + Ders Kesim Raporu hazırlama uygulaması.
-  Ana uygulama tek dosyadır ve tamamen çevrimdışı çalışır
-  kütüphanesi dosyanın içine gömülüdür.
-
-  PWA desteği için (Ana Ekrana Ekle, çevrimdışı yeniden açma) bu HTML dosyasıyla
-  AYNI KLASÖRDE şu küçük dosyaların da bulunması gerekir — iOS/Android'in
-  ikon ve servis çalışanı dosyalarını yalnızca gerçek bir adresten (data/blob
-  URL değil) okuyabilmesi nedeniyle bunlar ayrı dosyalar olarak verilmiştir:
-    favicon-32.png, apple-touch-icon-180.png, icon-192.png, icon-512.png,
-    icon-maskable-192.png, icon-maskable-512.png, sw.js
-  Bu dosyalar olmadan da ana uygulama eksiksiz çalışır; sadece "Ana Ekrana
-  Ekle" simgesi ve çevrimdışı yeniden açma özelliği devre dışı kalır.
-
-  Copyright (C) 2026 sebasmobil
-
-  Bu program özgür bir yazılımdır: Free Software Foundation tarafından
-  yayımlanan GNU Affero Genel Kamu Lisansı'nın 3. sürümü (ya da isterseniz
-  sonraki bir sürümü) koşulları altında yeniden dağıtabilir ve/veya
-  değiştirebilirsiniz.
-
-  Bu program kullanışlı olması umuduyla dağıtılmaktadır, ancak HİÇBİR
-  GARANTİSİ YOKTUR; satılabilirlik veya belirli bir amaca uygunluk
-  garantisi dahi verilmez. Ayrıntılar için GNU Affero Genel Kamu
-  Lisansı'na bakınız.
-
-  Bu programla birlikte GNU Affero Genel Kamu Lisansı'nın bir kopyasını
-  almış olmanız gerekir; almadıysanız bkz. <https://www.gnu.org/licenses/>.
-
-  Lisans: GNU AGPL v3.0 · © sebasmobil 2026
-  Sürüm bilgisi yalnızca uygulamanın üst çubuğunda gösterilir.
--->
-<html lang="tr">
+<html lang="tr" data-theme="light">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yıl Sonu İşlemleri</title>
@@ -488,13 +456,53 @@ table.rb-table tfoot td{font-weight:700;}
 input,select,textarea{font-size:16px;}
 table.data-table input,table.data-table select{font-size:16px;}
 table.data-table input[type=number]{width:84px;}
+
+@media print {
+  body > *:not(#previewOverlay) { display:none !important; }
+  body { background:#fff !important; }
+  .preview-overlay { position:static !important; background:none !important; padding:0 !important; display:block !important; }
+  .preview-box { box-shadow:none !important; max-width:100% !important; }
+  .pv-toolbar { display:none !important; }
+  #previewDoc { padding:0 !important; }
+  .resmi-belge { box-shadow:none !important; width:100% !important; padding:15mm 20mm !important; }
+}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+window.onerror = function(msg, src, line, col, err) {
+  var modal = document.getElementById('errModal');
+  var pre = document.getElementById('errMsg');
+  if (modal && pre) {
+    pre.textContent = 'Mesaj: ' + msg + '\nDosya: ' + src + '\nSatır: ' + line + ', Sütun: ' + col + (err ? '\nStack: ' + err.stack : '');
+    modal.style.display = 'flex';
+  }
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  var modal = document.getElementById('errModal');
+  var pre = document.getElementById('errMsg');
+  if (modal && pre) {
+    pre.textContent = 'Promise hatası: ' + (e.reason ? (e.reason.stack || e.reason) : e);
+    modal.style.display = 'flex';
+  }
+});
+</script>
 </head>
+
+<div id="errModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:12px;padding:20px;max-width:420px;width:100%;font-family:monospace;font-size:12px;">
+    <div style="font-weight:700;font-size:14px;color:#c00;margin-bottom:10px;">⛔ JavaScript Hatası</div>
+    <pre id="errMsg" style="background:#f5f5f5;padding:10px;border-radius:6px;overflow:auto;max-height:200px;white-space:pre-wrap;word-break:break-all;color:#333;font-size:11px;"></pre>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('errMsg').textContent).then(function(){this.textContent='✓ Kopyalandı'}.bind(this))" style="flex:1;padding:8px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;">📋 Kopyala</button>
+      <button onclick="document.getElementById('errModal').style.display='none'" style="flex:1;padding:8px;background:#eee;color:#333;border:none;border-radius:6px;font-size:13px;cursor:pointer;">✕ Kapat</button>
+    </div>
+  </div>
+</div>
 <body data-theme="light">
 
-<div class="top-bar" id="topBar">Pro 1.0.20 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
+
+<div class="top-bar" id="topBar">Pro 1.0.32 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3.0</a></div>
 
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="drawer" id="drawer" aria-hidden="true">
@@ -631,7 +639,7 @@ table.data-table input[type=number]{width:84px;}
     </div>
 
     <div class="btn-row">
-      <button class="btn" id="t_previewBtn">👁 Önizle</button><button class="btn btn-primary" id="t_pdfBtn">⭳ PDF</button><button class="btn btn-secondary" id="t_xlsxBtn">⭳ Excel</button>
+      <button class="btn btn-primary" id="t_pdfBtn">⭳ PDF İndir</button><button class="btn btn-secondary" id="t_xlsxBtn">⭳ CSV/Excel İndir</button>
       <button class="btn btn-ghost" id="t_clearBtn">Taslağı Temizle</button>
     </div>
   </section>
@@ -702,7 +710,7 @@ table.data-table input[type=number]{width:84px;}
     </div>
 
     <div class="btn-row">
-      <button class="btn" id="k_previewBtn">👁 Önizle</button><button class="btn btn-primary" id="k_pdfBtn">⭳ PDF</button><button class="btn btn-secondary" id="k_xlsxBtn">⭳ Excel</button>
+      <button class="btn btn-primary" id="k_pdfBtn">⭳ PDF İndir</button><button class="btn btn-secondary" id="k_xlsxBtn">⭳ CSV/Excel İndir</button>
       <button class="btn btn-ghost" id="k_clearBtn">Taslağı Temizle</button>
     </div>
   </section>
@@ -787,21 +795,19 @@ table.data-table input[type=number]{width:84px;}
 <div class="preview-overlay" id="previewOverlay" hidden>
   <div class="preview-toolbar">
     <button class="btn" id="pv_closeBtn">✕ Kapat</button>
-    <button class="btn btn-primary" id="pv_dlBtn">⭳ PDF İndir</button>
-    <button class="btn" id="pv_printBtn">🖨 Yazdır</button>
   </div>
   <div class="resmi-belge" id="previewDoc"></div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+</body>
 <script>
-(function(){
-"use strict";
 
 /* ============================================================ UTIL ============================================================ */
 function uid(){ return 'r' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
 function clampInt(v){ var n = parseInt(v,10); return isNaN(n) || n < 0 ? 0 : n; }
-function pad2(n){ return String(n).padStart(2,'0'); }
+function pad2(n){ var s=String(n); return s.length<2?'0'+s:s; }
 function isoToTR(iso){
   if(!iso) return '…/…/2026';
   var p = iso.split('-'); if(p.length!==3) return iso;
@@ -816,952 +822,31 @@ function defaultEgitimYili(){
   return m >= 7 ? (y+'/'+(y+1)) : ((y-1)+'/'+y);
 }
 function escapeHtml(str){
-  return String(str==null?'':str).replace(/[&<>"']/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-function showToast(msg){
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
-}
-
-/* ============================================================ STORAGE ============================================================ */
-var LS = {
-  settings:'yse_settings_v1',
-  teslim:'yse_teslim_v1',
-  kesim:'yse_kesim_v1'
-};
-
-function loadJSON(key, fallback){
-  try{
-    var raw = localStorage.getItem(key);
-    if(!raw) return fallback;
-    var parsed = JSON.parse(raw);
-    return parsed || fallback;
-  }catch(e){ return fallback; }
-}
-function saveJSON(key, val){
-  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ /* storage full / unavailable */ }
-}
-
-function defaultSettings(){
-  return {
-    okulAdi:'', semt:'', egitimYili: defaultEgitimYili(),
-    siniflar:[], dersler:[],
-    defTeslimAlanAd:'', defTeslimAlanUnvan:'Müdür Yardımcısı',
-    defOnaylayanAd:'', defOnaylayanUnvan:'Müdür Yardımcısı',
-    recentNames:[],
-    theme:'light'
-  };
-}
-function defaultTeslimState(s){
-  return {
-    tarih:todayISO(),
-    ogretmenAdi:'', teslimEdenUnvan:'Öğretmeni',
-    rows:[],
-    teslimAlanAd:s.defTeslimAlanAd, teslimAlanUnvan:s.defTeslimAlanUnvan
-  };
-}
-function defaultKesimState(s){
-  return {
-    tarih:todayISO(),
-    dersOgretmeniAdi:'',
-    rows:[],
-    onaylayanAd:s.defOnaylayanAd, onaylayanUnvan:s.defOnaylayanUnvan
-  };
-}
-
-var settings = loadJSON(LS.settings, null) || defaultSettings();
-var teslimState = loadJSON(LS.teslim, null) || defaultTeslimState(settings);
-var kesimState = loadJSON(LS.kesim, null) || defaultKesimState(settings);
-
-function persist(){
-  saveJSON(LS.settings, settings);
-  saveJSON(LS.teslim, teslimState);
-  saveJSON(LS.kesim, kesimState);
-}
-
-function rememberName(name){
-  name = (name||'').trim();
-  if(!name) return;
-  settings.recentNames = settings.recentNames.filter(function(n){ return n.toLowerCase() !== name.toLowerCase(); });
-  settings.recentNames.unshift(name);
-  settings.recentNames = settings.recentNames.slice(0,8);
-}
-
-/* ============================================================ THEME ============================================================ */
-function applyTheme(){
-  document.body.setAttribute('data-theme', settings.theme);
-  document.getElementById('themeToggle').textContent = settings.theme === 'dark' ? '☀️' : '🌙';
-}
-document.getElementById('themeToggle').addEventListener('click', function(){
-  settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
-  applyTheme(); persist();
-});
-
-/* ============================================================ NAVIGATION (çekmece menü + sayfalar) ============================================================ */
-var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
-var drawerEl = document.getElementById('drawer');
-var drawerBackdrop = document.getElementById('drawerBackdrop');
-
-function showPanel(name){
-  panels.forEach(function(p){ p.setAttribute('data-active', p.getAttribute('data-panel')===name ? 'true':'false'); });
-  document.querySelectorAll('.drawer-link').forEach(function(b){
-    var isActive = b.getAttribute('data-goto')===name;
-    b.classList.toggle('active', isActive);
-    b.setAttribute('aria-current', isActive ? 'page' : 'false');
-  });
-  closeDrawer();
-  window.scrollTo(0,0);
-}
-function openDrawer(){
-  drawerEl.classList.add('open'); drawerBackdrop.hidden = false; drawerEl.setAttribute('aria-hidden','false');
-}
-function closeDrawer(){
-  drawerEl.classList.remove('open'); drawerBackdrop.hidden = true; drawerEl.setAttribute('aria-hidden','true');
-}
-document.getElementById('menuToggle').addEventListener('click', openDrawer);
-document.getElementById('drawerCloseBtn').addEventListener('click', closeDrawer);
-drawerBackdrop.addEventListener('click', closeDrawer);
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });
-document.querySelectorAll('[data-goto]').forEach(function(el){
-  el.addEventListener('click', function(){ showPanel(el.getAttribute('data-goto')); });
-});
-
-/* ============================================================ DATALISTS ============================================================ */
-function refreshDatalists(){
-  var dlS = document.getElementById('dl-siniflar');
-  var dlD = document.getElementById('dl-dersler');
-  dlS.innerHTML = settings.siniflar.map(function(c){ return '<option value="'+escapeHtml(c)+'">'; }).join('');
-  dlD.innerHTML = settings.dersler.map(function(c){ return '<option value="'+escapeHtml(c)+'">'; }).join('');
-}
-
-function refreshNameChips(){
-  var html = settings.recentNames.map(function(n){
-    return '<button type="button" class="chip-suggest" data-name="'+escapeHtml(n)+'">'+escapeHtml(n)+'</button>';
-  }).join('');
-  ['t_ogretmenChips','t_teslimAlanChips','k_ogretmenChips','k_onaylayanChips'].forEach(function(id){
-    document.getElementById(id).innerHTML = html;
-  });
-}
-document.addEventListener('click', function(e){
-  var chip = e.target.closest('.chip-suggest');
-  if(!chip) return;
-  var box = chip.closest('.chips');
-  var input = box.previousElementSibling;
-  if(input && (input.tagName==='INPUT')){ input.value = chip.getAttribute('data-name'); input.dispatchEvent(new Event('input')); }
-});
-
-/* ============================================================ QUICK-ADD CLASS CHECKBOXES ============================================================ */
-function refreshQuickAddClasses(containerId){
-  var el = document.getElementById(containerId);
-  if(settings.siniflar.length===0){
-    el.innerHTML = '<span class="hint">Önce Ayarlar sekmesinden sınıf ekleyin.</span>';
-    return;
-  }
-  el.innerHTML = settings.siniflar.map(function(c){
-    return '<label class="class-check"><input type="checkbox" value="'+escapeHtml(c)+'"> '+escapeHtml(c)+'</label>';
-  }).join('');
-  el.querySelectorAll('input[type=checkbox]').forEach(function(cb){
-    cb.addEventListener('change', function(){ cb.closest('.class-check').classList.toggle('checked', cb.checked); });
-  });
-}
-
-/* ============================================================ MODULE: TESLİM ============================================================ */
-var tFields = ['tarih','ogretmenAdi'];
-function bindTeslimTopFields(){
-  tFields.forEach(function(key){
-    var el = document.getElementById('t_'+key);
-    el.value = teslimState[key] || '';
-    el.addEventListener('input', function(){ teslimState[key] = el.value; if(key==='ogretmenAdi'){ } persist(); renderTeslimDerived(); });
-    el.addEventListener('blur', function(){ if(key==='ogretmenAdi'){ rememberName(el.value); refreshNameChips(); persist(); } });
-  });
-  var unvanEl = document.getElementById('t_teslimEdenUnvan');
-  unvanEl.value = teslimState.teslimEdenUnvan || 'Öğretmeni';
-  unvanEl.addEventListener('input', function(){ teslimState.teslimEdenUnvan = unvanEl.value; persist(); });
-
-  var alanAd = document.getElementById('t_teslimAlanAd');
-  alanAd.value = teslimState.teslimAlanAd || '';
-  alanAd.addEventListener('input', function(){ teslimState.teslimAlanAd = alanAd.value; persist(); });
-  alanAd.addEventListener('blur', function(){ rememberName(alanAd.value); refreshNameChips(); persist(); });
-
-  var alanUnvan = document.getElementById('t_teslimAlanUnvan');
-  alanUnvan.value = teslimState.teslimAlanUnvan || '';
-  alanUnvan.addEventListener('input', function(){ teslimState.teslimAlanUnvan = alanUnvan.value; persist(); });
-
-  document.getElementById('t_teslimEdenAdGosterim').value = teslimState.ogretmenAdi || '';
-}
-function syncTeslimEdenGosterim(){
-  document.getElementById('t_teslimEdenAdGosterim').value = teslimState.ogretmenAdi || '';
-}
-
-function renderTeslimTable(){
-  var tbody = document.getElementById('t_tbody');
-  if(teslimState.rows.length===0){
-    tbody.innerHTML = '<div class="row-list-empty">Henüz satır eklenmedi. Yukarıdaki \u201cHızlı Satır Ekle\u201d panelini kullanın veya \u201c＋ Satır Ekle\u201d ile başlayın.</div>';
-  } else {
-    tbody.innerHTML = teslimState.rows.map(function(row, idx){
-      var toplam = clampInt(row.donem1) + clampInt(row.donem2);
-      return '<div class="row-card" data-id="'+row.id+'">'
-        + '<div class="row-card-head">'
-          + '<span class="row-num">'+(idx+1)+'</span>'
-          + '<div class="row-actions">'
-            + '<button class="mini-btn" data-act="up" title="Yukarı taşı">▲</button>'
-            + '<button class="mini-btn" data-act="down" title="Aşağı taşı">▼</button>'
-            + '<button class="mini-btn" data-act="del" title="Sil">🗑</button>'
-          + '</div>'
-        + '</div>'
-        + '<div class="row-card-body teslim-grid">'
-          + '<div class="rc-field"><span class="rc-label">Sınıf</span><input type="text" list="dl-siniflar" data-field="sinif" value="'+escapeHtml(row.sinif)+'" placeholder="Sınıf"></div>'
-          + '<div class="rc-field"><span class="rc-label">Dersin Adı</span><input type="text" list="dl-dersler" data-field="ders" value="'+escapeHtml(row.ders)+'" placeholder="Ders"></div>'
-          + '<div class="rc-field"><span class="rc-label">1.Dönem</span><input type="number" min="0" data-field="donem1" value="'+(row.donem1||'')+'" placeholder="0"></div>'
-          + '<div class="rc-field"><span class="rc-label">2.Dönem</span><input type="number" min="0" data-field="donem2" value="'+(row.donem2||'')+'" placeholder="0"></div>'
-          + '<div class="rc-total"><span class="rc-total-label">Toplam</span><span class="rc-total-val">'+toplam+'</span></div>'
-        + '</div>'
-        + '</div>';
-    }).join('');
-  }
-  renderTeslimDerived();
-}
-function renderTeslimDerived(){
-  var sum1=0,sum2=0;
-  teslimState.rows.forEach(function(r){ sum1+=clampInt(r.donem1); sum2+=clampInt(r.donem2); });
-  var sumTotal = sum1+sum2;
-  document.getElementById('t_sum1').textContent = sum1;
-  document.getElementById('t_sum2').textContent = sum2;
-  document.getElementById('t_sumTotal').textContent = sumTotal;
-  document.getElementById('t_sentenceNum1').textContent = sumTotal;
-  document.getElementById('t_sentenceNum2').textContent = sumTotal;
-}
-document.getElementById('t_tbody').addEventListener('input', function(e){
-  var card = e.target.closest('.row-card'); if(!card) return;
-  var id = card.getAttribute('data-id');
-  var row = teslimState.rows.find(function(r){ return r.id===id; });
-  if(!row) return;
-  var field = e.target.getAttribute('data-field');
-  row[field] = e.target.type==='number' ? clampInt(e.target.value) : e.target.value;
-  persist();
-  if(field==='donem1' || field==='donem2'){
-    var toplamVal = card.querySelector('.rc-total-val');
-    toplamVal.textContent = clampInt(row.donem1)+clampInt(row.donem2);
-    renderTeslimDerived();
-  }
-});
-document.getElementById('t_tbody').addEventListener('click', function(e){
-  var btn = e.target.closest('.mini-btn'); if(!btn) return;
-  var card = btn.closest('.row-card'); var id = card.getAttribute('data-id');
-  var idx = teslimState.rows.findIndex(function(r){ return r.id===id; });
-  if(idx<0) return;
-  var act = btn.getAttribute('data-act');
-  if(act==='del'){ teslimState.rows.splice(idx,1); }
-  else if(act==='up' && idx>0){ var tmp=teslimState.rows[idx-1]; teslimState.rows[idx-1]=teslimState.rows[idx]; teslimState.rows[idx]=tmp; }
-  else if(act==='down' && idx<teslimState.rows.length-1){ var tmp2=teslimState.rows[idx+1]; teslimState.rows[idx+1]=teslimState.rows[idx]; teslimState.rows[idx]=tmp2; }
-  persist(); renderTeslimTable();
-});
-document.getElementById('t_addRowBtn').addEventListener('click', function(){
-  teslimState.rows.push({id:uid(), sinif:'', ders:'', donem1:'', donem2:''});
-  persist(); renderTeslimTable();
-});
-document.getElementById('t_qaAddBtn').addEventListener('click', function(){
-  var checked = Array.prototype.slice.call(document.querySelectorAll('#t_qaClasses input:checked')).map(function(c){ return c.value; });
-  var dersInput = document.getElementById('t_qaDers');
-  var ders = dersInput.value.trim();
-  if(checked.length===0){ showToast('Önce en az bir sınıf seçin.'); return; }
-  checked.forEach(function(sinif){
-    teslimState.rows.push({id:uid(), sinif:sinif, ders:ders, donem1:'', donem2:''});
-  });
-  document.querySelectorAll('#t_qaClasses input:checked').forEach(function(c){ c.checked=false; c.closest('.class-check').classList.remove('checked'); });
-  dersInput.value = '';
-  persist(); renderTeslimTable();
-  showToast(checked.length+' satır eklendi.');
-});
-document.getElementById('t_clearBtn').addEventListener('click', function(){
-  if(!confirm('Bu modüldeki taslak temizlensin mi? Bu işlem geri alınamaz.')) return;
-  teslimState = defaultTeslimState(settings);
-  persist(); bindTeslimTopFields(); renderTeslimTable();
-  showToast('Taslak temizlendi.');
-});
-
-/* ============================================================ MODULE: KESİM ============================================================ */
-var kFields = ['tarih','dersOgretmeniAdi'];
-function bindKesimTopFields(){
-  kFields.forEach(function(key){
-    var el = document.getElementById('k_'+key);
-    el.value = kesimState[key] || '';
-    el.addEventListener('input', function(){ kesimState[key]=el.value; persist(); });
-    el.addEventListener('blur', function(){ if(key==='dersOgretmeniAdi'){ rememberName(el.value); refreshNameChips(); persist(); } });
-  });
-  var onayAd = document.getElementById('k_onaylayanAd');
-  onayAd.value = kesimState.onaylayanAd || '';
-  onayAd.addEventListener('input', function(){ kesimState.onaylayanAd = onayAd.value; persist(); });
-  onayAd.addEventListener('blur', function(){ rememberName(onayAd.value); refreshNameChips(); persist(); });
-
-  var onayUnvan = document.getElementById('k_onaylayanUnvan');
-  onayUnvan.value = kesimState.onaylayanUnvan || '';
-  onayUnvan.addEventListener('input', function(){ kesimState.onaylayanUnvan = onayUnvan.value; persist(); });
-}
-
-function durumIsIncomlete(d){
-  return d==='Müfredat kısmen tamamlanmıştır.' || d==='Müfredata uygun olarak tamamlanamamıştır.';
-}
-function makeDurumSelect(val){
-  var opts = [
-    'Müfredata uygun olarak tamamlanmıştır.',
-    'Müfredat kısmen tamamlanmıştır.',
-    'Müfredata uygun olarak tamamlanamamıştır.'
-  ];
-  return opts.map(function(o){
-    return '<option value="'+escapeHtml(o)+'"'+(val===o?' selected':'')+'>'+escapeHtml(o)+'</option>';
-  }).join('');
-}
-function renderKesimTable(){
-  var tbody = document.getElementById('k_tbody');
-  if(kesimState.rows.length===0){
-    tbody.innerHTML = '<div class="row-list-empty">Henüz satır eklenmedi. Yukarıdaki \u201cHızlı Satır Ekle\u201d panelini kullanın veya \u201c＋ Satır Ekle\u201d ile başlayın.</div>';
-    return;
-  }
-  tbody.innerHTML = kesimState.rows.map(function(row, idx){
-    var showNeden = durumIsIncomlete(row.durum);
-    return '<div class="row-card" data-id="'+row.id+'">'
-      + '<div class="row-card-head">'
-        + '<span class="row-num">'+(idx+1)+'</span>'
-        + '<div class="row-actions">'
-          + '<button class="mini-btn" data-act="up" title="Yukarı taşı">▲</button>'
-          + '<button class="mini-btn" data-act="down" title="Aşağı taşı">▼</button>'
-          + '<button class="mini-btn" data-act="del" title="Sil">🗑</button>'
-        + '</div>'
-      + '</div>'
-      + '<div class="row-card-body kesim-grid">'
-        + '<div class="rc-field"><span class="rc-label">Sınıf / Şube</span><input type="text" list="dl-siniflar" data-field="sinif" value="'+escapeHtml(row.sinif)+'" placeholder="Sınıf"></div>'
-        + '<div class="rc-field"><span class="rc-label">Dersin Adı</span><input type="text" list="dl-dersler" data-field="ders" value="'+escapeHtml(row.ders)+'" placeholder="Ders"></div>'
-        + '<div class="rc-field"><span class="rc-label">Ders Kesim Durumu</span><select class="durum-select" data-field="durum">'+makeDurumSelect(row.durum)+'</select></div>'
-        + '<div class="rc-field neden-wrap'+(showNeden?' visible':'')+'"><span class="neden-label">⚠ Kazandırılmama / Eksik Kalma Nedeni</span><textarea data-field="neden" placeholder="Kazanımın tam olarak gerçekleşmeme nedenini yazınız…">'+escapeHtml(row.neden||'')+'</textarea></div>'
-      + '</div>'
-      + '</div>';
-  }).join('');
-}
-document.getElementById('k_tbody').addEventListener('change', function(e){
-  var sel = e.target.closest('select.durum-select'); if(!sel) return;
-  var card = sel.closest('.row-card'); var id = card.getAttribute('data-id');
-  var row = kesimState.rows.find(function(r){ return r.id===id; });
-  if(!row) return;
-  row.durum = sel.value;
-  var nedenWrap = card.querySelector('.neden-wrap');
-  if(durumIsIncomlete(sel.value)){
-    nedenWrap.classList.add('visible');
-    nedenWrap.querySelector('textarea').focus();
-  } else {
-    nedenWrap.classList.remove('visible');
-    row.neden = '';
-  }
-  persist();
-});
-document.getElementById('k_tbody').addEventListener('input', function(e){
-  var card = e.target.closest('.row-card'); if(!card) return;
-  var id = card.getAttribute('data-id');
-  var row = kesimState.rows.find(function(r){ return r.id===id; });
-  if(!row) return;
-  var field = e.target.getAttribute('data-field');
-  if(field) { row[field] = e.target.value; persist(); }
-});
-document.getElementById('k_tbody').addEventListener('click', function(e){
-  var btn = e.target.closest('.mini-btn'); if(!btn) return;
-  var card = btn.closest('.row-card'); var id = card.getAttribute('data-id');
-  var idx = kesimState.rows.findIndex(function(r){ return r.id===id; });
-  if(idx<0) return;
-  var act = btn.getAttribute('data-act');
-  if(act==='del'){ kesimState.rows.splice(idx,1); }
-  else if(act==='up' && idx>0){ var tmp=kesimState.rows[idx-1]; kesimState.rows[idx-1]=kesimState.rows[idx]; kesimState.rows[idx]=tmp; }
-  else if(act==='down' && idx<kesimState.rows.length-1){ var tmp2=kesimState.rows[idx+1]; kesimState.rows[idx+1]=kesimState.rows[idx]; kesimState.rows[idx]=tmp2; }
-  persist(); renderKesimTable();
-});
-document.getElementById('k_addRowBtn').addEventListener('click', function(){
-  kesimState.rows.push({id:uid(), sinif:'', ders:'', durum:'Müfredata uygun olarak tamamlanmıştır.'});
-  persist(); renderKesimTable();
-});
-document.getElementById('k_qaAddBtn').addEventListener('click', function(){
-  var checked = Array.prototype.slice.call(document.querySelectorAll('#k_qaClasses input:checked')).map(function(c){ return c.value; });
-  var dersInput = document.getElementById('k_qaDers');
-  var ders = dersInput.value.trim();
-  var durumSel = document.getElementById('k_qaDurum').value;
-  var durum = durumSel==='__custom' ? '' : durumSel;
-  if(checked.length===0){ showToast('Önce en az bir sınıf/şube seçin.'); return; }
-  checked.forEach(function(sinif){
-    kesimState.rows.push({id:uid(), sinif:sinif, ders:ders, durum:durum});
-  });
-  document.querySelectorAll('#k_qaClasses input:checked').forEach(function(c){ c.checked=false; c.closest('.class-check').classList.remove('checked'); });
-  dersInput.value = '';
-  persist(); renderKesimTable();
-  showToast(checked.length+' satır eklendi.');
-});
-document.getElementById('k_fillDefaultBtn').addEventListener('click', function(){
-  if(kesimState.rows.length===0){ showToast('Önce satır ekleyin.'); return; }
-  kesimState.rows.forEach(function(r){ r.durum = 'Müfredata uygun olarak tamamlanmıştır.'; });
-  persist(); renderKesimTable();
-});
-document.getElementById('k_clearBtn').addEventListener('click', function(){
-  if(!confirm('Bu modüldeki taslak temizlensin mi? Bu işlem geri alınamaz.')) return;
-  kesimState = defaultKesimState(settings);
-  persist(); bindKesimTopFields(); renderKesimTable();
-  showToast('Taslak temizlendi.');
-});
-
-/* ============================================================ SETTINGS PANEL ============================================================ */
-function renderClassTags(editIdx){
-  var el = document.getElementById('s_classTags');
-  if(settings.siniflar.length===0){ el.innerHTML = '<span class="hint">Henüz sınıf eklenmedi.</span>'; return; }
-  el.innerHTML = settings.siniflar.map(function(c, i){
-    if(i===editIdx){
-      return '<span class="tag tag-edit" data-idx="'+i+'">'
-        + '<input class="tag-edit-input" type="text" value="'+escapeHtml(c)+'" data-arr="siniflar">'
-        + '<button class="tag-edit-ok" data-arr="siniflar" title="Kaydet">✓</button>'
-        + '<button class="tag-edit-cancel" title="İptal">✕</button>'
-        + '</span>';
-    }
-    return '<span class="tag" data-idx="'+i+'">'
-      + '<span class="reorder"><button data-act="up" title="Yukarı">▲</button><button data-act="down" title="Aşağı">▼</button></span>'
-      + escapeHtml(c)
-      + '<button data-act="edit" title="Düzenle">✎</button>'
-      + '<button data-act="del" title="Sil">✕</button></span>';
-  }).join('');
-  if(editIdx!==undefined){
-    var inp = el.querySelector('.tag-edit-input'); if(inp){ inp.focus(); inp.select(); }
-  }
-}
-function renderLessonTags(editIdx){
-  var el = document.getElementById('s_lessonTags');
-  if(settings.dersler.length===0){ el.innerHTML = '<span class="hint">Henüz ders eklenmedi.</span>'; return; }
-  el.innerHTML = settings.dersler.map(function(c, i){
-    if(i===editIdx){
-      return '<span class="tag tag-edit" data-idx="'+i+'">'
-        + '<input class="tag-edit-input" type="text" value="'+escapeHtml(c)+'" data-arr="dersler">'
-        + '<button class="tag-edit-ok" data-arr="dersler" title="Kaydet">✓</button>'
-        + '<button class="tag-edit-cancel" title="İptal">✕</button>'
-        + '</span>';
-    }
-    return '<span class="tag" data-idx="'+i+'">'
-      + '<span class="reorder"><button data-act="up" title="Yukarı">▲</button><button data-act="down" title="Aşağı">▼</button></span>'
-      + escapeHtml(c)
-      + '<button data-act="edit" title="Düzenle">✎</button>'
-      + '<button data-act="del" title="Sil">✕</button></span>';
-  }).join('');
-  if(editIdx!==undefined){
-    var inp = el.querySelector('.tag-edit-input'); if(inp){ inp.focus(); inp.select(); }
-  }
-}
-function refreshAllListUI(){
-  renderClassTags(); renderLessonTags(); refreshDatalists();
-  refreshQuickAddClasses('t_qaClasses'); refreshQuickAddClasses('k_qaClasses');
-}
-function showConfirmModal(icon, title, msg, hint, onOk){
-  document.getElementById('confirmIcon').textContent = icon;
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmMsg').innerHTML = msg;
-  var hintEl = document.getElementById('confirmHint');
-  hintEl.textContent = hint;
-  hintEl.hidden = !hint;
-  var overlay = document.getElementById('confirmOverlay');
-  overlay.hidden = false;
-  var okBtn = document.getElementById('confirmOk');
-  var cancelBtn = document.getElementById('confirmCancel');
-  function cleanup(){ overlay.hidden = true; okBtn.replaceWith(okBtn.cloneNode(true)); cancelBtn.replaceWith(cancelBtn.cloneNode(true)); }
-  document.getElementById('confirmOk').addEventListener('click', function(){ cleanup(); onOk(); }, {once:true});
-  document.getElementById('confirmCancel').addEventListener('click', function(){ cleanup(); }, {once:true});
-  overlay.addEventListener('click', function(e){ if(e.target===overlay){ cleanup(); } }, {once:true});
-}
-function usageCount(val, arrName){
-  var fieldName = arrName==='siniflar' ? 'sinif' : 'ders';
-  var n = 0;
-  teslimState.rows.forEach(function(r){ if(r[fieldName]===val) n++; });
-  kesimState.rows.forEach(function(r){ if(r[fieldName]===val) n++; });
-  return n;
-}
-function renameInRows(oldVal, newVal, arrName){
-  var fieldName = arrName==='siniflar' ? 'sinif' : 'ders';
-  teslimState.rows.forEach(function(r){ if(r[fieldName]===oldVal) r[fieldName]=newVal; });
-  kesimState.rows.forEach(function(r){ if(r[fieldName]===oldVal) r[fieldName]=newVal; });
-}
-function commitTagEdit(containerId, arrName){
-  var el = document.getElementById(containerId);
-  var inp = el.querySelector('.tag-edit-input'); if(!inp) return;
-  var tagEl = inp.closest('.tag'); var idx = parseInt(tagEl.getAttribute('data-idx'),10);
-  var newVal = inp.value.trim();
-  if(!newVal){ renderAllTags(); return; }
-  var arr = settings[arrName];
-  var oldVal = arr[idx];
-  if(newVal !== oldVal){
-    arr[idx] = newVal;
-    renameInRows(oldVal, newVal, arrName);
-  }
-  persist(); refreshAllListUI();
-  renderTeslimTable(); renderKesimTable();
-}
-function renderAllTags(){ renderClassTags(); renderLessonTags(); }
-function tagListHandler(containerId, arrName){
-  var el = document.getElementById(containerId);
-  el.addEventListener('click', function(e){
-    var btn = e.target.closest('button'); if(!btn) return;
-    var tagEl = btn.closest('.tag'); var idx = parseInt(tagEl.getAttribute('data-idx'),10);
-    var arr = settings[arrName];
-    // edit-mode buttons
-    if(btn.classList.contains('tag-edit-ok')){ commitTagEdit(containerId, arrName); return; }
-    if(btn.classList.contains('tag-edit-cancel')){ refreshAllListUI(); return; }
-    var act = btn.getAttribute('data-act');
-    if(act==='edit'){
-      if(arrName==='siniflar') renderClassTags(idx);
-      else renderLessonTags(idx);
-      return;
-    }
-    if(act==='del'){
-      var val = arr[idx];
-      var n = usageCount(val, arrName);
-      var typeName = arrName==='siniflar' ? 'sınıf' : 'ders';
-      var hint = n>0 ? 'Listeden silinir — satırlardaki veriler korunur.' : '';
-      var msg = n>0
-        ? '<b>'+escapeHtml(val)+'</b> adlı '+typeName+', <b>'+n+' satırda</b> kullanılıyor.'
-        : '<b>'+escapeHtml(val)+'</b> adlı '+typeName+' listeden kaldırılacak.';
-      showConfirmModal(
-        n>0 ? '⚠️' : '🗑',
-        '"'+val+'" Silinsin mi?',
-        msg,
-        hint,
-        function(){ arr.splice(idx,1); persist(); refreshAllListUI(); }
-      );
-      return;
-    }
-    else if(act==='up' && idx>0){ var t=arr[idx-1]; arr[idx-1]=arr[idx]; arr[idx]=t; }
-    else if(act==='down' && idx<arr.length-1){ var t2=arr[idx+1]; arr[idx+1]=arr[idx]; arr[idx]=t2; }
-    persist(); refreshAllListUI();
-  });
-  el.addEventListener('keydown', function(e){
-    if(!e.target.classList.contains('tag-edit-input')) return;
-    if(e.key==='Enter'){ e.preventDefault(); commitTagEdit(containerId, arrName); }
-    if(e.key==='Escape'){ refreshAllListUI(); }
-  });
-}
-tagListHandler('s_classTags','siniflar');
-tagListHandler('s_lessonTags','dersler');
-
-document.getElementById('s_classAddBtn').addEventListener('click', function(){
-  var input = document.getElementById('s_classInput');
-  var val = input.value.trim();
-  if(!val) return;
-  if(settings.siniflar.indexOf(val)===-1) settings.siniflar.push(val);
-  input.value=''; persist(); refreshAllListUI();
-});
-document.getElementById('s_classInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('s_classAddBtn').click(); } });
-
-document.getElementById('s_lessonAddBtn').addEventListener('click', function(){
-  var input = document.getElementById('s_lessonInput');
-  var val = input.value.trim();
-  if(!val) return;
-  if(settings.dersler.indexOf(val)===-1) settings.dersler.push(val);
-  input.value=''; persist(); refreshAllListUI();
-});
-document.getElementById('s_lessonInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('s_lessonAddBtn').click(); } });
-
-document.getElementById('s_bulkAddBtn').addEventListener('click', function(){
-  var start = clampInt(document.getElementById('s_bulkStart').value);
-  var end = clampInt(document.getElementById('s_bulkEnd').value);
-  var branches = document.getElementById('s_bulkBranches').value.split(',').map(function(b){ return b.trim(); }).filter(Boolean);
-  if(end < start || branches.length===0){ showToast('Geçerli bir aralık ve şube girin.'); return; }
-  var added = 0;
-  for(var g=start; g<=end; g++){
-    branches.forEach(function(b){
-      var val = g+b;
-      if(settings.siniflar.indexOf(val)===-1){ settings.siniflar.push(val); added++; }
-    });
-  }
-  persist(); refreshAllListUI();
-  showToast(added+' sınıf eklendi.');
-});
-
-var PRESET_LESSONS = ['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','İngilizce','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Teknoloji ve Tasarım','Bilişim Teknolojileri ve Yazılım','T.C. İnkılap Tarihi ve Atatürkçülük'];
-document.getElementById('s_lessonPresetBtn').addEventListener('click', function(){
-  var added = 0;
-  PRESET_LESSONS.forEach(function(l){ if(settings.dersler.indexOf(l)===-1){ settings.dersler.push(l); added++; } });
-  persist(); refreshAllListUI();
-  showToast(added+' ders eklendi.');
-});
-
-function bindSettingsTopFields(){
-  [['defTeslimAlanAd','defTeslimAlanAd'],['defTeslimAlanUnvan','defTeslimAlanUnvan'],['defOnaylayanAd','defOnaylayanAd'],['defOnaylayanUnvan','defOnaylayanUnvan']].forEach(function(pair){
-    var el = document.getElementById('s_'+pair[0]);
-    el.value = settings[pair[1]] || '';
-    el.addEventListener('input', function(){ settings[pair[1]] = el.value; persist(); });
-  });
-}
-
-/* Okul adı, ilçe/semt ve eğitim-öğretim yılı tek bir yerde (Ayarlar) saklanır;
-   her iki modüldeki ilgili alanlar bu değerle birlikte güncellenir, böylece
-   bu bilgiler tüm modüllerde aynı kaynaktan (Ayarlar) gelir. */
-function bindSharedSettingField(key, elementIds){
-  var els = elementIds.map(function(id){ return document.getElementById(id); }).filter(Boolean);
-  els.forEach(function(el){ el.value = settings[key] || ''; });
-  els.forEach(function(el){
-    el.addEventListener('input', function(){
-      settings[key] = el.value;
-      els.forEach(function(other){ if(other !== el) other.value = el.value; });
-      persist();
-    });
-  });
-}
-function bindSharedSettingFields(){
-  bindSharedSettingField('okulAdi', ['s_okulAdi','t_okulAdi','k_okulAdi']);
-  bindSharedSettingField('semt', ['s_semt','t_semt']);
-  bindEgitimYiliFields();
-}
-/* Eğitim-öğretim yılı, Ayarlar ve Yazılı Kâğıdı modülünde "2025/2026" biçiminde,
-   Ders Kesim Raporu modülünde ise şablona uygun "2025-2026" biçiminde gösterilir.
-   Hangi alandan değiştirilirse değiştirilsin, hepsi aynı kaynaktan (settings.egitimYili) güncellenir. */
-function refreshEgitimYiliInputs(){
-  var slash = settings.egitimYili || '';
-  var dash = slash.replace('/','-');
-  var s = document.getElementById('s_egitimYili');
-  var t = document.getElementById('t_egitimYili');
-  var k = document.getElementById('k_egitimYili');
-  if(s) s.value = slash;
-  if(t) t.value = slash;
-  if(k) k.value = dash;
-}
-function bindEgitimYiliFields(){
-  var s = document.getElementById('s_egitimYili');
-  var t = document.getElementById('t_egitimYili');
-  var k = document.getElementById('k_egitimYili');
-  refreshEgitimYiliInputs();
-  [s,t].forEach(function(el){
-    if(!el) return;
-    el.addEventListener('input', function(){ settings.egitimYili = el.value; refreshEgitimYiliInputs(); persist(); });
-  });
-  if(k){
-    k.addEventListener('input', function(){ settings.egitimYili = k.value.replace('-','/'); refreshEgitimYiliInputs(); persist(); });
-  }
-}
-/* Bu sürümden önce her modülün kendi okul adı/eğitim yılı kopyası vardı.
-   Daha önce girilmiş bir değer varsa ve Ayarlar henüz boşsa, kaybolmasın diye Ayarlar'a aktarılır. */
-function migrateLegacySharedFields(){
-  if(!settings.okulAdi && teslimState.okulAdi) settings.okulAdi = teslimState.okulAdi;
-  if(!settings.okulAdi && kesimState.okulAdi) settings.okulAdi = kesimState.okulAdi;
-  if(!settings.semt && teslimState.semt) settings.semt = teslimState.semt;
-  if(!settings.egitimYili && teslimState.egitimYili) settings.egitimYili = teslimState.egitimYili;
-  if(!settings.egitimYili && kesimState.egitimYili) settings.egitimYili = kesimState.egitimYili.replace('-','/');
-}
-
-document.getElementById('s_exportJsonBtn').addEventListener('click', function(){
-  var blob = new Blob([JSON.stringify(settings,null,2)], {type:'application/json'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'yil-sonu-islemleri-ayarlar.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-});
-document.getElementById('s_importJsonBtn').addEventListener('click', function(){ document.getElementById('s_importJsonInput').click(); });
-document.getElementById('s_importJsonInput').addEventListener('change', function(e){
-  var file = e.target.files[0]; if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(){
-    try{
-      var data = JSON.parse(reader.result);
-      settings = Object.assign(defaultSettings(), data);
-      persist(); applyTheme(); bindSettingsTopFields(); refreshAllListUI(); refreshNameChips();
-      showToast('Ayarlar içe aktarıldı.');
-    }catch(err){ showToast('Dosya okunamadı. Geçerli bir JSON seçin.'); }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
-document.getElementById('s_resetBtn').addEventListener('click', function(){
-  if(!confirm('Tüm ayarlar, sınıf/ders listeleri ve taslaklar silinecek. Devam edilsin mi?')) return;
-  localStorage.removeItem(LS.settings); localStorage.removeItem(LS.teslim); localStorage.removeItem(LS.kesim);
-  location.reload();
-});
-
-/* ============================================================ PREVIEW / DOCUMENT GENERATION ============================================================ */
-var currentPreviewType = null;
-
-function generateTeslimDocHTML(){
-  var sum1=0,sum2=0;
-  var rowsHtml = teslimState.rows.map(function(r, idx){
-    var d1=clampInt(r.donem1),d2=clampInt(r.donem2);
-    sum1+=d1; sum2+=d2;
-    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td><td class="rb-left">'+escapeHtml(r.ders)+'</td>'
-      +'<td>'+d1+'</td><td>'+d2+'</td><td>'+(d1+d2)+'</td></tr>';
-  }).join('');
-  var sumTotal=sum1+sum2;
-  if(!rowsHtml) rowsHtml='<tr><td colspan="6" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
-  var tarih=isoToTR(teslimState.tarih);
-  return '<div class="rb-title">Yazılı Kâğıdı Teslim Tutanağı</div>'
-    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞE')+'</p>'
-    +(settings.semt?'<p class="rb-to-sub">'+escapeHtml(settings.semt)+'</p>':'')
-    +'<p class="rb-body">'+escapeHtml(settings.egitimYili||'')+' Eğitim-Öğretim yılı içerisinde okutmuş olduğum derslerden yapmış olduğum yazılı sınavlarına ait sınav kâğıtlarının teslim alınması için;</p>'
-    +'<p class="rb-body">Gereğini bilgilerinize arz ederim.</p>'
-    +'<p class="rb-date-right">'+tarih+'</p>'
-    +'<table class="rb-table"><thead><tr>'
-      +'<th style="width:36px">No</th><th>Sınıf</th><th>Dersin Adı</th>'
-      +'<th>1.Dönem<br>(Top)</th><th>2.Dönem<br>(Top)</th><th>Toplam<br>(Top)</th>'
-    +'</tr></thead><tbody>'+rowsHtml+'</tbody>'
-    +'<tfoot><tr><td colspan="3" style="text-align:right;padding-right:8px;">TOPLAM</td>'
-      +'<td>'+sum1+'</td><td>'+sum2+'</td><td>'+sumTotal+'</td></tr></tfoot></table>'
-    +'<p class="rb-total-line">Toplam <strong>'+sumTotal+'</strong> top sınav kâğıdı teslim edilmiştir.</p>'
-    +'<div class="rb-signatures">'
-      +'<div class="rb-sig-box">'
-        +'<div class="rb-sig-label">Teslim Eden</div>'
-        +'<div class="rb-sig-spacer"></div>'
-        +'<div class="rb-sig-line"></div>'
-        +'<div class="rb-sig-name">'+escapeHtml(teslimState.ogretmenAdi||'Ad Soyad')+'</div>'
-        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimEdenUnvan||'Öğretmeni')+'</div>'
-        +'<div class="rb-sig-date">'+tarih+'</div>'
-      +'</div>'
-      +'<div class="rb-sig-box">'
-        +'<div class="rb-sig-label">Teslim Alan</div>'
-        +'<div class="rb-sig-spacer"></div>'
-        +'<div class="rb-sig-line"></div>'
-        +'<div class="rb-sig-name">'+escapeHtml(teslimState.teslimAlanAd||'Ad Soyad')+'</div>'
-        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimAlanUnvan||'Unvan')+'</div>'
-        +'<div class="rb-sig-date">'+tarih+'</div>'
-      +'</div>'
-    +'</div>';
-}
-function generateKesimDocHTML(){
-  var rowsHtml = kesimState.rows.map(function(r, idx){
-    var durumCell = escapeHtml(r.durum)+(r.neden?'<br><em style="color:#c00;font-size:10px;">Neden: '+escapeHtml(r.neden)+'</em>':'');
-    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td>'
-      +'<td class="rb-left">'+escapeHtml(r.ders)+'</td><td class="rb-left">'+durumCell+'</td></tr>';
-  }).join('');
-  if(!rowsHtml) rowsHtml='<tr><td colspan="4" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';
-  var tarih=isoToTR(kesimState.tarih);
-  return '<div class="rb-title">Ders Kesim Raporu</div>'
-    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞÜNE')+'</p>'
-    +'<p class="rb-body">'+escapeHtml((settings.egitimYili||'').replace('/','-'))+' Eğitim-Öğretim yılında ders verdiğim sınıflara ait ders kesim durumu, sınıflar bazında ayrıntılı olarak aşağıdaki tabloda gösterilmiştir.</p>'
-    +'<p class="rb-body">Bilgilerinize arz ederim.</p>'
-    +'<table class="rb-table"><thead><tr>'
-      +'<th style="width:36px">No</th><th style="width:70px">Sınıf / Şube</th>'
-      +'<th>Dersin Adı</th><th>Ders Kesim Durumu</th>'
-    +'</tr></thead><tbody>'+rowsHtml+'</tbody></table>'
-    +'<div class="rb-signatures">'
-      +'<div class="rb-sig-box">'
-        +'<div class="rb-sig-label">Ders Öğretmeni</div>'
-        +'<div class="rb-sig-line"></div>'
-        +'<div class="rb-sig-name">'+escapeHtml(kesimState.dersOgretmeniAdi||'Ad Soyad')+'</div>'
-        +'<div class="rb-sig-role">Öğretmen</div>'
-        +'<div class="rb-sig-date">'+tarih+'</div>'
-      +'</div>'
-      +'<div class="rb-sig-box">'
-        +'<div class="rb-sig-label">Onaylayan</div>'
-        +'<div class="rb-sig-line"></div>'
-        +'<div class="rb-sig-name">'+escapeHtml(kesimState.onaylayanAd||'Ad Soyad')+'</div>'
-        +'<div class="rb-sig-role">'+escapeHtml(kesimState.onaylayanUnvan||'Unvan')+'</div>'
-        +'<div class="rb-sig-date">'+tarih+'</div>'
-      +'</div>'
-    +'</div>';
-}
-
-function openPreview(type){
-  currentPreviewType = type;
-  document.getElementById('previewDoc').innerHTML = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();
-  document.getElementById('previewOverlay').hidden = false;
-}
-function getDocCSS(){
-  // Belge için gerekli tüm CSS'i topla
-  var css = '';
-  for(var i=0;i<document.styleSheets.length;i++){
-    try{
-      var rules = document.styleSheets[i].cssRules||document.styleSheets[i].rules;
-      for(var j=0;j<rules.length;j++) css += rules[j].cssText + '\n';
-    }catch(e){}
-  }
-  return css;
-}
-function downloadDoc(type){
-  if(typeof window.jspdf === 'undefined'){
-    showToast('PDF kütüphanesi yükleniyor, lütfen bekleyin…'); return;
-  }
-  var fname = type==='teslim' ? 'Yazili_Kagidi_Teslim_Tutanagi' : 'Ders_Kesim_Raporu';
-  var bodyHtml = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();
-
-  // Geçici gizli div oluştur, belge HTML'ini render et
-  var wrap = document.createElement('div');
-  wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;'
-    +'font-family:"Times New Roman",Times,serif;font-size:12px;line-height:1.45;color:#15181a;'
-    +'padding:56px 75px;box-sizing:border-box;';
-  wrap.innerHTML = ''
-    +'<style>'
-    +'.rb-title{text-align:center;font-size:13px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase;}'
-    +'.rb-to{font-weight:700;font-size:12px;margin:0 0 1px;}'
-    +'.rb-to-sub{font-weight:700;font-size:12px;margin:0 0 8px;}'
-    +'.rb-body{font-size:12px;margin:0 0 6px;text-align:justify;}'
-    +'.rb-date-right{text-align:right;font-size:12px;margin:8px 0 2px;}'
-    +'table.rb-table{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:11px;}'
-    +'table.rb-table th,table.rb-table td{border:1px solid #15181a;padding:3px 5px;text-align:center;}'
-    +'table.rb-table th{font-weight:700;font-size:10px;background:#f0f0f0;}'
-    +'table.rb-table td.rb-left{text-align:left;}'
-    +'table.rb-table tfoot td{font-weight:700;}'
-    +'.rb-total-line{font-size:12px;margin:4px 0 10px;}'
-    +'.rb-signatures{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:20px;}'
-    +'.rb-sig-box{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;}'
-    +'.rb-sig-spacer{flex:1;min-height:8px;}'
-    +'.rb-sig-label{font-size:11px;font-style:italic;margin-bottom:24px;}'
-    +'.rb-sig-line{border-top:1px solid #15181a;width:85%;margin:0 auto 4px;}'
-    +'.rb-sig-name{font-weight:700;font-size:12px;}'
-    +'.rb-sig-role{font-size:11px;margin-top:1px;}'
-    +'.rb-sig-date{font-size:11px;margin-top:2px;color:#3a3f3f;}'
-    +'</style>'
-    + bodyHtml;
-  document.body.appendChild(wrap);
-
-  var pdf = new window.jspdf.jsPDF({
-    orientation:'portrait', unit:'mm', format:'a4',
-    putOnlyUsedFonts:true, compress:true
-  });
-
-  pdf.html(wrap, {
-    callback: function(doc){
-      document.body.removeChild(wrap);
-      doc.save(fname+'.pdf');
-    },
-    x: 0, y: 0,
-    width: 210,
-    windowWidth: 794,
-    margin: [0,0,0,0],
-    autoPaging: 'text',
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff'
-    }
-  });
-}
-function printDoc(type){
-  currentPreviewType = type;
-  document.getElementById('previewDoc').innerHTML = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();
-  document.getElementById('previewOverlay').hidden = false;
+  return String(str==null?'':str).replace(/[&<>"']/g, function(c){\n    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];\n  });\n}\nfunction showToast(msg){\n  var t = document.getElementById('toast');\n  t.textContent = msg;\n  t.classList.add('show');\n  clearTimeout(t._timer);\n  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);\n}\n\n/* ============================================================ STORAGE ============================================================ */\nvar LS = {\n  settings:'yse_settings_v1',\n  teslim:'yse_teslim_v1',\n  kesim:'yse_kesim_v1'\n};\n\nfunction loadJSON(key, fallback){\n  try{\n    var raw = localStorage.getItem(key);\n    if(!raw) return fallback;\n    var parsed = JSON.parse(raw);\n    return parsed || fallback;\n  }catch(e){ return fallback; }\n}\nfunction saveJSON(key, val){\n  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ /* storage full / unavailable */ }\n}\n\nfunction defaultSettings(){\n  return {\n    okulAdi:'', semt:'', egitimYili: defaultEgitimYili(),\n    siniflar:[], dersler:[],\n    defTeslimAlanAd:'', defTeslimAlanUnvan:'Müdür Yardımcısı',\n    defOnaylayanAd:'', defOnaylayanUnvan:'Müdür Yardımcısı',\n    recentNames:[],\n    theme:'light'\n  };\n}\nfunction defaultTeslimState(s){\n  return {\n    tarih:todayISO(),\n    ogretmenAdi:'', teslimEdenUnvan:'Öğretmeni',\n    rows:[],\n    teslimAlanAd:s.defTeslimAlanAd, teslimAlanUnvan:s.defTeslimAlanUnvan\n  };\n}\nfunction defaultKesimState(s){\n  return {\n    tarih:todayISO(),\n    dersOgretmeniAdi:'',\n    rows:[],\n    onaylayanAd:s.defOnaylayanAd, onaylayanUnvan:s.defOnaylayanUnvan\n  };\n}\n\nvar settings; try { settings = loadJSON(LS.settings, null) || defaultSettings(); } catch(e) { settings = defaultSettings(); }\nvar teslimState; try { teslimState = loadJSON(LS.teslim, null) || defaultTeslimState(settings); } catch(e) { teslimState = defaultTeslimState(settings); }\nvar kesimState; try { kesimState = loadJSON(LS.kesim, null) || defaultKesimState(settings); } catch(e) { kesimState = defaultKesimState(settings); }\n\nfunction persist(){\n  saveJSON(LS.settings, settings);\n  saveJSON(LS.teslim, teslimState);\n  saveJSON(LS.kesim, kesimState);\n}\n\nfunction rememberName(name){\n  name = (name||'').trim();\n  if(!name) return;\n  settings.recentNames = settings.recentNames.filter(function(n){ return n.toLowerCase() !== name.toLowerCase(); });\n  settings.recentNames.unshift(name);\n  settings.recentNames = settings.recentNames.slice(0,8);\n}\n\n/* ============================================================ THEME ============================================================ */\nfunction applyTheme(){\n  document.body.setAttribute('data-theme', settings.theme);\n  document.getElementById('themeToggle').textContent = settings.theme === 'dark' ? '☀️' : '🌙';\n}\ndocument.getElementById('themeToggle').addEventListener('click', function(){\n  settings.theme = settings.theme === 'dark' ? 'light' : 'dark';\n  applyTheme(); persist();\n});\n\n/* ============================================================ NAVIGATION (çekmece menü + sayfalar) ============================================================ */\nvar panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));\nvar drawerEl = document.getElementById('drawer');\nvar drawerBackdrop = document.getElementById('drawerBackdrop');\n\nfunction showPanel(name){\n  panels.forEach(function(p){ p.setAttribute('data-active', p.getAttribute('data-panel')===name ? 'true':'false'); });\n  document.querySelectorAll('.drawer-link').forEach(function(b){\n    var isActive = b.getAttribute('data-goto')===name;\n    b.classList.toggle('active', isActive);\n    b.setAttribute('aria-current', isActive ? 'page' : 'false');\n  });\n  closeDrawer();\n  window.scrollTo(0,0);\n}\nfunction openDrawer(){\n  drawerEl.classList.add('open'); drawerBackdrop.hidden = false; drawerEl.setAttribute('aria-hidden','false');\n}\nfunction closeDrawer(){\n  drawerEl.classList.remove('open'); drawerBackdrop.hidden = true; drawerEl.setAttribute('aria-hidden','true');\n}\ndocument.getElementById('menuToggle').addEventListener('click', openDrawer);\ndocument.getElementById('drawerCloseBtn').addEventListener('click', closeDrawer);\ndrawerBackdrop.addEventListener('click', closeDrawer);\ndocument.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });\ndocument.querySelectorAll('[data-goto]').forEach(function(el){\n  el.addEventListener('click', function(){ showPanel(el.getAttribute('data-goto')); });\n});\n\n/* ============================================================ DATALISTS ============================================================ */\nfunction refreshDatalists(){\n  var dlS = document.getElementById('dl-siniflar');\n  var dlD = document.getElementById('dl-dersler');\n  dlS.innerHTML = settings.siniflar.map(function(c){ return '<option value="'+escapeHtml(c)+'">'; }).join('');\n  dlD.innerHTML = settings.dersler.map(function(c){ return '<option value="'+escapeHtml(c)+'">'; }).join('');\n}\n\nfunction refreshNameChips(){\n  var html = settings.recentNames.map(function(n){\n    return '<button type="button" class="chip-suggest" data-name="'+escapeHtml(n)+'">'+escapeHtml(n)+'</button>';\n  }).join('');\n  ['t_ogretmenChips','t_teslimAlanChips','k_ogretmenChips','k_onaylayanChips'].forEach(function(id){\n    document.getElementById(id).innerHTML = html;\n  });\n}\ndocument.addEventListener('click', function(e){\n  var chip = e.target.closest('.chip-suggest');\n  if(!chip) return;\n  var box = chip.closest('.chips');\n  var input = box.previousElementSibling;\n  if(input && (input.tagName==='INPUT')){ input.value = chip.getAttribute('data-name'); input.dispatchEvent(new Event('input')); }\n});\n\n/* ============================================================ QUICK-ADD CLASS CHECKBOXES ============================================================ */\nfunction refreshQuickAddClasses(containerId){\n  var el = document.getElementById(containerId);\n  if(settings.siniflar.length===0){\n    el.innerHTML = '<span class="hint">Önce Ayarlar sekmesinden sınıf ekleyin.</span>';\n    return;\n  }\n  el.innerHTML = settings.siniflar.map(function(c){\n    return '<label class="class-check"><input type="checkbox" value="'+escapeHtml(c)+'"> '+escapeHtml(c)+'</label>';\n  }).join('');\n  el.querySelectorAll('input[type=checkbox]').forEach(function(cb){\n    cb.addEventListener('change', function(){ cb.closest('.class-check').classList.toggle('checked', cb.checked); });\n  });\n}\n\n/* ============================================================ MODULE: TESLİM ============================================================ */\nvar tFields = ['tarih','ogretmenAdi'];\nfunction bindTeslimTopFields(){\n  tFields.forEach(function(key){\n    var el = document.getElementById('t_'+key);\n    el.value = teslimState[key] || '';\n    el.addEventListener('input', function(){ teslimState[key] = el.value; if(key==='ogretmenAdi'){ } persist(); renderTeslimDerived(); });\n    el.addEventListener('blur', function(){ if(key==='ogretmenAdi'){ rememberName(el.value); refreshNameChips(); persist(); } });\n  });\n  var unvanEl = document.getElementById('t_teslimEdenUnvan');\n  unvanEl.value = teslimState.teslimEdenUnvan || 'Öğretmeni';\n  unvanEl.addEventListener('input', function(){ teslimState.teslimEdenUnvan = unvanEl.value; persist(); });\n\n  var alanAd = document.getElementById('t_teslimAlanAd');\n  alanAd.value = teslimState.teslimAlanAd || '';\n  alanAd.addEventListener('input', function(){ teslimState.teslimAlanAd = alanAd.value; persist(); });\n  alanAd.addEventListener('blur', function(){ rememberName(alanAd.value); refreshNameChips(); persist(); });\n\n  var alanUnvan = document.getElementById('t_teslimAlanUnvan');\n  alanUnvan.value = teslimState.teslimAlanUnvan || '';\n  alanUnvan.addEventListener('input', function(){ teslimState.teslimAlanUnvan = alanUnvan.value; persist(); });\n\n  document.getElementById('t_teslimEdenAdGosterim').value = teslimState.ogretmenAdi || '';\n}\nfunction syncTeslimEdenGosterim(){\n  document.getElementById('t_teslimEdenAdGosterim').value = teslimState.ogretmenAdi || '';\n}\n\nfunction renderTeslimTable(){\n  var tbody = document.getElementById('t_tbody');\n  if(teslimState.rows.length===0){\n    tbody.innerHTML = '<div class="row-list-empty">Henüz satır eklenmedi. Yukarıdaki \u201cHızlı Satır Ekle\u201d panelini kullanın veya \u201c＋ Satır Ekle\u201d ile başlayın.</div>';\n  } else {\n    tbody.innerHTML = teslimState.rows.map(function(row, idx){\n      var toplam = clampInt(row.donem1) + clampInt(row.donem2);\n      return '<div class="row-card" data-id="'+row.id+'">'\n        + '<div class="row-card-head">'\n          + '<span class="row-num">'+(idx+1)+'</span>'\n          + '<div class="row-actions">'\n            + '<button class="mini-btn" data-act="up" title="Yukarı taşı">▲</button>'\n            + '<button class="mini-btn" data-act="down" title="Aşağı taşı">▼</button>'\n            + '<button class="mini-btn" data-act="del" title="Sil">🗑</button>'\n          + '</div>'\n        + '</div>'\n        + '<div class="row-card-body teslim-grid">'\n          + '<div class="rc-field"><span class="rc-label">Sınıf</span><input type="text" list="dl-siniflar" data-field="sinif" value="'+escapeHtml(row.sinif)+'" placeholder="Sınıf"></div>'\n          + '<div class="rc-field"><span class="rc-label">Dersin Adı</span><input type="text" list="dl-dersler" data-field="ders" value="'+escapeHtml(row.ders)+'" placeholder="Ders"></div>'\n          + '<div class="rc-field"><span class="rc-label">1.Dönem</span><input type="number" min="0" data-field="donem1" value="'+(row.donem1||'')+'" placeholder="0"></div>'\n          + '<div class="rc-field"><span class="rc-label">2.Dönem</span><input type="number" min="0" data-field="donem2" value="'+(row.donem2||'')+'" placeholder="0"></div>'\n          + '<div class="rc-total"><span class="rc-total-label">Toplam</span><span class="rc-total-val">'+toplam+'</span></div>'\n        + '</div>'\n        + '</div>';\n    }).join('');\n  }\n  renderTeslimDerived();\n}\nfunction renderTeslimDerived(){\n  var sum1=0,sum2=0;\n  teslimState.rows.forEach(function(r){ sum1+=clampInt(r.donem1); sum2+=clampInt(r.donem2); });\n  var sumTotal = sum1+sum2;\n  document.getElementById('t_sum1').textContent = sum1;\n  document.getElementById('t_sum2').textContent = sum2;\n  document.getElementById('t_sumTotal').textContent = sumTotal;\n  document.getElementById('t_sentenceNum1').textContent = sumTotal;\n  document.getElementById('t_sentenceNum2').textContent = sumTotal;\n}\ndocument.getElementById('t_tbody').addEventListener('input', function(e){\n  var card = e.target.closest('.row-card'); if(!card) return;\n  var id = card.getAttribute('data-id');\n  var row = teslimState.rows.find(function(r){ return r.id===id; });\n  if(!row) return;\n  var field = e.target.getAttribute('data-field');\n  row[field] = e.target.type==='number' ? clampInt(e.target.value) : e.target.value;\n  persist();\n  if(field==='donem1' || field==='donem2'){\n    var toplamVal = card.querySelector('.rc-total-val');\n    toplamVal.textContent = clampInt(row.donem1)+clampInt(row.donem2);\n    renderTeslimDerived();\n  }\n});\ndocument.getElementById('t_tbody').addEventListener('click', function(e){\n  var btn = e.target.closest('.mini-btn'); if(!btn) return;\n  var card = btn.closest('.row-card'); var id = card.getAttribute('data-id');\n  var idx = teslimState.rows.findIndex(function(r){ return r.id===id; });\n  if(idx<0) return;\n  var act = btn.getAttribute('data-act');\n  if(act==='del'){ teslimState.rows.splice(idx,1); }\n  else if(act==='up' && idx>0){ var tmp=teslimState.rows[idx-1]; teslimState.rows[idx-1]=teslimState.rows[idx]; teslimState.rows[idx]=tmp; }\n  else if(act==='down' && idx<teslimState.rows.length-1){ var tmp2=teslimState.rows[idx+1]; teslimState.rows[idx+1]=teslimState.rows[idx]; teslimState.rows[idx]=tmp2; }\n  persist(); renderTeslimTable();\n});\ndocument.getElementById('t_addRowBtn').addEventListener('click', function(){\n  teslimState.rows.push({id:uid(), sinif:'', ders:'', donem1:'', donem2:''});\n  persist(); renderTeslimTable();\n});\ndocument.getElementById('t_qaAddBtn').addEventListener('click', function(){\n  var checked = Array.prototype.slice.call(document.querySelectorAll('#t_qaClasses input:checked')).map(function(c){ return c.value; });\n  var dersInput = document.getElementById('t_qaDers');\n  var ders = dersInput.value.trim();\n  if(checked.length===0){ showToast('Önce en az bir sınıf seçin.'); return; }\n  checked.forEach(function(sinif){\n    teslimState.rows.push({id:uid(), sinif:sinif, ders:ders, donem1:'', donem2:''});\n  });\n  document.querySelectorAll('#t_qaClasses input:checked').forEach(function(c){ c.checked=false; c.closest('.class-check').classList.remove('checked'); });\n  dersInput.value = '';\n  persist(); renderTeslimTable();\n  showToast(checked.length+' satır eklendi.');\n});\ndocument.getElementById('t_clearBtn').addEventListener('click', function(){\n  if(!confirm('Bu modüldeki taslak temizlensin mi? Bu işlem geri alınamaz.')) return;\n  teslimState = defaultTeslimState(settings);\n  persist(); bindTeslimTopFields(); renderTeslimTable();\n  showToast('Taslak temizlendi.');\n});\n\n/* ============================================================ MODULE: KESİM ============================================================ */\nvar kFields = ['tarih','dersOgretmeniAdi'];\nfunction bindKesimTopFields(){\n  kFields.forEach(function(key){\n    var el = document.getElementById('k_'+key);\n    el.value = kesimState[key] || '';\n    el.addEventListener('input', function(){ kesimState[key]=el.value; persist(); });\n    el.addEventListener('blur', function(){ if(key==='dersOgretmeniAdi'){ rememberName(el.value); refreshNameChips(); persist(); } });\n  });\n  var onayAd = document.getElementById('k_onaylayanAd');\n  onayAd.value = kesimState.onaylayanAd || '';\n  onayAd.addEventListener('input', function(){ kesimState.onaylayanAd = onayAd.value; persist(); });\n  onayAd.addEventListener('blur', function(){ rememberName(onayAd.value); refreshNameChips(); persist(); });\n\n  var onayUnvan = document.getElementById('k_onaylayanUnvan');\n  onayUnvan.value = kesimState.onaylayanUnvan || '';\n  onayUnvan.addEventListener('input', function(){ kesimState.onaylayanUnvan = onayUnvan.value; persist(); });\n}\n\nfunction durumIsIncomlete(d){\n  return d==='Müfredat kısmen tamamlanmıştır.' || d==='Müfredata uygun olarak tamamlanamamıştır.';\n}\nfunction makeDurumSelect(val){\n  var opts = [\n    'Müfredata uygun olarak tamamlanmıştır.',\n    'Müfredat kısmen tamamlanmıştır.',\n    'Müfredata uygun olarak tamamlanamamıştır.'\n  ];\n  return opts.map(function(o){\n    return '<option value="'+escapeHtml(o)+'"'+(val===o?' selected':'')+'>'+escapeHtml(o)+'</option>';\n  }).join('');\n}\nfunction renderKesimTable(){\n  var tbody = document.getElementById('k_tbody');\n  if(kesimState.rows.length===0){\n    tbody.innerHTML = '<div class="row-list-empty">Henüz satır eklenmedi. Yukarıdaki \u201cHızlı Satır Ekle\u201d panelini kullanın veya \u201c＋ Satır Ekle\u201d ile başlayın.</div>';\n    return;\n  }\n  tbody.innerHTML = kesimState.rows.map(function(row, idx){\n    var showNeden = durumIsIncomlete(row.durum);\n    return '<div class="row-card" data-id="'+row.id+'">'\n      + '<div class="row-card-head">'\n        + '<span class="row-num">'+(idx+1)+'</span>'\n        + '<div class="row-actions">'\n          + '<button class="mini-btn" data-act="up" title="Yukarı taşı">▲</button>'\n          + '<button class="mini-btn" data-act="down" title="Aşağı taşı">▼</button>'\n          + '<button class="mini-btn" data-act="del" title="Sil">🗑</button>'\n        + '</div>'\n      + '</div>'\n      + '<div class="row-card-body kesim-grid">'\n        + '<div class="rc-field"><span class="rc-label">Sınıf / Şube</span><input type="text" list="dl-siniflar" data-field="sinif" value="'+escapeHtml(row.sinif)+'" placeholder="Sınıf"></div>'\n        + '<div class="rc-field"><span class="rc-label">Dersin Adı</span><input type="text" list="dl-dersler" data-field="ders" value="'+escapeHtml(row.ders)+'" placeholder="Ders"></div>'\n        + '<div class="rc-field"><span class="rc-label">Ders Kesim Durumu</span><select class="durum-select" data-field="durum">'+makeDurumSelect(row.durum)+'</select></div>'\n        + '<div class="rc-field neden-wrap'+(showNeden?' visible':'')+'"><span class="neden-label">⚠ Kazandırılmama / Eksik Kalma Nedeni</span><textarea data-field="neden" placeholder="Kazanımın tam olarak gerçekleşmeme nedenini yazınız…">'+escapeHtml(row.neden||'')+'</textarea></div>'\n      + '</div>'\n      + '</div>';\n  }).join('');\n}\ndocument.getElementById('k_tbody').addEventListener('change', function(e){\n  var sel = e.target.closest('select.durum-select'); if(!sel) return;\n  var card = sel.closest('.row-card'); var id = card.getAttribute('data-id');\n  var row = kesimState.rows.find(function(r){ return r.id===id; });\n  if(!row) return;\n  row.durum = sel.value;\n  var nedenWrap = card.querySelector('.neden-wrap');\n  if(durumIsIncomlete(sel.value)){\n    nedenWrap.classList.add('visible');\n    nedenWrap.querySelector('textarea').focus();\n  } else {\n    nedenWrap.classList.remove('visible');\n    row.neden = '';\n  }\n  persist();\n});\ndocument.getElementById('k_tbody').addEventListener('input', function(e){\n  var card = e.target.closest('.row-card'); if(!card) return;\n  var id = card.getAttribute('data-id');\n  var row = kesimState.rows.find(function(r){ return r.id===id; });\n  if(!row) return;\n  var field = e.target.getAttribute('data-field');\n  if(field) { row[field] = e.target.value; persist(); }\n});\ndocument.getElementById('k_tbody').addEventListener('click', function(e){\n  var btn = e.target.closest('.mini-btn'); if(!btn) return;\n  var card = btn.closest('.row-card'); var id = card.getAttribute('data-id');\n  var idx = kesimState.rows.findIndex(function(r){ return r.id===id; });\n  if(idx<0) return;\n  var act = btn.getAttribute('data-act');\n  if(act==='del'){ kesimState.rows.splice(idx,1); }\n  else if(act==='up' && idx>0){ var tmp=kesimState.rows[idx-1]; kesimState.rows[idx-1]=kesimState.rows[idx]; kesimState.rows[idx]=tmp; }\n  else if(act==='down' && idx<kesimState.rows.length-1){ var tmp2=kesimState.rows[idx+1]; kesimState.rows[idx+1]=kesimState.rows[idx]; kesimState.rows[idx]=tmp2; }\n  persist(); renderKesimTable();\n});\ndocument.getElementById('k_addRowBtn').addEventListener('click', function(){\n  kesimState.rows.push({id:uid(), sinif:'', ders:'', durum:'Müfredata uygun olarak tamamlanmıştır.'});\n  persist(); renderKesimTable();\n});\ndocument.getElementById('k_qaAddBtn').addEventListener('click', function(){\n  var checked = Array.prototype.slice.call(document.querySelectorAll('#k_qaClasses input:checked')).map(function(c){ return c.value; });\n  var dersInput = document.getElementById('k_qaDers');\n  var ders = dersInput.value.trim();\n  var durumSel = document.getElementById('k_qaDurum').value;\n  var durum = durumSel==='__custom' ? '' : durumSel;\n  if(checked.length===0){ showToast('Önce en az bir sınıf/şube seçin.'); return; }\n  checked.forEach(function(sinif){\n    kesimState.rows.push({id:uid(), sinif:sinif, ders:ders, durum:durum});\n  });\n  document.querySelectorAll('#k_qaClasses input:checked').forEach(function(c){ c.checked=false; c.closest('.class-check').classList.remove('checked'); });\n  dersInput.value = '';\n  persist(); renderKesimTable();\n  showToast(checked.length+' satır eklendi.');\n});\ndocument.getElementById('k_fillDefaultBtn').addEventListener('click', function(){\n  if(kesimState.rows.length===0){ showToast('Önce satır ekleyin.'); return; }\n  kesimState.rows.forEach(function(r){ r.durum = 'Müfredata uygun olarak tamamlanmıştır.'; });\n  persist(); renderKesimTable();\n});\ndocument.getElementById('k_clearBtn').addEventListener('click', function(){\n  if(!confirm('Bu modüldeki taslak temizlensin mi? Bu işlem geri alınamaz.')) return;\n  kesimState = defaultKesimState(settings);\n  persist(); bindKesimTopFields(); renderKesimTable();\n  showToast('Taslak temizlendi.');\n});\n\n/* ============================================================ SETTINGS PANEL ============================================================ */\nfunction renderClassTags(editIdx){\n  var el = document.getElementById('s_classTags');\n  if(settings.siniflar.length===0){ el.innerHTML = '<span class="hint">Henüz sınıf eklenmedi.</span>'; return; }\n  el.innerHTML = settings.siniflar.map(function(c, i){\n    if(i===editIdx){\n      return '<span class="tag tag-edit" data-idx="'+i+'">'\n        + '<input class="tag-edit-input" type="text" value="'+escapeHtml(c)+'" data-arr="siniflar">'\n        + '<button class="tag-edit-ok" data-arr="siniflar" title="Kaydet">✓</button>'\n        + '<button class="tag-edit-cancel" title="İptal">✕</button>'\n        + '</span>';\n    }\n    return '<span class="tag" data-idx="'+i+'">'\n      + '<span class="reorder"><button data-act="up" title="Yukarı">▲</button><button data-act="down" title="Aşağı">▼</button></span>'\n      + escapeHtml(c)\n      + '<button data-act="edit" title="Düzenle">✎</button>'\n      + '<button data-act="del" title="Sil">✕</button></span>';\n  }).join('');\n  if(editIdx!==undefined){\n    var inp = el.querySelector('.tag-edit-input'); if(inp){ inp.focus(); inp.select(); }\n  }\n}\nfunction renderLessonTags(editIdx){\n  var el = document.getElementById('s_lessonTags');\n  if(settings.dersler.length===0){ el.innerHTML = '<span class="hint">Henüz ders eklenmedi.</span>'; return; }\n  el.innerHTML = settings.dersler.map(function(c, i){\n    if(i===editIdx){\n      return '<span class="tag tag-edit" data-idx="'+i+'">'\n        + '<input class="tag-edit-input" type="text" value="'+escapeHtml(c)+'" data-arr="dersler">'\n        + '<button class="tag-edit-ok" data-arr="dersler" title="Kaydet">✓</button>'\n        + '<button class="tag-edit-cancel" title="İptal">✕</button>'\n        + '</span>';\n    }\n    return '<span class="tag" data-idx="'+i+'">'\n      + '<span class="reorder"><button data-act="up" title="Yukarı">▲</button><button data-act="down" title="Aşağı">▼</button></span>'\n      + escapeHtml(c)\n      + '<button data-act="edit" title="Düzenle">✎</button>'\n      + '<button data-act="del" title="Sil">✕</button></span>';\n  }).join('');\n  if(editIdx!==undefined){\n    var inp = el.querySelector('.tag-edit-input'); if(inp){ inp.focus(); inp.select(); }\n  }\n}\nfunction refreshAllListUI(){\n  renderClassTags(); renderLessonTags(); refreshDatalists();\n  refreshQuickAddClasses('t_qaClasses'); refreshQuickAddClasses('k_qaClasses');\n}\nfunction showConfirmModal(icon, title, msg, hint, onOk){\n  document.getElementById('confirmIcon').textContent = icon;\n  document.getElementById('confirmTitle').textContent = title;\n  document.getElementById('confirmMsg').innerHTML = msg;\n  var hintEl = document.getElementById('confirmHint');\n  hintEl.textContent = hint;\n  hintEl.hidden = !hint;\n  var overlay = document.getElementById('confirmOverlay');\n  overlay.hidden = false;\n  var okBtn = document.getElementById('confirmOk');\n  var cancelBtn = document.getElementById('confirmCancel');\n  var cleanup = function(){ overlay.hidden = true; okBtn.replaceWith(okBtn.cloneNode(true)); cancelBtn.replaceWith(cancelBtn.cloneNode(true)); };\n  document.getElementById('confirmOk').addEventListener('click', function(){ cleanup(); onOk(); }, {once:true});\n  document.getElementById('confirmCancel').addEventListener('click', function(){ cleanup(); }, {once:true});\n  overlay.addEventListener('click', function(e){ if(e.target===overlay){ cleanup(); } }, {once:true});\n}\nfunction usageCount(val, arrName){\n  var fieldName = arrName==='siniflar' ? 'sinif' : 'ders';\n  var n = 0;\n  teslimState.rows.forEach(function(r){ if(r[fieldName]===val) n++; });\n  kesimState.rows.forEach(function(r){ if(r[fieldName]===val) n++; });\n  return n;\n}\nfunction renameInRows(oldVal, newVal, arrName){\n  var fieldName = arrName==='siniflar' ? 'sinif' : 'ders';\n  teslimState.rows.forEach(function(r){ if(r[fieldName]===oldVal) r[fieldName]=newVal; });\n  kesimState.rows.forEach(function(r){ if(r[fieldName]===oldVal) r[fieldName]=newVal; });\n}\nfunction commitTagEdit(containerId, arrName){\n  var el = document.getElementById(containerId);\n  var inp = el.querySelector('.tag-edit-input'); if(!inp) return;\n  var tagEl = inp.closest('.tag'); var idx = parseInt(tagEl.getAttribute('data-idx'),10);\n  var newVal = inp.value.trim();\n  if(!newVal){ renderAllTags(); return; }\n  var arr = settings[arrName];\n  var oldVal = arr[idx];\n  if(newVal !== oldVal){\n    arr[idx] = newVal;\n    renameInRows(oldVal, newVal, arrName);\n  }\n  persist(); refreshAllListUI();\n  renderTeslimTable(); renderKesimTable();\n}\nfunction renderAllTags(){ renderClassTags(); renderLessonTags(); }\nfunction tagListHandler(containerId, arrName){\n  var el = document.getElementById(containerId);\n  el.addEventListener('click', function(e){\n    var btn = e.target.closest('button'); if(!btn) return;\n    var tagEl = btn.closest('.tag'); var idx = parseInt(tagEl.getAttribute('data-idx'),10);\n    var arr = settings[arrName];\n    // edit-mode buttons\n    if(btn.classList.contains('tag-edit-ok')){ commitTagEdit(containerId, arrName); return; }\n    if(btn.classList.contains('tag-edit-cancel')){ refreshAllListUI(); return; }\n    var act = btn.getAttribute('data-act');\n    if(act==='edit'){\n      if(arrName==='siniflar') renderClassTags(idx);\n      else renderLessonTags(idx);\n      return;\n    }\n    if(act==='del'){\n      var val = arr[idx];\n      var n = usageCount(val, arrName);\n      var typeName = arrName==='siniflar' ? 'sınıf' : 'ders';\n      var hint = n>0 ? 'Listeden silinir — satırlardaki veriler korunur.' : '';\n      var msg = n>0\n        ? '<b>'+escapeHtml(val)+'</b> adlı '+typeName+', <b>'+n+' satırda</b> kullanılıyor.'\n        : '<b>'+escapeHtml(val)+'</b> adlı '+typeName+' listeden kaldırılacak.';\n      showConfirmModal(\n        n>0 ? '⚠️' : '🗑',\n        '"'+val+'" Silinsin mi?',\n        msg,\n        hint,\n        function(){ arr.splice(idx,1); persist(); refreshAllListUI(); }\n      );\n      return;\n    }\n    else if(act==='up' && idx>0){ var t=arr[idx-1]; arr[idx-1]=arr[idx]; arr[idx]=t; }\n    else if(act==='down' && idx<arr.length-1){ var t2=arr[idx+1]; arr[idx+1]=arr[idx]; arr[idx]=t2; }\n    persist(); refreshAllListUI();\n  });\n  el.addEventListener('keydown', function(e){\n    if(!e.target.classList.contains('tag-edit-input')) return;\n    if(e.key==='Enter'){ e.preventDefault(); commitTagEdit(containerId, arrName); }\n    if(e.key==='Escape'){ refreshAllListUI(); }\n  });\n}\ntagListHandler('s_classTags','siniflar');\ntagListHandler('s_lessonTags','dersler');\n\ndocument.getElementById('s_classAddBtn').addEventListener('click', function(){\n  var input = document.getElementById('s_classInput');\n  var val = input.value.trim();\n  if(!val) return;\n  if(settings.siniflar.indexOf(val)===-1) settings.siniflar.push(val);\n  input.value=''; persist(); refreshAllListUI();\n});\ndocument.getElementById('s_classInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('s_classAddBtn').click(); } });\n\ndocument.getElementById('s_lessonAddBtn').addEventListener('click', function(){\n  var input = document.getElementById('s_lessonInput');\n  var val = input.value.trim();\n  if(!val) return;\n  if(settings.dersler.indexOf(val)===-1) settings.dersler.push(val);\n  input.value=''; persist(); refreshAllListUI();\n});\ndocument.getElementById('s_lessonInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('s_lessonAddBtn').click(); } });\n\ndocument.getElementById('s_bulkAddBtn').addEventListener('click', function(){\n  var start = clampInt(document.getElementById('s_bulkStart').value);\n  var end = clampInt(document.getElementById('s_bulkEnd').value);\n  var branches = document.getElementById('s_bulkBranches').value.split(',').map(function(b){ return b.trim(); }).filter(Boolean);\n  if(end < start || branches.length===0){ showToast('Geçerli bir aralık ve şube girin.'); return; }\n  var added = 0;\n  for(var g=start; g<=end; g++){\n    branches.forEach(function(b){\n      var val = g+b;\n      if(settings.siniflar.indexOf(val)===-1){ settings.siniflar.push(val); added++; }\n    });\n  }\n  persist(); refreshAllListUI();\n  showToast(added+' sınıf eklendi.');\n});\n\nvar PRESET_LESSONS = ['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','İngilizce','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Teknoloji ve Tasarım','Bilişim Teknolojileri ve Yazılım','T.C. İnkılap Tarihi ve Atatürkçülük'];\ndocument.getElementById('s_lessonPresetBtn').addEventListener('click', function(){\n  var added = 0;\n  PRESET_LESSONS.forEach(function(l){ if(settings.dersler.indexOf(l)===-1){ settings.dersler.push(l); added++; } });\n  persist(); refreshAllListUI();\n  showToast(added+' ders eklendi.');\n});\n\nfunction bindSettingsTopFields(){\n  [['defTeslimAlanAd','defTeslimAlanAd'],['defTeslimAlanUnvan','defTeslimAlanUnvan'],['defOnaylayanAd','defOnaylayanAd'],['defOnaylayanUnvan','defOnaylayanUnvan']].forEach(function(pair){\n    var el = document.getElementById('s_'+pair[0]);\n    el.value = settings[pair[1]] || '';\n    el.addEventListener('input', function(){ settings[pair[1]] = el.value; persist(); });\n  });\n}\n\n/* Okul adı, ilçe/semt ve eğitim-öğretim yılı tek bir yerde (Ayarlar) saklanır;\n   her iki modüldeki ilgili alanlar bu değerle birlikte güncellenir, böylece\n   bu bilgiler tüm modüllerde aynı kaynaktan (Ayarlar) gelir. */\nfunction bindSharedSettingField(key, elementIds){\n  var els = elementIds.map(function(id){ return document.getElementById(id); }).filter(Boolean);\n  els.forEach(function(el){ el.value = settings[key] || ''; });\n  els.forEach(function(el){\n    el.addEventListener('input', function(){\n      settings[key] = el.value;\n      els.forEach(function(other){ if(other !== el) other.value = el.value; });\n      persist();\n    });\n  });\n}\nfunction bindSharedSettingFields(){\n  bindSharedSettingField('okulAdi', ['s_okulAdi','t_okulAdi','k_okulAdi']);\n  bindSharedSettingField('semt', ['s_semt','t_semt']);\n  bindEgitimYiliFields();\n}\n/* Eğitim-öğretim yılı, Ayarlar ve Yazılı Kâğıdı modülünde "2025/2026" biçiminde,\n   Ders Kesim Raporu modülünde ise şablona uygun "2025-2026" biçiminde gösterilir.\n   Hangi alandan değiştirilirse değiştirilsin, hepsi aynı kaynaktan (settings.egitimYili) güncellenir. */\nfunction refreshEgitimYiliInputs(){\n  var slash = settings.egitimYili || '';\n  var dash = slash.replace('/','-');\n  var s = document.getElementById('s_egitimYili');\n  var t = document.getElementById('t_egitimYili');\n  var k = document.getElementById('k_egitimYili');\n  if(s) s.value = slash;\n  if(t) t.value = slash;\n  if(k) k.value = dash;\n}\nfunction bindEgitimYiliFields(){\n  var s = document.getElementById('s_egitimYili');\n  var t = document.getElementById('t_egitimYili');\n  var k = document.getElementById('k_egitimYili');\n  refreshEgitimYiliInputs();\n  [s,t].forEach(function(el){\n    if(!el) return;\n    el.addEventListener('input', function(){ settings.egitimYili = el.value; refreshEgitimYiliInputs(); persist(); });\n  });\n  if(k){\n    k.addEventListener('input', function(){ settings.egitimYili = k.value.replace('-','/'); refreshEgitimYiliInputs(); persist(); });\n  }\n}\n/* Bu sürümden önce her modülün kendi okul adı/eğitim yılı kopyası vardı.\n   Daha önce girilmiş bir değer varsa ve Ayarlar henüz boşsa, kaybolmasın diye Ayarlar'a aktarılır. */\nfunction migrateLegacySharedFields(){\n  if(!settings.okulAdi && teslimState.okulAdi) settings.okulAdi = teslimState.okulAdi;\n  if(!settings.okulAdi && kesimState.okulAdi) settings.okulAdi = kesimState.okulAdi;\n  if(!settings.semt && teslimState.semt) settings.semt = teslimState.semt;\n  if(!settings.egitimYili && teslimState.egitimYili) settings.egitimYili = teslimState.egitimYili;\n  if(!settings.egitimYili && kesimState.egitimYili) settings.egitimYili = kesimState.egitimYili.replace('-','/');\n}\n\ndocument.getElementById('s_exportJsonBtn').addEventListener('click', function(){\n  var blob = new Blob([JSON.stringify(settings,null,2)], {type:'application/json'});\n  var a = document.createElement('a');\n  a.href = URL.createObjectURL(blob);\n  a.download = 'yil-sonu-islemleri-ayarlar.json';\n  document.body.appendChild(a); a.click(); document.body.removeChild(a);\n});\ndocument.getElementById('s_importJsonBtn').addEventListener('click', function(){ document.getElementById('s_importJsonInput').click(); });\ndocument.getElementById('s_importJsonInput').addEventListener('change', function(e){\n  var file = e.target.files[0]; if(!file) return;\n  var reader = new FileReader();\n  reader.onload = function(){\n    try{\n      var data = JSON.parse(reader.result);\n      settings = Object.assign(defaultSettings(), data);\n      persist(); applyTheme(); bindSettingsTopFields(); refreshAllListUI(); refreshNameChips();\n      showToast('Ayarlar içe aktarıldı.');\n    }catch(err){ showToast('Dosya okunamadı. Geçerli bir JSON seçin.'); }\n  };\n  reader.readAsText(file);\n  e.target.value = '';\n});\ndocument.getElementById('s_resetBtn').addEventListener('click', function(){\n  if(!confirm('Tüm ayarlar, sınıf/ders listeleri ve taslaklar silinecek. Devam edilsin mi?')) return;\n  localStorage.removeItem(LS.settings); localStorage.removeItem(LS.teslim); localStorage.removeItem(LS.kesim);\n  location.reload();\n});\n\n/* ============================================================ PREVIEW / DOCUMENT GENERATION ============================================================ */\nvar currentPreviewType = null;\n\nfunction generateTeslimDocHTML(){\n  var sum1=0,sum2=0;\n  var rowsHtml = teslimState.rows.map(function(r, idx){\n    var d1=clampInt(r.donem1),d2=clampInt(r.donem2);\n    sum1+=d1; sum2+=d2;\n    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td><td class="rb-left">'+escapeHtml(r.ders)+'</td>'\n      +'<td>'+d1+'</td><td>'+d2+'</td><td>'+(d1+d2)+'</td></tr>';\n  }).join('');\n  var sumTotal=sum1+sum2;\n  if(!rowsHtml) rowsHtml='<tr><td colspan="6" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';\n  var tarih=isoToTR(teslimState.tarih);\n  return '<div class="rb-title">Yazılı Kâğıdı Teslim Tutanağı</div>'\n    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞE')+'</p>'\n    +(settings.semt?'<p class="rb-to-sub">'+escapeHtml(settings.semt)+'</p>':'')\n    +'<p class="rb-body">'+escapeHtml(settings.egitimYili||'')+' Eğitim-Öğretim yılı içerisinde okutmuş olduğum derslerden yapmış olduğum yazılı sınavlarına ait sınav kâğıtlarının teslim alınması için;</p>'\n    +'<p class="rb-body">Gereğini bilgilerinize arz ederim.</p>'\n    +'<p class="rb-date-right">'+tarih+'</p>'\n    +'<table class="rb-table"><thead><tr>'\n      +'<th style="width:36px">No</th><th>Sınıf</th><th>Dersin Adı</th>'\n      +'<th>1.Dönem<br>(Top)</th><th>2.Dönem<br>(Top)</th><th>Toplam<br>(Top)</th>'\n    +'</tr></thead><tbody>'+rowsHtml+'</tbody>'\n    +'<tfoot><tr><td colspan="3" style="text-align:right;padding-right:8px;">TOPLAM</td>'\n      +'<td>'+sum1+'</td><td>'+sum2+'</td><td>'+sumTotal+'</td></tr></tfoot></table>'\n    +'<p class="rb-total-line">Toplam <strong>'+sumTotal+'</strong> top sınav kâğıdı teslim edilmiştir.</p>'\n    +'<div class="rb-signatures">'\n      +'<div class="rb-sig-box">'\n        +'<div class="rb-sig-label">Teslim Eden</div>'\n        +'<div class="rb-sig-spacer"></div>'\n        +'<div class="rb-sig-line"></div>'\n        +'<div class="rb-sig-name">'+escapeHtml(teslimState.ogretmenAdi||'Ad Soyad')+'</div>'\n        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimEdenUnvan||'Öğretmeni')+'</div>'\n        +'<div class="rb-sig-date">'+tarih+'</div>'\n      +'</div>'\n      +'<div class="rb-sig-box">'\n        +'<div class="rb-sig-label">Teslim Alan</div>'\n        +'<div class="rb-sig-spacer"></div>'\n        +'<div class="rb-sig-line"></div>'\n        +'<div class="rb-sig-name">'+escapeHtml(teslimState.teslimAlanAd||'Ad Soyad')+'</div>'\n        +'<div class="rb-sig-role">'+escapeHtml(teslimState.teslimAlanUnvan||'Unvan')+'</div>'\n        +'<div class="rb-sig-date">'+tarih+'</div>'\n      +'</div>'\n    +'</div>';\n}\nfunction generateKesimDocHTML(){\n  var rowsHtml = kesimState.rows.map(function(r, idx){\n    var durumCell = escapeHtml(r.durum)+(r.neden?'<br><em style="color:#c00;font-size:10px;">Neden: '+escapeHtml(r.neden)+'</em>':'');\n    return '<tr><td>'+(idx+1)+'</td><td class="rb-left">'+escapeHtml(r.sinif)+'</td>'\n      +'<td class="rb-left">'+escapeHtml(r.ders)+'</td><td class="rb-left">'+durumCell+'</td></tr>';\n  }).join('');\n  if(!rowsHtml) rowsHtml='<tr><td colspan="4" style="color:#777;font-style:italic;">Satır girilmedi</td></tr>';\n  var tarih=isoToTR(kesimState.tarih);\n  return '<div class="rb-title">Ders Kesim Raporu</div>'\n    +'<p class="rb-to">'+escapeHtml(settings.okulAdi||'……………………… ORTAOKULU MÜDÜRLÜĞÜNE')+'</p>'\n    +'<p class="rb-body">'+escapeHtml((settings.egitimYili||'').replace('/','-'))+' Eğitim-Öğretim yılında ders verdiğim sınıflara ait ders kesim durumu, sınıflar bazında ayrıntılı olarak aşağıdaki tabloda gösterilmiştir.</p>'\n    +'<p class="rb-body">Bilgilerinize arz ederim.</p>'\n    +'<table class="rb-table"><thead><tr>'\n      +'<th style="width:36px">No</th><th style="width:70px">Sınıf / Şube</th>'\n      +'<th>Dersin Adı</th><th>Ders Kesim Durumu</th>'\n    +'</tr></thead><tbody>'+rowsHtml+'</tbody></table>'\n    +'<div class="rb-signatures">'\n      +'<div class="rb-sig-box">'\n        +'<div class="rb-sig-label">Ders Öğretmeni</div>'\n        +'<div class="rb-sig-line"></div>'\n        +'<div class="rb-sig-name">'+escapeHtml(kesimState.dersOgretmeniAdi||'Ad Soyad')+'</div>'\n        +'<div class="rb-sig-role">Öğretmen</div>'\n        +'<div class="rb-sig-date">'+tarih+'</div>'\n      +'</div>'\n      +'<div class="rb-sig-box">'\n        +'<div class="rb-sig-label">Onaylayan</div>'\n        +'<div class="rb-sig-line"></div>'\n        +'<div class="rb-sig-name">'+escapeHtml(kesimState.onaylayanAd||'Ad Soyad')+'</div>'\n        +'<div class="rb-sig-role">'+escapeHtml(kesimState.onaylayanUnvan||'Unvan')+'</div>'\n        +'<div class="rb-sig-date">'+tarih+'</div>'\n      +'</div>'\n    +'</div>';\n}\n\nfunction openPreview(type){\n  printDoc(type);\n}\n/* ── Türkçe → Latin1 dönüşümü (jsPDF helvetica için) ── */\nfunction makePDF(type){ printDoc(type); setTimeout(function(){ window.print(); }, 400); }\nfunction printDoc(type){\n  currentPreviewType = type;\n  document.getElementById('previewDoc').innerHTML = type==='teslim' ? generateTeslimDocHTML() : generateKesimDocHTML();\n  document.getElementById('previewOverlay').hidden = false;\n}\nn\n\ndocument.getElementById('t_pdfBtn').addEventListener('click', function(){ makePDF('teslim'); });\ndocument.getElementById('k_pdfBtn').addEventListener('click', function(){ makePDF('kesim'); });\ndocument.getElementById('t_xlsxBtn').addEventListener('click', function(){ xlsxDoc('teslim'); });\ndocument.getElementById('k_xlsxBtn').addEventListener('click', function(){ xlsxDoc('kesim'); });\ndocument.getElementById('pv_closeBtn').addEventListener('click', function(){ document.getElementById('previewOverlay').hidden = true; });\ndocument.getElementById('pv_printBtn').addEventListener('click', function(){ window.print(); });\n\n/* ----- Excel export (CSV, Excel uyumlu) ----- */
+function aoaToXlsx(aoa){
+  var bom = '\uFEFF';
+  var rows = aoa.map(function(row){
+    return (row||[]).map(function(cell){
+      var s = (cell===null||cell===undefined) ? '' : String(cell);
+      if(s.indexOf(',')!==-1 || s.indexOf('"')!==-1 || s.indexOf('
+')!==-1){
+        s = '"' + s.replace(/"/g,'""') + '"';
+      }
+      return s;
+    }).join(',');
+  }).join('\r\n');
+  return bom + rows;
 }
 function xlsxDoc(type){
-  currentPreviewType = type;
   var aoa = type==='teslim' ? buildTeslimAOA() : buildKesimAOA();
-  var bytes = aoaToXlsx(aoa);
-  var blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var csv = aoaToXlsx(aoa);
+  var blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = (type==='teslim' ? 'Yazili_Kagidi_Teslim_Tutanagi' : 'Ders_Kesim_Raporu') + '.xlsx';
+  a.download = (type==='teslim' ? 'Yazili_Kagidi_Teslim_Tutanagi' : 'Ders_Kesim_Raporu') + '.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
 }
-document.getElementById('t_previewBtn').addEventListener('click', function(){ openPreview('teslim'); });
-document.getElementById('k_previewBtn').addEventListener('click', function(){ openPreview('kesim'); });
-document.getElementById('t_pdfBtn').addEventListener('click', function(){ downloadDoc('teslim'); });
-document.getElementById('k_pdfBtn').addEventListener('click', function(){ downloadDoc('kesim'); });
-document.getElementById('t_xlsxBtn').addEventListener('click', function(){ xlsxDoc('teslim'); });
-document.getElementById('k_xlsxBtn').addEventListener('click', function(){ xlsxDoc('kesim'); });
-document.getElementById('pv_closeBtn').addEventListener('click', function(){ document.getElementById('previewOverlay').hidden = true; });
-document.getElementById('pv_dlBtn').addEventListener('click', function(){ downloadDoc(currentPreviewType); });
-document.getElementById('pv_printBtn').addEventListener('click', function(){ window.print(); });
-
-/* ----- Excel export (minimal inline XLSX) ----- */
-function aoaToXlsx(aoa){
-  // Minimal Open XML XLSX builder — no external dependency
-  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  var sharedStrs=[], strIdx={};
-  function si(s){ s=String(s==null?'':s); if(strIdx[s]===undefined){strIdx[s]=sharedStrs.length;sharedStrs.push(s);}return strIdx[s]; }
-  var rows='';
-  aoa.forEach(function(row,ri){
-    var cells='';
-    (row||[]).forEach(function(val,ci){
-      var col=String.fromCharCode(65+ci)+(ri+1);
-      if(val===null||val===undefined||val===''){return;}
-      if(typeof val==='number'){
-        cells+='<c r="'+col+'" t="n"><v>'+val+'</v></c>';
-      } else {
-        cells+='<c r="'+col+'" t="s"><v>'+si(val)+'</v></c>';
-      }
-    });
-    if(cells) rows+='<row r="'+(ri+1)+'">'+cells+'</row>';
-  });
-  var sst='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="'+sharedStrs.length+'" uniqueCount="'+sharedStrs.length+'">'
-    +sharedStrs.map(function(s){return'<si><t xml:space="preserve">'+esc(s)+'</t></si>';}).join('')
-    +'</sst>';
-  var sheet='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
-    +'<sheetData>'+rows+'</sheetData></worksheet>';
-  var wb='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
-    +'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
-    +'<sheets><sheet name="Rapor" sheetId="1" r:id="rId1"/></sheets></workbook>';
-  var rels='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-    +'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
-    +'<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>'
-    +'</Relationships>';
-  var topRels='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-    +'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
-    +'</Relationships>';
-  var ct='<?xml version="1.0" encoding="UTF-8"?>'
-    +'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
-    +'<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
-    +'<Default Extension="xml" ContentType="application/xml"/>'
-    +'<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
-    +'<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
-    +'<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>'
-    +'</Types>';
-  // Build ZIP using fflate-like manual deflate — use stored (no compress) for simplicity
-  function str2u8(s){
-    var b=new TextEncoder().encode(s); return b;
-  }
-  function u8concat(arrays){
-    var len=arrays.reduce(function(a,b){return a+b.length;},0);
-    var r=new Uint8Array(len),o=0;
-    arrays.forEach(function(a){r.set(a,o);o+=a.length;});
-    return r;
-  }
-  function crc32(buf){
-    var c=0xFFFFFFFF,t=new Uint32Array(256);
-    for(var i=0;i<256;i++){var k=i;for(var j=0;j<8;j++)k=k&1?(0xEDB88320^(k>>>1)):k>>>1;t[i]=k;}
-    for(var i=0;i<buf.length;i++)c=t[(c^buf[i])&0xFF]^(c>>>8);
-    return(c^0xFFFFFFFF)>>>0;
-  }
-  function u32le(n){return new Uint8Array([n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255]);}
-  function u16le(n){return new Uint8Array([n&255,(n>>8)&255]);}
-  function zipEntry(name,data){
-    var nd=str2u8(name),crc=crc32(data),t=new Date(),
-      dos=((t.getFullYear()-1980)<<25|(t.getMonth()+1)<<21|t.getDate()<<16|(t.getHours()<<11)|(t.getMinutes()<<5)|(t.getSeconds()>>1));
-    var lh=u8concat([
-      new Uint8Array([0x50,0x4B,0x03,0x04,20,0,0,0,0,0]),
-      u32le(dos),u32le(crc),u32le(data.length),u32le(data.length),u16le(nd.length),u16le(0),nd,data
-    ]);
-    var cd=u8concat([
-      new Uint8Array([0x50,0x4B,0x01,0x02,20,0,20,0,0,0,0,0]),
-      u32le(dos),u32le(crc),u32le(data.length),u32le(data.length),u16le(nd.length),u16le(0),u16le(0),u16le(0),u16le(0),u32le(0),u32le(0),nd
-    ]);
-    return{lh:lh,cd:cd,size:data.length};
-  }
-  var files=[
-    ['[Content_Types].xml',ct],
-    ['_rels/.rels',topRels],
-    ['xl/workbook.xml',wb],
-    ['xl/_rels/workbook.xml.rels',rels],
-    ['xl/worksheets/sheet1.xml',sheet],
-    ['xl/sharedStrings.xml',sst]
-  ];
-  var lhParts=[],cdParts=[],offset=0;
-  files.forEach(function(f){
-    var e=zipEntry(f[0],str2u8(f[1]));
-    // patch offset into CD
-    e.cd[42]=(offset)&255;e.cd[43]=(offset>>8)&255;e.cd[44]=(offset>>16)&255;e.cd[45]=(offset>>24)&255;
-    lhParts.push(e.lh);cdParts.push(e.cd);offset+=e.lh.length;
-  });
-  var cdBuf=u8concat(cdParts);
-  var eocd=u8concat([
-    new Uint8Array([0x50,0x4B,0x05,0x06,0,0,0,0]),
-    u16le(files.length),u16le(files.length),
-    u32le(cdBuf.length),u32le(offset),u16le(0)
-  ]);
-  return u8concat(lhParts.concat([cdBuf,eocd]));
-}
-
 
 function buildTeslimAOA(){
   var aoa = [];
@@ -1840,36 +925,5 @@ function setupPWA(){
 
   // Servis çalışanı (service worker) yalnızca http/https üzerinden açıldığında kaydedilir.
   // file:// üzerinden açıldığında tarayıcılar bunu desteklemez; sessizce atlanır.
-  // Not: Servis çalışanları blob:/data: URL'den kaydedilemez (tarayıcılar bunu reddeder),
-  // bu yüzden gerçek bir dosya olan sw.js kullanılıyor (bu dosya, ana HTML ile aynı klasörde olmalı).
-  if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
-    try{
-      navigator.serviceWorker.register(PWA_ICON_BASE + 'sw.js').catch(function(){ /* sw.js bulunamadıysa sessizce atlanır */ });
-    }catch(e){ /* yoksay */ }
-  }
-}
-
-/* ============================================================ INIT ============================================================ */
-function init(){
-  applyTheme();
-  migrateLegacySharedFields();
-  bindSettingsTopFields();
-  bindSharedSettingFields();
-  bindTeslimTopFields();
-  bindKesimTopFields();
-  refreshAllListUI();
-  refreshNameChips();
-  renderTeslimTable();
-  renderKesimTable();
-  syncTeslimEdenGosterim();
-  // Keep the "teslim eden" read-only display in sync as the user types the name.
-  document.getElementById('t_ogretmenAdi').addEventListener('input', syncTeslimEdenGosterim);
-  setupPWA();
-}
-init();
-
-})();
-
-</script>
-</body>
+  // Not: Servis çalışanları blob:/data: URL'den kaydedilemez (tarayıcılar bunu reddeder),\n  // bu yüzden gerçek bir dosya olan sw.js kullanılıyor (bu dosya, ana HTML ile aynı klasörde olmalı).\n  if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){\n    try{\n      navigator.serviceWorker.register(PWA_ICON_BASE + 'sw.js').catch(function(){ /* sw.js bulunamadıysa sessizce atlanır */ });\n    }catch(e){ /* yoksay */ }\n  }\n}\n\n/* ============================================================ INIT ============================================================ */\nfunction init(){\n  applyTheme();\n  migrateLegacySharedFields();\n  bindSettingsTopFields();\n  bindSharedSettingFields();\n  bindTeslimTopFields();\n  bindKesimTopFields();\n  refreshAllListUI();\n  refreshNameChips();\n  renderTeslimTable();\n  renderKesimTable();\n  syncTeslimEdenGosterim();\n  // Keep the "teslim eden" read-only display in sync as the user types the name.\n  document.getElementById('t_ogretmenAdi').addEventListener('input', syncTeslimEdenGosterim);\n  setupPWA();\n}\ninit();\n\n</script>
 </html>
