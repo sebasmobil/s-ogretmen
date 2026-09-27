@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<!--
+  Seyyar Kütüphane
+  Copyright (C) sebasmobil
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Licensed under the GNU Affero General Public License v3.0.
+  Full text: https://www.gnu.org/licenses/agpl-3.0.html
+-->
+<html lang="tr">
+<head>
+<script>(function(){try{var t=JSON.parse(localStorage.getItem('kb-theme-v1'))||{theme:'dark',palette:'green'};document.documentElement.setAttribute('data-theme',t.theme);document.documentElement.setAttribute('data-palette',t.palette);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seyyar Kütüphane</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    box-sizing:border-box;
+    --ink:#22314A; --card:#F6EFDC; --card-line:#D9CBA3;
+    --board:#17181A; --board-2:#222327; --board-text:#F2F1EC; --board-muted:#9C9C97;
+    --stamp:#B23A2E; --stamp-ink:#F6EFDC; --gold:#C79A3C;
+    --font-stamp:Arial,"Helvetica Neue",Helvetica,sans-serif;
+    --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  html[data-theme="light"]{
+    --board:#FAFAF8; --board-2:#F0EFEA; --board-text:#1A1B1E; --board-muted:#6B6B66;
+    --card:#FFFFFF; --card-line:#E3DED0;
+  }
+  html[data-palette="blue"]{ --gold:#3E7C9A; --stamp:#2B5C82; }
+  html[data-palette="purple"]{ --gold:#9C6FB5; --stamp:#6B3FA0; }
+  html[data-palette="brown"]{ --gold:#B8895A; --stamp:#7A4A2B; }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *,*::before,*::after{box-sizing:inherit;}
+  html,body{overflow-x:hidden;}
+  body{margin:0;min-height:100%;font-family:var(--font-body);background:var(--board);
+    background-image:linear-gradient(var(--board-2) 1px,transparent 1px),linear-gradient(90deg,var(--board-2) 1px,transparent 1px);
+    background-size:100% 100%,34px 34px;color:var(--board-text);overflow-wrap:break-word;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:.72rem;padding:.35rem .8rem;background:var(--board-2);
+    color:var(--board-muted);letter-spacing:.3px;}
+  .topbar a{color:inherit;text-decoration:none;}
+  .themeBtn{background:none;border:1px solid var(--board-muted);color:inherit;font-family:var(--font-body);
+    font-size:.7rem;padding:.15rem .55rem;border-radius:3px;cursor:pointer;white-space:nowrap;}
+  header{padding:2.2rem 1.5rem 1.2rem;max-width:960px;margin:0 auto;}
+  header h1{font-family:var(--font-stamp);font-weight:700;font-size:clamp(1.5rem,4vw,2.3rem);margin:0 0 .3rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--board-muted);font-size:.95rem;max-width:60ch;line-height:1.5;}
+  main{max-width:960px;margin:0 auto;padding:0 1.5rem 3rem;display:grid;gap:1.6rem;}
+  .card{background:var(--card);color:var(--ink);border-radius:2px;
+    box-shadow:0 10px 0 -6px rgba(0,0,0,.18),0 2px 10px rgba(0,0,0,.25);
+    padding:1.4rem 1.5rem 1.6rem;border-top:6px solid var(--gold);}
+  .card h2{font-family:var(--font-stamp);font-weight:700;font-size:1.15rem;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px dashed var(--card-line);}
+  .subhead{font-family:var(--font-stamp);font-weight:700;font-size:.95rem;margin:0 0 .6rem;}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;}
+  @media (max-width:720px){.twocol{grid-template-columns:1fr;}}
+
+  .miniform{display:flex;flex-wrap:wrap;gap:.5rem;align-items:flex-end;margin-bottom:.7rem;}
+  .miniform .field{display:flex;flex-direction:column;gap:.2rem;}
+  .miniform .field.grow{flex:1;min-width:140px;}
+  .miniform .field.small{width:90px;}
+  .miniform .field label{font-size:.7rem;color:#6b5d3f;font-weight:600;}
+  .filebtn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--ink);border-radius:3px;
+    padding:.5rem .8rem;cursor:pointer;font-size:.82rem;white-space:nowrap;}
+
+  input,textarea,select{font-family:var(--font-body);font-size:16px;border:1px solid var(--card-line);
+    background:#FFFDF6;color:var(--ink);border-radius:3px;padding:.5rem .6rem;}
+  input[type=file]{font-size:.8rem;padding:.3rem;}
+  button{font-family:var(--font-stamp);font-size:.85rem;cursor:pointer;border:none;border-radius:3px;
+    padding:.5rem 1rem;background:var(--stamp);color:var(--stamp-ink);letter-spacing:.4px;}
+  button.secondary{background:transparent;color:var(--ink);border:1px solid var(--ink);}
+  button.ghost{background:transparent;color:#7A3B2E;border:none;padding:.1rem .4rem;font-size:1rem;}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:1px;}
+
+  .roster{list-style:none;margin:0;padding:.2rem;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.7rem;align-content:start;}
+  .roster li{position:relative;min-width:0;background:#FFFDF6;border:1px solid var(--card-line);
+    border-radius:4px;padding:.85rem .8rem .9rem;font-size:.88rem;min-height:92px;
+    overflow-wrap:anywhere;word-break:break-word;}
+  .roster .tag{position:absolute;top:.55rem;left:.65rem;font-family:var(--font-stamp);font-size:.68rem;color:#8a7645;}
+  .roster .info{display:block;margin-top:1.35rem;min-width:0;}
+  .roster .info .primary{font-weight:700;display:block;line-height:1.25;}
+  .roster .info .secondary{display:block;font-size:.74rem;color:#6b5d3f;margin-top:.3rem;line-height:1.35;}
+  .roster .cardActions{position:absolute;top:.35rem;right:.4rem;display:flex;gap:.15rem;}
+  .roster .cardActions button{font-size:1rem;line-height:1;padding:.1rem .3rem;}
+  .roster .cardActions button.confirming{color:var(--stamp);font-weight:700;}
+  .rosterToggle{display:block;width:100%;margin-top:.6rem;text-align:left;font-size:.82rem;padding:.55rem .8rem;}
+  .count{font-size:.78rem;color:#6b5d3f;margin-top:.4rem;}
+
+  .rounds{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.5rem;}
+  .levelsList{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.5rem;max-height:260px;overflow-y:auto;}
+  .levelsList li{display:flex;align-items:center;gap:.6rem;background:#FFFDF6;border:1px dashed var(--card-line);
+    border-radius:3px;padding:.4rem .6rem;}
+  .levelsList li input{flex:1;}
+  .newlevel{display:flex;gap:.5rem;margin-top:.4rem;}
+  .newlevel input{flex:1;}
+  .themeToggle{display:flex;gap:.5rem;margin-bottom:1rem;}
+  .themeToggle button{flex:1;background:transparent;border:1px solid var(--ink);color:var(--ink);
+    font-family:var(--font-body);font-size:.85rem;padding:.5rem;border-radius:3px;cursor:pointer;}
+  .themeToggle button.active{background:var(--stamp);color:var(--stamp-ink);border-color:var(--stamp);}
+  .paletteSwatches{display:flex;gap:.7rem;}
+  .paletteSwatches button{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0;}
+  .paletteSwatches button.active{border-color:var(--ink);}
+
+  #levelsBackdrop{z-index:60;}
+  .rounds li{display:flex;align-items:center;gap:.7rem;background:#FFFDF6;border:1px dashed var(--card-line);
+    border-radius:3px;padding:.5rem .7rem;font-size:.88rem;}
+  .rounds .rlabel{font-family:var(--font-stamp);min-width:6.5em;}
+  .rounds .rdate{margin-left:auto;font-family:var(--font-stamp);font-size:.72rem;color:#8a7645;white-space:nowrap;}
+  .rounds input[type=number]{width:5em;}
+  .row3{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:end;}
+
+  .msg{font-size:.85rem;margin-top:.7rem;color:#7A3B2E;}
+  #today-box{display:none;}
+  #today-list{list-style:none;padding:0;margin:0;display:grid;gap:.5rem;}
+  #today-list li{display:flex;justify-content:space-between;gap:.8rem;padding:.5rem .7rem;
+    background:#FFFDF6;border:1px dashed var(--card-line);border-radius:3px;font-size:.9rem;}
+
+  .shelf{display:grid;gap:1.2rem;}
+  .book{background:var(--card);color:var(--ink);border-radius:2px;
+    box-shadow:0 8px 0 -5px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.22);padding:1.1rem 1.3rem 1.3rem;}
+  .book h3{font-family:var(--font-stamp);font-weight:700;font-size:1.05rem;margin:0 0 .1rem;}
+  .book .meta{font-size:.78rem;color:#6b5d3f;margin:0 0 .6rem;}
+  .roundhead{font-family:var(--font-stamp);font-size:.78rem;color:#8a7645;margin:.7rem 0 .3rem;}
+  .track{list-style:none;margin:0;padding:0 0 .3rem;display:flex;gap:.5rem;overflow-x:auto;}
+  .stop{border:1px solid var(--card-line);border-radius:3px;padding:.45rem .65rem;min-width:130px;
+    flex:0 0 auto;font-size:.82rem;background:#FFFDF6;}
+  .stop .who{font-weight:700;display:block;}
+  .stop .when{color:#6b5d3f;font-family:var(--font-stamp);font-size:.74rem;}
+  .stop.active{background:var(--stamp);color:var(--stamp-ink);border-color:var(--stamp);}
+  .stop.active .when{color:#F1D6CF;}
+  .stop.past{opacity:.5;}
+  footer{text-align:center;padding:1rem;color:var(--board-muted);font-size:.8rem;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,26,20,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--card);color:var(--ink);border-radius:2px;border-top:6px solid var(--gold);
+    max-width:580px;width:100%;max-height:88vh;overflow-y:auto;padding:1.3rem 1.4rem 1.5rem;
+    box-shadow:0 20px 40px rgba(0,0,0,.4);}
+  .modal h2{font-family:var(--font-stamp);font-weight:700;font-size:1.1rem;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px dashed var(--card-line);}
+  .modal label{display:block;font-size:.82rem;font-weight:600;margin:.8rem 0 .3rem;}
+  .modal select{width:100%;}
+  .fieldrow{margin-bottom:.4rem;}
+  .modal .checkline{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:400;margin-top:.9rem;}
+  .modal .checkline input{width:auto;}
+  .prevwrap{overflow-x:auto;margin-top:.6rem;border:1px dashed var(--card-line);border-radius:3px;}
+  table.prev{border-collapse:collapse;width:100%;font-size:.78rem;}
+  table.prev th,table.prev td{padding:.35rem .5rem;border-bottom:1px solid var(--card-line);text-align:left;white-space:nowrap;}
+  table.prev th{font-family:var(--font-stamp);font-weight:400;color:#8a7645;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem;}
+
+  @media (max-width:520px){
+    main{padding:0 1rem 2.5rem;gap:1.2rem;}
+    header{padding:1.6rem 1rem 1rem;}
+    .card{padding:1.1rem 1rem 1.3rem;}
+    .roster{grid-template-columns:1fr;}
+    .row3{grid-template-columns:1fr;}
+    .row3 button{width:100%;}
+    .rounds li{flex-wrap:wrap;row-gap:.35rem;}
+    .rounds .rdate{margin-left:0;width:100%;}
+    .topbar{flex-wrap:wrap;row-gap:.3rem;justify-content:center;text-align:center;}
+    .modal{padding:1.1rem 1rem 1.3rem;}
+    .stop{min-width:112px;}
+    .book{padding:1rem 1rem 1.1rem;}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;}
+    header p,#setup,#roundsCard .msg,footer,.topbar{display:none;}
+    .card,.book{box-shadow:none;border:1px solid #999;background:#fff;}
+    .stop.active{background:#eee;color:#000;}
+    .track{overflow-x:visible;flex-wrap:wrap;}
+    #setup{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>v1.10 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
+</div>
+
+<div class="modal-backdrop" id="themeBackdrop">
+  <div class="modal">
+    <h2>Görünüm</h2>
+    <label>Tema</label>
+    <div class="themeToggle">
+      <button data-theme-choice="light" type="button">☀ Aydınlık</button>
+      <button data-theme-choice="dark" type="button">🌙 Karanlık</button>
+    </div>
+    <label>Renk Teması</label>
+    <div class="paletteSwatches">
+      <button data-palette-choice="green" style="background:#B23A2E" title="Yeşil"></button>
+      <button data-palette-choice="blue" style="background:#2B5C82" title="Mavi"></button>
+      <button data-palette-choice="purple" style="background:#6B3FA0" title="Mor"></button>
+      <button data-palette-choice="brown" style="background:#7A4A2B" title="Kahve"></button>
+    </div>
+    <div class="modal-actions"><button id="closeTheme" type="button">Kapat</button></div>
+  </div>
+</div>
+
+<header>
+  <h1>Seyyar Kütüphane</h1>
+  <p>Sınıf kütüphanesi ve sınıf listesini oluştur, istediğin kadar döngü ekle — her döngünün süresi farklı olabilir. Kitaplar tüm dönem boyunca kesintisiz, kaydırmalı sırayla öğrenciler arasında dolaşır.</p>
+</header>
+
+<main>
+  <section class="card" id="setup">
+    <h2 style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
+      <span style="flex:1 1 auto;min-width:0;">1 — Sınıf Kütüphanesi ve Sınıf Listesi</span>
+      <span style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="secondary" id="openLevels" type="button" style="font-size:.75rem;padding:.35rem .7rem;">🏷 Seviyeleri Yönet</button>
+        <button class="secondary" id="loadTestData" type="button" style="font-size:.75rem;padding:.35rem .7rem;">🧪 Test Verisi Yükle</button>
+      </span>
+    </h2>
+    <div class="twocol">
+      <div>
+        <div class="subhead">📖 Kütüphane (Kitaplar)</div>
+        <div class="miniform">
+          <button id="openAddBook" type="button">+ Kitap Ekle</button>
+          <label class="filebtn">Excel'den Yükle <input type="file" id="bookFile" accept=".xlsx,.xls,.csv" style="display:none;"></label>
+        </div>
+        <button class="secondary rosterToggle" id="toggleBooks" type="button"></button>
+        <div id="bookRosterWrap" style="display:none;">
+          <ul class="roster" id="bookRoster" style="margin-top:.7rem;"></ul>
+          <div class="count" id="bookCount"></div>
+        </div>
+      </div>
+      <div>
+        <div class="subhead">🎓 Sınıf Listesi (Öğrenciler)</div>
+        <div class="miniform">
+          <button id="openAddStudent" type="button">+ Öğrenci Ekle</button>
+          <label class="filebtn">Excel'den Yükle <input type="file" id="studentFile" accept=".xlsx,.xls,.csv" style="display:none;"></label>
+        </div>
+        <button class="secondary rosterToggle" id="toggleStudents" type="button"></button>
+        <div id="studentRosterWrap" style="display:none;">
+          <ul class="roster" id="studentRoster" style="margin-top:.7rem;"></ul>
+          <div class="count" id="studentCount"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="roundsCard">
+    <h2>2 — Döngüler</h2>
+    <div class="row3">
+      <div><label style="font-size:.85rem;font-weight:600;">Başlangıç tarihi</label><input type="date" id="start"></div>
+      <button class="secondary" id="addRound" type="button">+ Döngü Ekle</button>
+    </div>
+    <ul class="rounds" id="roundList" style="margin-top:1rem;"></ul>
+    <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
+    <button id="generate">Programı Oluştur</button>
+    <button class="secondary" id="printBtn" type="button">Yazdır</button>
+    <div class="msg" id="msg"></div>
+  </section>
+
+  <section class="card" id="today-box">
+    <h2>Bugün kim okuyor?</h2>
+    <ul id="today-list"></ul>
+  </section>
+
+  <div class="shelf" id="shelf"></div>
+</main>
+
+<footer>Veriler yalnızca bu tarayıcıda saklanır.</footer>
+
+<div class="modal-backdrop" id="levelsBackdrop">
+  <div class="modal">
+    <h2>Seviyeleri Yönet</h2>
+    <p style="font-size:.82rem;color:#6b5d3f;margin:-.4rem 0 .8rem;">Buradaki seviyeler, hem kitap hem öğrenci eklerken açılır listede görünür. Bir seviyeyi yeniden adlandırırsan, o seviyeye sahip tüm kitap ve öğrenciler otomatik güncellenir; silersen etiketleri boşa döner.</p>
+    <ul class="levelsList" id="levelsList"></ul>
+    <div class="newlevel">
+      <input type="text" id="newLevelInput" placeholder="Örn. Elma Seviyesi">
+      <button id="addLevelBtn" type="button">+ Ekle</button>
+    </div>
+    <div class="modal-actions">
+      <button id="closeLevels" type="button">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="addBackdrop">
+  <div class="modal">
+    <h2 id="addTitle">Ekle</h2>
+    <div id="addFieldsBox"></div>
+    <div class="count" id="addSessionCount" style="margin-top:.6rem;"></div>
+    <div class="modal-actions">
+      <button class="secondary" id="closeAddModal" type="button">Kapat</button>
+      <button id="confirmAdd" type="button">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="importBackdrop">
+  <div class="modal">
+    <h2 id="importTitle">Excel'den İçe Aktar</h2>
+    <label for="sheetSelect">Sayfa</label>
+    <select id="sheetSelect"></select>
+    <div id="fieldMap"></div>
+    <div class="checkline">
+      <input type="checkbox" id="hasHeader" checked>
+      <label for="hasHeader" style="margin:0;font-weight:400;">İlk satır başlık (içe aktarılmasın)</label>
+    </div>
+    <label>Önizleme</label>
+    <div class="prevwrap"><table class="prev" id="importPreview"></table></div>
+    <div class="modal-actions">
+      <button class="secondary" id="cancelImport" type="button">İptal</button>
+      <button id="confirmImport" type="button">İçe Aktar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const STORE_KEY = 'kb-dongusu-6b-v3';
+
+// --- Theme & color palette ---
+const THEME_KEY = 'kb-theme-v1';
+function loadTheme(){ try{ const r = localStorage.getItem(THEME_KEY); if(r) return JSON.parse(r); }catch(e){} return {theme:'dark', palette:'green'}; }
+function saveTheme(t){ try{ localStorage.setItem(THEME_KEY, JSON.stringify(t)); }catch(e){} }
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t.theme);
+  document.documentElement.setAttribute('data-palette', t.palette);
+  document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active', b.dataset.themeChoice===t.theme));
+  document.querySelectorAll('[data-palette-choice]').forEach(b=>b.classList.toggle('active', b.dataset.paletteChoice===t.palette));
+}
+let themeState = loadTheme();
+applyTheme(themeState);
+$('openTheme').addEventListener('click', ()=>{ applyTheme(themeState); $('themeBackdrop').classList.add('open'); });
+$('closeTheme').addEventListener('click', ()=>$('themeBackdrop').classList.remove('open'));
+document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click', ()=>{
+  themeState = {...themeState, theme:b.dataset.themeChoice}; applyTheme(themeState); saveTheme(themeState);
+}));
+document.querySelectorAll('[data-palette-choice]').forEach(b=>b.addEventListener('click', ()=>{
+  themeState = {...themeState, palette:b.dataset.paletteChoice}; applyTheme(themeState); saveTheme(themeState);
+}));
+
+let state = { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'] };
+
+function loadState(){
+  try{ const raw = localStorage.getItem(STORE_KEY); if(raw){ const s = JSON.parse(raw); if(s && s.rounds && s.rounds.length) return s; } }catch(e){}
+  return null;
+}
+function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+
+// --- Books & Students roster rendering ---
+let booksOpen = false, studentsOpen = false;
+function updateRosterToggle(kind){
+  const open = kind==='books' ? booksOpen : studentsOpen;
+  const n = kind==='books' ? state.books.length : state.students.length;
+  const noun = kind==='books' ? 'Kitapları' : 'Öğrencileri';
+  const arrow = open ? '▲' : '▼';
+  $(kind==='books' ? 'toggleBooks' : 'toggleStudents').textContent = `${arrow} ${open ? noun+' Gizle' : noun+' Göster'} (${n})`;
+  $(kind==='books' ? 'bookRosterWrap' : 'studentRosterWrap').style.display = open ? 'block' : 'none';
+}
+$('toggleBooks').addEventListener('click', ()=>{ booksOpen = !booksOpen; updateRosterToggle('books'); });
+$('toggleStudents').addEventListener('click', ()=>{ studentsOpen = !studentsOpen; updateRosterToggle('students'); });
+
+function renderBooks(){
+  const ul = $('bookRoster'); ul.innerHTML = '';
+  state.books.forEach((b,i)=>{
+    const li = document.createElement('li');
+    const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : ''].filter(Boolean).join(' · ');
+    li.innerHTML = `<span class="tag">K-${String(i+1).padStart(2,'0')}</span>
+      <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
+      <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
+    li.querySelector('.primary').textContent = b.title;
+    if(secondary) li.querySelector('.secondary').textContent = secondary;
+    const [editBtn, delBtn] = li.querySelectorAll('.cardActions button');
+    editBtn.addEventListener('click', ()=>openEditModal('books', i));
+    attachConfirmDelete(delBtn, ()=>{ state.books.splice(i,1); renderBooks(); saveState(); });
+    ul.appendChild(li);
+  });
+  $('bookCount').textContent = state.books.length ? `${state.books.length} kayıt` : 'Henüz kayıt yok.';
+  updateRosterToggle('books');
+}
+function renderStudents(){
+  const ul = $('studentRoster'); ul.innerHTML = '';
+  state.students.forEach((s,i)=>{
+    const li = document.createElement('li');
+    const secondary = [s.grade && s.section ? s.grade+'/'+s.section : (s.grade||s.section||''), s.level ? '🏷 '+s.level : ''].filter(Boolean).join(' · ');
+    li.innerHTML = `<span class="tag">${i+1}</span>
+      <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
+      <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
+    li.querySelector('.primary').textContent = s.name;
+    if(secondary) li.querySelector('.secondary').textContent = secondary;
+    const [editBtn, delBtn] = li.querySelectorAll('.cardActions button');
+    editBtn.addEventListener('click', ()=>openEditModal('students', i));
+    attachConfirmDelete(delBtn, ()=>{ state.students.splice(i,1); renderStudents(); saveState(); });
+    ul.appendChild(li);
+  });
+  $('studentCount').textContent = state.students.length ? `${state.students.length} kayıt` : 'Henüz kayıt yok.';
+  updateRosterToggle('students');
+  updateRoundDatesUI();
+}
+
+// --- Confirm-before-delete helper (two-step click) ---
+function attachConfirmDelete(btn, onConfirm){
+  btn.addEventListener('click', ()=>{
+    if(btn.dataset.armed === '1'){
+      clearTimeout(Number(btn.dataset.timer));
+      onConfirm();
+    } else {
+      btn.dataset.armed = '1';
+      btn.textContent = '✔';
+      btn.title = 'Silmek için tekrar tıklayın';
+      btn.classList.add('confirming');
+      const t = setTimeout(()=>{
+        btn.dataset.armed = '0'; btn.textContent = '×'; btn.title = 'Sil'; btn.classList.remove('confirming');
+      }, 3000);
+      btn.dataset.timer = t;
+    }
+  });
+}
+
+// --- Add-item modal (books & students) ---
+const ADD_FIELDS = {
+  books: [
+    {key:'title', label:'Ad', required:true, placeholder:'Küçük Prens'},
+    {key:'author', label:'Yazar', placeholder:'A. de Saint-Exupéry'},
+    {key:'genre', label:'Tür', placeholder:'Roman'},
+    {key:'pages', label:'Sayfa Sayısı', type:'number', placeholder:'96'},
+    {key:'publisher', label:'Yayınevi', placeholder:'Can Yayınları'},
+    {key:'ageRange', label:'Yaş Aralığı', placeholder:'9-12'},
+    {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'}
+  ],
+  students: [
+    {key:'name', label:'Ad Soyad', required:true, placeholder:'Ahmet Yılmaz'},
+    {key:'grade', label:'Sınıf', placeholder:'6'},
+    {key:'section', label:'Şube', placeholder:'B'},
+    {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'}
+  ]
+};
+let addTarget = null;
+
+function buildAddFields(){
+  const box = $('addFieldsBox'); box.innerHTML = '';
+  ADD_FIELDS[addTarget].forEach(f=>{
+    const wrap = document.createElement('div'); wrap.className='fieldrow';
+    const lbl = document.createElement('label'); lbl.textContent = f.label + (f.required?' *':''); wrap.appendChild(lbl);
+    if(f.key === 'level'){
+      const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:.5rem;align-items:center;';
+      const sel = document.createElement('select'); sel.dataset.field = 'level'; sel.style.flex = '1';
+      const none = document.createElement('option'); none.value=''; none.textContent='— Seviye Yok —'; sel.appendChild(none);
+      state.levels.forEach(lv=>{ const o=document.createElement('option'); o.value=lv; o.textContent=lv; sel.appendChild(o); });
+      row.appendChild(sel);
+      const editBtn = document.createElement('button'); editBtn.type='button'; editBtn.className='secondary';
+      editBtn.textContent = 'Düzenle'; editBtn.style.cssText='padding:.5rem .7rem;font-size:.78rem;';
+      editBtn.addEventListener('click', ()=>openLevelsModal());
+      row.appendChild(editBtn);
+      wrap.appendChild(row);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = f.type || 'text'; inp.placeholder = f.placeholder || ''; inp.dataset.field = f.key;
+      if(f.type==='number') inp.min = 1;
+      inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('confirmAdd').click(); }});
+      wrap.appendChild(inp);
+    }
+    box.appendChild(wrap);
+  });
+}
+
+// --- Levels manager ---
+function renderLevelsList(){
+  const ul = $('levelsList'); ul.innerHTML = '';
+  if(!state.levels.length){
+    const li = document.createElement('li'); li.style.border='none'; li.style.background='none';
+    li.textContent = 'Henüz seviye eklenmedi.'; ul.appendChild(li); return;
+  }
+  state.levels.forEach((lv,i)=>{
+    const li = document.createElement('li');
+    const inp = document.createElement('input'); inp.type='text'; inp.value = lv;
+    inp.addEventListener('change', ()=>renameLevel(i, inp.value.trim()));
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); inp.blur(); }});
+    li.appendChild(inp);
+    const del = document.createElement('button'); del.className='ghost'; del.textContent='×'; del.title='Sil';
+    del.addEventListener('click', ()=>deleteLevel(i));
+    li.appendChild(del);
+    ul.appendChild(li);
+  });
+}
+function renameLevel(index, newName){
+  const oldName = state.levels[index];
+  if(!newName || newName === oldName){ renderLevelsList(); return; }
+  if(state.levels.includes(newName)){ renderLevelsList(); return; }
+  state.levels[index] = newName;
+  state.books.forEach(b=>{ if(b.level===oldName) b.level = newName; });
+  state.students.forEach(s=>{ if(s.level===oldName) s.level = newName; });
+  renderLevelsList(); renderBooks(); renderStudents(); saveState();
+}
+function deleteLevel(index){
+  const name = state.levels[index];
+  state.levels.splice(index,1);
+  state.books.forEach(b=>{ if(b.level===name) b.level=''; });
+  state.students.forEach(s=>{ if(s.level===name) s.level=''; });
+  renderLevelsList(); renderBooks(); renderStudents(); saveState();
+}
+function openLevelsModal(){ renderLevelsList(); $('levelsBackdrop').classList.add('open'); }
+$('openLevels').addEventListener('click', openLevelsModal);
+$('closeLevels').addEventListener('click', ()=>{
+  $('levelsBackdrop').classList.remove('open');
+  if($('addBackdrop').classList.contains('open')) buildAddFields();
+});
+$('addLevelBtn').addEventListener('click', ()=>{
+  const v = $('newLevelInput').value.trim();
+  if(!v || state.levels.includes(v)) return;
+  state.levels.push(v); $('newLevelInput').value='';
+  renderLevelsList(); saveState();
+});
+$('newLevelInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('addLevelBtn').click(); }});
+
+
+let addMode = 'add';
+let editIndex = null;
+
+function openAddModal(target){
+  addTarget = target; addMode = 'add'; editIndex = null;
+  $('addTitle').textContent = target==='books' ? 'Kitap Ekle' : 'Öğrenci Ekle';
+  $('confirmAdd').textContent = 'Ekle';
+  buildAddFields();
+  updateAddSessionCount();
+  $('addBackdrop').classList.add('open');
+  const first = $('addFieldsBox').querySelector('input,select'); if(first) first.focus();
+}
+function openEditModal(target, index){
+  addTarget = target; addMode = 'edit'; editIndex = index;
+  $('addTitle').textContent = target==='books' ? 'Kitabı Düzenle' : 'Öğrenciyi Düzenle';
+  $('confirmAdd').textContent = 'Kaydet';
+  buildAddFields();
+  const record = (target==='books' ? state.books : state.students)[index];
+  ADD_FIELDS[target].forEach(f=>{
+    const el = $('addFieldsBox').querySelector(`[data-field="${f.key}"]`);
+    if(el && record[f.key] !== undefined) el.value = record[f.key];
+  });
+  $('addSessionCount').textContent = '';
+  $('addBackdrop').classList.add('open');
+  const first = $('addFieldsBox').querySelector('input,select'); if(first) first.focus();
+}
+function updateAddSessionCount(){
+  const n = addTarget==='books' ? state.books.length : state.students.length;
+  $('addSessionCount').textContent = `Şu an listede ${n} kayıt var.`;
+}
+
+$('openAddBook').addEventListener('click', ()=>openAddModal('books'));
+$('openAddStudent').addEventListener('click', ()=>openAddModal('students'));
+$('closeAddModal').addEventListener('click', ()=>{
+  $('addBackdrop').classList.remove('open');
+  addMode = 'add'; editIndex = null; $('confirmAdd').textContent = 'Ekle';
+});
+
+$('confirmAdd').addEventListener('click', ()=>{
+  const fields = ADD_FIELDS[addTarget];
+  const rec = {};
+  let ok = true;
+  fields.forEach(f=>{
+    const inp = $('addFieldsBox').querySelector(`[data-field="${f.key}"]`);
+    const v = inp.value.trim();
+    if(f.required && !v) ok = false;
+    rec[f.key] = v;
+  });
+  if(!ok){ $('addFieldsBox').querySelector('input,select').focus(); return; }
+  const arr = addTarget==='books' ? state.books : state.students;
+  if(addMode==='edit' && editIndex!==null){ arr[editIndex] = rec; } else { arr.push(rec); }
+  if(addTarget==='books') renderBooks(); else renderStudents();
+  saveState();
+  if(addMode==='edit'){
+    $('addBackdrop').classList.remove('open');
+    addMode = 'add'; editIndex = null; $('confirmAdd').textContent = 'Ekle';
+  } else {
+    buildAddFields();
+    updateAddSessionCount();
+    const first = $('addFieldsBox').querySelector('input,select'); if(first) first.focus();
+  }
+});
+
+// --- Excel import with sheet + multi-field column mapping ---
+const IMPORT_FIELDS = {
+  books: [
+    {key:'title', label:'Ad', required:true, kw:['ad','isim','başlık','baslik','kitap','title']},
+    {key:'author', label:'Yazar', kw:['yazar','author']},
+    {key:'genre', label:'Tür', kw:['tür','tur','kategori','genre']},
+    {key:'pages', label:'Sayfa Sayısı', kw:['sayfa','pages']},
+    {key:'publisher', label:'Yayınevi', kw:['yayın','yayin','publisher']},
+    {key:'ageRange', label:'Yaş Aralığı', kw:['yaş','yas','age']},
+    {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
+  ],
+  students: [
+    {key:'name', label:'Ad Soyad', required:true, kw:['ad soyad','isim','ad','soyad','name']},
+    {key:'grade', label:'Sınıf', kw:['sınıf','sinif','grade']},
+    {key:'section', label:'Şube', kw:['şube','sube','section','şb']},
+    {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
+  ]
+};
+
+let importWB = null, importTarget = null, importRows = [];
+
+function colLetter(i){ let n=i+1, s=''; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
+
+function openImportModal(file, target){
+  importTarget = target;
+  $('importTitle').textContent = target==='books' ? 'Kitapları İçe Aktar' : 'Öğrencileri İçe Aktar';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      importWB = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      const sheetSel = $('sheetSelect');
+      sheetSel.innerHTML = importWB.SheetNames.map(n=>`<option value="${n}">${n}</option>`).join('');
+      loadSheetRows(importWB.SheetNames[0]);
+      $('importBackdrop').classList.add('open');
+    }catch(err){ $('msg').textContent = 'Excel dosyası okunamadı.'; }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function loadSheetRows(sheetName){
+  const sheet = importWB.Sheets[sheetName];
+  importRows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:''});
+  buildFieldMapUI();
+}
+
+function buildFieldMapUI(){
+  const maxCols = importRows.reduce((m,r)=>Math.max(m, r.length), 0);
+  const header = importRows[0] || [];
+  const fields = IMPORT_FIELDS[importTarget];
+  const used = new Set();
+  const box = $('fieldMap'); box.innerHTML = '';
+  fields.forEach(f=>{
+    const div = document.createElement('div'); div.className = 'fieldrow';
+    const lbl = document.createElement('label'); lbl.textContent = f.label + (f.required ? ' *' : ''); div.appendChild(lbl);
+    const sel = document.createElement('select'); sel.dataset.field = f.key;
+    if(!f.required){ const o = document.createElement('option'); o.value=''; o.textContent='— Yok —'; sel.appendChild(o); }
+    let guess = f.required ? 0 : -1;
+    for(let c=0;c<maxCols;c++){
+      const headerText = String(header[c]||'').toLowerCase();
+      if(!used.has(c) && f.kw && f.kw.some(k=>headerText.includes(k))) guess = c;
+    }
+    for(let c=0;c<maxCols;c++){
+      const samples = importRows.slice(0,3).map(r=>String(r[c]||'').trim()).filter(Boolean).join(', ');
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = `Sütun ${colLetter(c)}${samples ? ' — '+samples : ''}`;
+      if(c === guess) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    if(guess >= 0) used.add(guess);
+    sel.addEventListener('change', updatePreview);
+    div.appendChild(sel);
+    box.appendChild(div);
+  });
+  updatePreview();
+}
+
+function currentMapping(){
+  const map = {};
+  $('fieldMap').querySelectorAll('select').forEach(sel=>{ map[sel.dataset.field] = sel.value; });
+  return map;
+}
+
+function mappedRecords(){
+  const map = currentMapping();
+  const skipHeader = $('hasHeader').checked;
+  const rows = skipHeader ? importRows.slice(1) : importRows;
+  const fields = IMPORT_FIELDS[importTarget];
+  const records = [];
+  rows.forEach(r=>{
+    const rec = {};
+    fields.forEach(f=>{
+      const c = map[f.key];
+      rec[f.key] = (c!==undefined && c!=='') ? String(r[c]!==undefined ? r[c] : '').trim() : '';
+    });
+    const requiredKey = fields.find(f=>f.required).key;
+    if(rec[requiredKey]) records.push(rec);
+  });
+  return records;
+}
+
+function updatePreview(){
+  const records = mappedRecords();
+  const fields = IMPORT_FIELDS[importTarget];
+  const table = $('importPreview');
+  const headRow = '<tr>' + fields.map(f=>`<th>${f.label}</th>`).join('') + '</tr>';
+  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${rec[f.key]||''}</td>`).join('')+'</tr>').join('');
+  table.innerHTML = headRow + (bodyRows || `<tr><td colspan="${fields.length}">(Veri bulunamadı)</td></tr>`);
+  if(records.length > 6){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="${fields.length}" style="font-style:italic;color:#6b5d3f;">+${records.length-6} kayıt daha</td>`;
+    table.appendChild(tr);
+  }
+  return records;
+}
+
+$('sheetSelect').addEventListener('change', e=>loadSheetRows(e.target.value));
+$('hasHeader').addEventListener('change', updatePreview);
+
+$('cancelImport').addEventListener('click', ()=>{
+  $('importBackdrop').classList.remove('open');
+  $('bookFile').value=''; $('studentFile').value='';
+});
+
+$('confirmImport').addEventListener('click', ()=>{
+  const records = mappedRecords();
+  const arr = importTarget==='books' ? state.books : state.students;
+  records.forEach(rec=>{
+    arr.push(rec);
+    if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
+  });
+  if(importTarget==='books') renderBooks(); else renderStudents();
+  saveState();
+  $('importBackdrop').classList.remove('open');
+  $('bookFile').value=''; $('studentFile').value='';
+});
+
+$('bookFile').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) openImportModal(f, 'books'); });
+$('studentFile').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) openImportModal(f, 'students'); });
+
+// --- Test data loader (30 students / 30 books, 3 reading levels) ---
+const TEST_BOOKS = [
+  {title:'Küçük Kara Balık', author:'Samed Behrengi', genre:'Öykü', pages:'48', publisher:'Can Çocuk', ageRange:'8-11', level:'Giriş'},
+  {title:'Nasreddin Hoca Fıkraları', author:'Anonim (Derleme)', genre:'Fıkra', pages:'64', publisher:'İş Bankası Kültür Yayınları', ageRange:'8-11', level:'Giriş'},
+  {title:'Pinokyo (Kısaltılmış)', author:'Carlo Collodi', genre:'Masal', pages:'72', publisher:'Timaş Çocuk', ageRange:'8-11', level:'Giriş'},
+  {title:'Kırmızı Başlıklı Kız ve Diğer Masallar', author:'Grimm Kardeşler', genre:'Masal', pages:'56', publisher:'Redhouse Kidz', ageRange:'7-10', level:'Giriş'},
+  {title:'Keloğlan Masalları', author:'Anonim (Derleme)', genre:'Masal', pages:'60', publisher:'Yapı Kredi Yayınları', ageRange:'8-11', level:'Giriş'},
+  {title:'Küçük Prens', author:'A. de Saint-Exupéry', genre:'Roman', pages:'96', publisher:'Can Yayınları', ageRange:'9-12', level:'Orta'},
+  {title:'Momo', author:'Michael Ende', genre:'Roman', pages:'288', publisher:'Can Çocuk', ageRange:'10-13', level:'Orta'},
+  {title:'Şeker Portakalı', author:'J. M. de Vasconcelos', genre:'Roman', pages:'192', publisher:'Can Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:"Charlotte'un Ağı", author:'E. B. White', genre:'Roman', pages:'184', publisher:'Can Çocuk', ageRange:'9-12', level:'Orta'},
+  {title:'Pal Sokağı Çocukları', author:'Ferenc Molnár', genre:'Roman', pages:'224', publisher:'İş Bankası Kültür Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:'Heidi', author:'Johanna Spyri', genre:'Roman', pages:'240', publisher:'Can Çocuk', ageRange:'9-12', level:'Orta'},
+  {title:"Tom Sawyer'ın Maceraları", author:'Mark Twain', genre:'Roman', pages:'256', publisher:'İthaki Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:'Alice Harikalar Diyarında', author:'Lewis Carroll', genre:'Roman', pages:'176', publisher:'Can Çocuk', ageRange:'9-12', level:'Orta'},
+  {title:'Define Adası', author:'R. L. Stevenson', genre:'Macera', pages:'272', publisher:'İş Bankası Kültür Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:'Küçük Kadınlar', author:'Louisa May Alcott', genre:'Roman', pages:'320', publisher:'Can Yayınları', ageRange:'11-14', level:'Orta'},
+  {title:'Pollyanna', author:'Eleanor H. Porter', genre:'Roman', pages:'256', publisher:'Timaş Çocuk', ageRange:'10-13', level:'Orta'},
+  {title:'Gizli Bahçe', author:'F. Hodgson Burnett', genre:'Roman', pages:'288', publisher:'Can Çocuk', ageRange:'10-13', level:'Orta'},
+  {title:"Gulliver'in Gezileri", author:'Jonathan Swift', genre:'Macera', pages:'240', publisher:'İthaki Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:"Robin Hood'un Maceraları", author:'Howard Pyle', genre:'Macera', pages:'256', publisher:'İş Bankası Kültür Yayınları', ageRange:'10-13', level:'Orta'},
+  {title:'Oliver Twist (Gençlik Uyarlaması)', author:'Charles Dickens', genre:'Roman', pages:'304', publisher:'Can Çocuk', ageRange:'11-14', level:'Orta'},
+  {title:'Yüzüklerin Efendisi: Yüzük Kardeşliği', author:'J. R. R. Tolkien', genre:'Fantastik', pages:'576', publisher:'Metis Yayınları', ageRange:'12-15', level:'İleri'},
+  {title:'Harry Potter ve Felsefe Taşı', author:'J. K. Rowling', genre:'Fantastik', pages:'320', publisher:'Yapı Kredi Yayınları', ageRange:'11-14', level:'İleri'},
+  {title:'Percy Jackson: Şimşek Hırsızı', author:'Rick Riordan', genre:'Fantastik', pages:'384', publisher:'Beta Kids', ageRange:'11-14', level:'İleri'},
+  {title:'Simyacı', author:'Paulo Coelho', genre:'Roman', pages:'208', publisher:'Can Yayınları', ageRange:'12-15', level:'İleri'},
+  {title:'Dünyanın Merkezine Yolculuk', author:'Jules Verne', genre:'Bilimkurgu', pages:'288', publisher:'İş Bankası Kültür Yayınları', ageRange:'11-14', level:'İleri'},
+  {title:'Denizler Altında Yirmi Bin Fersah', author:'Jules Verne', genre:'Bilimkurgu', pages:'448', publisher:'İş Bankası Kültür Yayınları', ageRange:'12-15', level:'İleri'},
+  {title:'Beyaz Diş', author:'Jack London', genre:'Roman', pages:'256', publisher:'İthaki Yayınları', ageRange:'11-14', level:'İleri'},
+  {title:'Vahşetin Çağrısı', author:'Jack London', genre:'Roman', pages:'192', publisher:'İthaki Yayınları', ageRange:'11-14', level:'İleri'},
+  {title:'Kayıp Dünya', author:'Arthur Conan Doyle', genre:'Macera', pages:'288', publisher:'İthaki Yayınları', ageRange:'12-15', level:'İleri'},
+  {title:"Baskerville'lerin Köpeği", author:'Arthur Conan Doyle', genre:'Polisiye', pages:'240', publisher:'İthaki Yayınları', ageRange:'12-15', level:'İleri'}
+];
+const TEST_STUDENT_NAMES = {
+  'İleri': ['Ahmet Yılmaz','Zeynep Kaya','Mehmet Demir','Elif Çelik','Mustafa Şahin','Ayşe Yıldız','Emre Aydın','Fatma Öztürk','Burak Arslan','Hatice Doğan'],
+  'Orta': ['Can Kılıç','Merve Aslan','Kerem Çetin','Selin Kurt','Onur Aksoy','Buse Türk','Yusuf Koç','Ece Güneş','Berkay Polat','İrem Şimşek','Emirhan Yalçın','Gizem Karaca','Furkan Bulut','Nisa Er','Baran Acar'],
+  'Giriş': ['Duru Keskin','Alp Uçar','Defne Bozkurt','Kaan Tekin','Sude Avcı']
+};
+const TEST_STUDENTS = Object.entries(TEST_STUDENT_NAMES).flatMap(([level,names])=>
+  names.map(name=>({name, grade:'6', section:'B', level}))
+);
+
+let testDataArmed = false;
+$('loadTestData').addEventListener('click', ()=>{
+  const btn = $('loadTestData');
+  if(!testDataArmed){
+    testDataArmed = true;
+    btn.textContent = '⚠️ Emin misiniz? Tekrar tıklayın';
+    setTimeout(()=>{ testDataArmed = false; btn.textContent = '🧪 Test Verisi Yükle'; }, 4000);
+    return;
+  }
+  testDataArmed = false;
+  btn.textContent = '🧪 Test Verisi Yükle';
+  ['Giriş','Orta','İleri'].forEach(lv=>{ if(!state.levels.includes(lv)) state.levels.push(lv); });
+  state.books = TEST_BOOKS.map(b=>({...b}));
+  state.students = TEST_STUDENTS.map(s=>({...s}));
+  renderBooks(); renderStudents(); saveState();
+  generate();
+});
+function computeRoundDates(){
+  const N = state.students.length;
+  const startVal = $('start').value;
+  if(N < 1 || !startVal) return null;
+  let cursor = startOfDay(new Date(startVal));
+  const rows = [];
+  state.rounds.forEach(r=>{
+    const totalDays = N * r.days;
+    const from = cursor, to = addDays(cursor, totalDays - 1);
+    rows.push({from, to});
+    cursor = addDays(cursor, totalDays);
+  });
+  return { rows, finalEnd: addDays(cursor, -1) };
+}
+function updateRoundDatesUI(){
+  const info = computeRoundDates();
+  const lis = $('roundList').querySelectorAll('li');
+  lis.forEach((li,i)=>{
+    const span = li.querySelector('.rdate');
+    span.textContent = (info && info.rows[i]) ? `→ ${fmtDate(info.rows[i].from)} – ${fmtDate(info.rows[i].to)}` : '';
+  });
+  const summary = $('roundsSummary');
+  summary.textContent = info
+    ? `Program tahmini olarak ${info.finalEnd.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})} tarihinde biter.`
+    : 'Tarih hesaplamak için sınıf listesine öğrenci ekleyin ve başlangıç tarihi seçin.';
+}
+function renderRounds(){
+  const ul = $('roundList'); ul.innerHTML = '';
+  state.rounds.forEach((r,i)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="rlabel">Döngü ${i+1}</span><input type="number" min="1" value="${r.days}"><span>gün / öğrenci</span><span class="rdate"></span><button class="ghost" title="Kaldır">×</button>`;
+    const input = li.querySelector('input');
+    input.addEventListener('input', ()=>{ r.days = Math.max(1, parseInt(input.value,10)||1); saveState(); updateRoundDatesUI(); });
+    li.querySelector('button').addEventListener('click', ()=>{
+      if(state.rounds.length<=1) return;
+      state.rounds.splice(i,1); renderRounds(); saveState();
+    });
+    ul.appendChild(li);
+  });
+  updateRoundDatesUI();
+}
+$('start').addEventListener('change', updateRoundDatesUI);
+$('addRound').addEventListener('click', ()=>{
+  const last = state.rounds[state.rounds.length-1];
+  state.rounds.push({days: last ? last.days : 7});
+  renderRounds(); saveState();
+});
+
+// --- Schedule ---
+function fmtDate(d){ return d.toLocaleDateString('tr-TR', {day:'2-digit', month:'short'}); }
+function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+function startOfDay(d){ const c=new Date(d); c.setHours(0,0,0,0); return c; }
+
+function buildSchedule(){
+  const start = startOfDay(new Date(state.start));
+  const levels = Array.from(new Set([
+    ...state.books.map(b=>b.level||''),
+    ...state.students.map(s=>s.level||'')
+  ]));
+  const warnings = [];
+  const groups = [];
+
+  levels.forEach(level=>{
+    const gBooks = state.books.filter(b=>(b.level||'')===level);
+    const gStudents = state.students.filter(s=>(s.level||'')===level);
+    const label = level || (levels.length>1 ? 'Seviyesiz' : '');
+    if(gBooks.length===0){ if(gStudents.length) warnings.push(`"${label}" grubunda öğrenci var ama kitap yok.`); return; }
+    if(gStudents.length===0){ if(gBooks.length) warnings.push(`"${label}" grubunda kitap var ama öğrenci yok.`); return; }
+
+    const N = gStudents.length, K = gBooks.length;
+    const periods = [];
+    let cursor = start;
+    state.rounds.forEach((r, ri)=>{
+      for(let j=0;j<N;j++){
+        const from = cursor, to = addDays(cursor, r.days-1);
+        periods.push({from, to, roundIndex: ri});
+        cursor = addDays(cursor, r.days);
+      }
+    });
+    const books = gBooks.map((book,k)=>{
+      const offset = Math.round(k*N/K);
+      const stops = periods.map((per,p)=>({
+        student: gStudents[(offset+p) % N], from: per.from, to: per.to, roundIndex: per.roundIndex
+      }));
+      return {book, stops};
+    });
+    groups.push({level, label, books});
+  });
+
+  return {groups, warnings};
+}
+
+function render(groups){
+  const shelf = $('shelf'); shelf.innerHTML = '';
+  const today = startOfDay(new Date());
+  const todayList = $('today-list'); todayList.innerHTML = '';
+  let anyToday = false;
+  const showGroupHeaders = groups.length > 1;
+
+  groups.forEach(group=>{
+    if(showGroupHeaders){
+      const gh = document.createElement('div');
+      gh.style.cssText = 'font-family:var(--font-stamp);color:var(--board-text);font-size:1rem;margin:.4rem 0 -.2rem;';
+      gh.textContent = '🏷 ' + (group.label || 'Seviyesiz');
+      shelf.appendChild(gh);
+    }
+    group.books.forEach(entry=>{
+      const div = document.createElement('div'); div.className='book';
+      const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
+      const metaText = [entry.book.author, entry.book.genre, entry.book.pages ? entry.book.pages+' sayfa':'', entry.book.ageRange ? entry.book.ageRange+' yaş':''].filter(Boolean).join(' · ');
+      if(metaText){ const meta = document.createElement('div'); meta.className='meta'; meta.textContent = metaText; div.appendChild(meta); }
+
+      let curRound = -1, track;
+      entry.stops.forEach(stop=>{
+        if(stop.roundIndex !== curRound){
+          curRound = stop.roundIndex;
+          const rh = document.createElement('div');
+          rh.className = 'roundhead';
+          rh.textContent = `Döngü ${curRound+1} — ${state.rounds[curRound].days} gün/öğrenci`;
+          div.appendChild(rh);
+          track = document.createElement('ul'); track.className='track'; div.appendChild(track);
+        }
+        const li = document.createElement('li'); li.className='stop';
+        const studentLabel = stop.student.name + (stop.student.grade && stop.student.section ? ` (${stop.student.grade}/${stop.student.section})` : '');
+        if(today >= stop.from && today <= stop.to){
+          li.classList.add('active'); anyToday = true;
+          const row = document.createElement('li');
+          row.innerHTML = `<span>${entry.book.title}</span><b>${stop.student.name}</b>`;
+          todayList.appendChild(row);
+        } else if(today > stop.to){ li.classList.add('past'); }
+        li.innerHTML = `<span class="who">${studentLabel}</span><span class="when">${fmtDate(stop.from)} – ${fmtDate(stop.to)}</span>`;
+        track.appendChild(li);
+      });
+      shelf.appendChild(div);
+    });
+  });
+  $('today-box').style.display = anyToday ? 'block' : 'none';
+}
+
+function generate(){
+  const msg = $('msg'); msg.textContent = '';
+  state.start = $('start').value;
+  if(state.students.length < 2){ msg.textContent = 'Sınıf listesine en az 2 öğrenci ekleyin.'; return; }
+  if(state.books.length < 1){ msg.textContent = 'Kütüphaneye en az 1 kitap ekleyin.'; return; }
+  if(!state.start){ msg.textContent = 'Başlangıç tarihi seçin.'; return; }
+  const { groups, warnings } = buildSchedule();
+  if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; return; }
+  render(groups);
+  msg.textContent = warnings.join(' ');
+  saveState();
+}
+$('generate').addEventListener('click', generate);
+$('printBtn').addEventListener('click', ()=>window.print());
+
+(function init(){
+  const s = loadState();
+  if(s){ state = s; if(!Array.isArray(state.levels)) state.levels = ['Destek','Orta','İleri']; }
+  else { state.start = new Date().toISOString().slice(0,10); }
+  $('start').value = state.start || new Date().toISOString().slice(0,10);
+  renderBooks(); renderStudents(); renderRounds();
+  if(state.students.length>=2 && state.books.length>=1 && state.start) generate();
+})();
+</script>
+</body>
+</html>
