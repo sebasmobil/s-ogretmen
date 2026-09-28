@@ -79,6 +79,8 @@
   .roster li{position:relative;min-width:0;background:#FFFDF6;border:1px solid var(--card-line);
     border-radius:4px;padding:.85rem .8rem .9rem;font-size:.88rem;min-height:92px;
     overflow-wrap:anywhere;word-break:break-word;}
+  .roster li.groupHead{grid-column:1/-1;min-height:0;padding:.4rem .2rem .25rem;background:none;border:none;
+    border-bottom:1px dashed var(--card-line);font-weight:700;font-size:.85rem;color:var(--ink);font-family:var(--font-stamp);}
   .roster .tag{position:absolute;top:.55rem;left:.65rem;font-family:var(--font-stamp);font-size:.68rem;color:#8a7645;}
   .roster .info{display:block;margin-top:1.35rem;min-width:0;}
   .roster .info .primary{font-weight:700;display:block;line-height:1.25;}
@@ -192,7 +194,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.16 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.17 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -388,10 +390,18 @@ function updateRosterToggle(kind){
 $('toggleBooks').addEventListener('click', ()=>{ booksOpen = !booksOpen; ui.books = booksOpen; saveUI(); updateRosterToggle('books'); });
 $('toggleStudents').addEventListener('click', ()=>{ studentsOpen = !studentsOpen; ui.students = studentsOpen; saveUI(); updateRosterToggle('students'); });
 
+function showGroups(items){ const s = new Set(items.map(x=>x.level||'')); return s.size > 1 || (s.size === 1 && !s.has('')); }
+function groupHeader(ul, level, items){
+  const li = document.createElement('li'); li.className = 'groupHead';
+  li.textContent = '🏷 ' + (level || 'Seviyesiz') + ' (' + items.filter(x=>(x.level||'')===level).length + ')';
+  ul.appendChild(li);
+}
 function renderBooks(){
-  state.books.sort((a,b)=>trCmp(a.title,b.title));
+  state.books.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.title,b.title));
   const ul = $('bookRoster'); ul.innerHTML = '';
+  const gB = showGroups(state.books); let lastB = null;
   state.books.forEach((b,i)=>{
+    if(gB && (b.level||'') !== lastB){ lastB = b.level||''; groupHeader(ul, lastB, state.books); }
     const li = document.createElement('li');
     const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : ''].filter(Boolean).join(' · ');
     li.innerHTML = `<span class="tag">K-${String(i+1).padStart(2,'0')}</span>
@@ -408,9 +418,11 @@ function renderBooks(){
   updateRosterToggle('books');
 }
 function renderStudents(){
-  state.students.sort((a,b)=>trCmp(a.name,b.name));
+  state.students.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.name,b.name));
   const ul = $('studentRoster'); ul.innerHTML = '';
+  const gS = showGroups(state.students); let lastS = null;
   state.students.forEach((s,i)=>{
+    if(gS && (s.level||'') !== lastS){ lastS = s.level||''; groupHeader(ul, lastS, state.students); }
     const li = document.createElement('li');
     const secondary = [s.grade && s.section ? s.grade+'/'+s.section : (s.grade||s.section||''), s.level ? '🏷 '+s.level : ''].filter(Boolean).join(' · ');
     li.innerHTML = `<span class="tag">${i+1}</span>
