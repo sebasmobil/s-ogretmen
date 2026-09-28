@@ -16,8 +16,9 @@
 <style>
   :root{
     box-sizing:border-box;
-    --ink:#22314A; --card:#F6EFDC; --card-line:#D9CBA3;
-    --board:#17181A; --board-2:#222327; --board-text:#F2F1EC; --board-muted:#9C9C97;
+    --ink:#ECEAE4; --card:#1E2024; --card-line:#3A3D45; --paper:#282B31; --muted:#A8A69E; --muted2:#B9A87F; --danger:#E8A79D;
+    color-scheme:dark;
+    --board:#08080A; --board-2:#121215; --edge:#565B68; --board-text:#F2F1EC; --board-muted:#9C9C97;
     --stamp:#B23A2E; --stamp-ink:#F6EFDC; --gold:#C79A3C;
     --font-stamp:Arial,"Helvetica Neue",Helvetica,sans-serif;
     --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
@@ -26,7 +27,9 @@
   }
   html[data-theme="light"]{
     --board:#FAFAF8; --board-2:#F0EFEA; --board-text:#1A1B1E; --board-muted:#6B6B66;
-    --card:#FFFFFF; --card-line:#E3DED0;
+    --ink:#22314A; --card:#FFFFFF; --card-line:#E3DED0; --paper:#FFFDF6; --muted:#6b5d3f; --muted2:#8a7645; --danger:#7A3B2E;
+    --edge:transparent;
+    color-scheme:light;
   }
   html[data-palette="blue"]{ --gold:#3E7C9A; --stamp:#2B5C82; }
   html[data-palette="purple"]{ --gold:#9C6FB5; --stamp:#6B3FA0; }
@@ -50,7 +53,7 @@
   main > *{min-width:0;}
   .card{background:var(--card);color:var(--ink);border-radius:2px;
     box-shadow:0 10px 0 -6px rgba(0,0,0,.18),0 2px 10px rgba(0,0,0,.25);
-    padding:1.4rem 1.5rem 1.6rem;border-top:6px solid var(--gold);}
+    padding:1.4rem 1.5rem 1.6rem;border:1px solid var(--edge);border-top:6px solid var(--gold);}
   .card h2{font-family:var(--font-stamp);font-weight:700;font-size:1.15rem;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px dashed var(--card-line);}
   .subhead{font-family:var(--font-stamp);font-weight:700;font-size:.95rem;margin:0 0 .6rem;}
   .twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.6rem;}
@@ -61,39 +64,39 @@
   .miniform .field{display:flex;flex-direction:column;gap:.2rem;}
   .miniform .field.grow{flex:1;min-width:140px;}
   .miniform .field.small{width:90px;}
-  .miniform .field label{font-size:.7rem;color:#6b5d3f;font-weight:600;}
+  .miniform .field label{font-size:.7rem;color:var(--muted);font-weight:600;}
   .filebtn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--ink);border-radius:3px;
     padding:.5rem .8rem;cursor:pointer;font-size:.82rem;white-space:nowrap;}
 
   input,textarea,select{font-family:var(--font-body);font-size:16px;border:1px solid var(--card-line);
-    background:#FFFDF6;color:var(--ink);border-radius:3px;padding:.5rem .6rem;}
+    background:var(--paper);color:var(--ink);border-radius:3px;padding:.5rem .6rem;}
   input[type=file]{font-size:.8rem;padding:.3rem;}
   button{font-family:var(--font-stamp);font-size:.85rem;cursor:pointer;border:none;border-radius:3px;
     padding:.5rem 1rem;background:var(--stamp);color:var(--stamp-ink);letter-spacing:.4px;}
   button.secondary{background:transparent;color:var(--ink);border:1px solid var(--ink);}
-  button.ghost{background:transparent;color:#7A3B2E;border:none;padding:.1rem .4rem;font-size:1rem;}
+  button.ghost{background:transparent;color:var(--danger);border:none;padding:.1rem .4rem;font-size:1rem;}
   button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:1px;}
 
   .roster{list-style:none;margin:0;padding:.2rem;
     display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:.7rem;align-content:start;}
-  .roster li{position:relative;min-width:0;background:#FFFDF6;border:1px solid var(--card-line);
+  .roster li{position:relative;min-width:0;background:var(--paper);border:1px solid var(--card-line);
     border-radius:4px;padding:.85rem .8rem .9rem;font-size:.88rem;min-height:92px;
     overflow-wrap:anywhere;word-break:break-word;}
   .roster li.groupHead{grid-column:1/-1;min-height:0;padding:.4rem .2rem .25rem;background:none;border:none;
     border-bottom:1px dashed var(--card-line);font-weight:700;font-size:.85rem;color:var(--ink);font-family:var(--font-stamp);}
-  .roster .tag{position:absolute;top:.55rem;left:.65rem;font-family:var(--font-stamp);font-size:.68rem;color:#8a7645;}
+  .roster .tag{position:absolute;top:.55rem;left:.65rem;font-family:var(--font-stamp);font-size:.68rem;color:var(--muted2);}
   .roster .info{display:block;margin-top:1.35rem;min-width:0;}
   .roster .info .primary{font-weight:700;display:block;line-height:1.25;}
-  .roster .info .secondary{display:block;font-size:.74rem;color:#6b5d3f;margin-top:.3rem;line-height:1.35;}
+  .roster .info .secondary{display:block;font-size:.74rem;color:var(--muted);margin-top:.3rem;line-height:1.35;}
   .roster .cardActions{position:absolute;top:.35rem;right:.4rem;display:flex;gap:.15rem;}
   .roster .cardActions button{font-size:1rem;line-height:1;padding:.1rem .3rem;}
-  .roster .cardActions button.confirming{color:var(--stamp);font-weight:700;}
+  .roster .cardActions button.confirming{color:var(--danger);font-weight:700;}
   .rosterToggle{display:block;width:100%;margin-top:.6rem;text-align:left;font-size:.82rem;padding:.55rem .8rem;}
-  .count{font-size:.78rem;color:#6b5d3f;margin-top:.4rem;}
+  .count{font-size:.78rem;color:var(--muted);margin-top:.4rem;}
 
   .rounds{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.5rem;}
   .levelsList{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.5rem;max-height:260px;overflow-y:auto;}
-  .levelsList li{display:flex;align-items:center;gap:.6rem;background:#FFFDF6;border:1px dashed var(--card-line);
+  .levelsList li{display:flex;align-items:center;gap:.6rem;background:var(--paper);border:1px dashed var(--card-line);
     border-radius:3px;padding:.4rem .6rem;}
   .levelsList li input{flex:1;}
   .newlevel{display:flex;gap:.5rem;margin-top:.4rem;}
@@ -107,10 +110,10 @@
   .paletteSwatches button.active{border-color:var(--ink);}
 
   #levelsBackdrop{z-index:60;}
-  .rounds li{display:flex;align-items:center;gap:.7rem;background:#FFFDF6;border:1px dashed var(--card-line);
+  .rounds li{display:flex;align-items:center;gap:.7rem;background:var(--paper);border:1px dashed var(--card-line);
     border-radius:3px;padding:.5rem .7rem;font-size:.88rem;}
   .rounds .rlabel{font-family:var(--font-stamp);min-width:6.5em;}
-  .rounds .rdate{margin-left:auto;font-family:var(--font-stamp);font-size:.72rem;color:#8a7645;white-space:nowrap;}
+  .rounds .rdate{margin-left:auto;font-family:var(--font-stamp);font-size:.72rem;color:var(--muted2);white-space:nowrap;}
   .rounds input[type=number]{width:5em;}
   .row3{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:end;}
 
@@ -118,24 +121,24 @@
   details summary{cursor:pointer;font-weight:700;margin:.5rem 0;}
   .histRound{margin:.6rem 0;font-size:.85rem;line-height:1.4;}
   .histRound b{display:block;}
-  .msg{white-space:pre-line;font-size:.85rem;margin-top:.7rem;color:#7A3B2E;}
+  .msg{white-space:pre-line;font-size:.85rem;margin-top:.7rem;color:var(--danger);}
   #today-box{display:none;}
   #today-list{list-style:none;padding:0;margin:0;display:grid;gap:.5rem;}
   #today-list li{display:flex;justify-content:space-between;gap:.8rem;padding:.5rem .7rem;
-    background:#FFFDF6;border:1px dashed var(--card-line);border-radius:3px;font-size:.9rem;}
+    background:var(--paper);border:1px dashed var(--card-line);border-radius:3px;font-size:.9rem;}
 
   .shelf{display:grid;grid-template-columns:minmax(0,1fr);gap:1.2rem;}
   .shelf > *{min-width:0;}
-  .book{background:var(--card);color:var(--ink);border-radius:2px;
+  .book{border:1px solid var(--edge);background:var(--card);color:var(--ink);border-radius:2px;
     box-shadow:0 8px 0 -5px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.22);padding:1.1rem 1.3rem 1.3rem;}
   .book h3{font-family:var(--font-stamp);font-weight:700;font-size:1.05rem;margin:0 0 .1rem;}
-  .book .meta{font-size:.78rem;color:#6b5d3f;margin:0 0 .6rem;}
-  .roundhead{font-family:var(--font-stamp);font-size:.78rem;color:#8a7645;margin:.7rem 0 .3rem;}
+  .book .meta{font-size:.78rem;color:var(--muted);margin:0 0 .6rem;}
+  .roundhead{font-family:var(--font-stamp);font-size:.78rem;color:var(--muted2);margin:.7rem 0 .3rem;}
   .track{list-style:none;margin:0;padding:0 0 .3rem;display:flex;gap:.5rem;overflow-x:auto;max-width:100%;min-width:0;-webkit-overflow-scrolling:touch;}
   .stop{border:1px solid var(--card-line);border-radius:3px;padding:.45rem .65rem;min-width:130px;
-    flex:0 0 auto;font-size:.82rem;background:#FFFDF6;}
+    flex:0 0 auto;font-size:.82rem;background:var(--paper);}
   .stop .who{font-weight:700;display:block;}
-  .stop .when{color:#6b5d3f;font-family:var(--font-stamp);font-size:.74rem;}
+  .stop .when{color:var(--muted);font-family:var(--font-stamp);font-size:.74rem;}
   .stop.active{background:var(--stamp);color:var(--stamp-ink);border-color:var(--stamp);}
   .stop.active .when{color:#F1D6CF;}
   .stop.past{opacity:.5;}
@@ -143,7 +146,7 @@
 
   .modal-backdrop{position:fixed;inset:0;background:rgba(20,26,20,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem;}
   .modal-backdrop.open{display:flex;}
-  .modal{background:var(--card);color:var(--ink);border-radius:2px;border-top:6px solid var(--gold);
+  .modal{background:var(--card);color:var(--ink);border-radius:2px;border:1px solid var(--edge);border-top:6px solid var(--gold);
     max-width:580px;width:100%;max-height:88vh;overflow-y:auto;padding:1.3rem 1.4rem 1.5rem;
     box-shadow:0 20px 40px rgba(0,0,0,.4);}
   .modal h2{font-family:var(--font-stamp);font-weight:700;font-size:1.1rem;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px dashed var(--card-line);}
@@ -155,7 +158,7 @@
   .prevwrap{overflow-x:auto;margin-top:.6rem;border:1px dashed var(--card-line);border-radius:3px;}
   table.prev{border-collapse:collapse;width:100%;font-size:.78rem;}
   table.prev th,table.prev td{padding:.35rem .5rem;border-bottom:1px solid var(--card-line);text-align:left;white-space:nowrap;}
-  table.prev th{font-family:var(--font-stamp);font-weight:400;color:#8a7645;}
+  table.prev th{font-family:var(--font-stamp);font-weight:400;color:var(--muted2);}
   .modal-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem;}
 
   @media (max-width:520px){
@@ -178,7 +181,15 @@
     box-shadow:0 8px 0 -5px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.22);cursor:pointer;}
   .boardToggle[hidden]{display:none;}
 
+  .retRow{display:flex;gap:.6rem;align-items:flex-start;padding:.5rem .6rem;background:var(--paper);border:1px solid var(--card-line);
+    border-radius:3px;margin-bottom:.4rem;font-size:.88rem;}
+  .retRow input{width:22px;height:22px;padding:0;margin-top:.1rem;flex:none;}
+  .retRow .rt{flex:1;min-width:0;overflow-wrap:anywhere;}
+  .retRow .rs{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem;}
+  .retRow.done{opacity:.55;}
   @media print{
+    #returnBody{display:block !important;}
+    html,html[data-theme]{--ink:#000;--card:#fff;--card-line:#999;--paper:#fff;--muted:#333;--muted2:#333;--danger:#900;}
     .boardToggle,.rosterToggle,#todaySortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
     #shelf,#today-list{display:grid !important;}
     #roundsBody{display:block !important;}
@@ -194,7 +205,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.19 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.24 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -299,6 +310,12 @@
     <details id="det2"><summary>Öğrenci okuma listesi</summary><div id="histStudents"></div></details>
   </section>
 
+  <section class="card" id="returnCard" style="display:none;">
+    <h2>📦 İade Listesi</h2>
+    <button class="secondary rosterToggle" id="toggleReturns" type="button" style="margin-top:0;"></button>
+    <div id="returnBody" style="display:none;margin-top:.8rem;"></div>
+  </section>
+
   <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
   <div class="shelf" id="shelf" style="display:none;"></div>
 </main>
@@ -308,7 +325,7 @@
 <div class="modal-backdrop" id="levelsBackdrop">
   <div class="modal">
     <h2>Seviyeleri Yönet</h2>
-    <p style="font-size:.82rem;color:#6b5d3f;margin:-.4rem 0 .8rem;">Buradaki seviyeler, hem kitap hem öğrenci eklerken açılır listede görünür. Bir seviyeyi yeniden adlandırırsan, o seviyeye sahip tüm kitap ve öğrenciler otomatik güncellenir; silersen etiketleri boşa döner.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Buradaki seviyeler, hem kitap hem öğrenci eklerken açılır listede görünür. Bir seviyeyi yeniden adlandırırsan, o seviyeye sahip tüm kitap ve öğrenciler otomatik güncellenir; silersen etiketleri boşa döner.</p>
     <ul class="levelsList" id="levelsList"></ul>
     <div class="newlevel">
       <input type="text" id="newLevelInput" placeholder="Örn. Elma Seviyesi">
@@ -386,7 +403,7 @@ function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
+let ui = {returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -414,7 +431,7 @@ function renderBooks(){
   state.books.forEach((b,i)=>{
     if(gB && (b.level||'') !== lastB){ lastB = b.level||''; groupHeader(ul, lastB, state.books); }
     const li = document.createElement('li');
-    const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : ''].filter(Boolean).join(' · ');
+    const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : '', ownerLabel(b)].filter(Boolean).join(' · ');
     li.innerHTML = `<span class="tag">K-${String(i+1).padStart(2,'0')}</span>
       <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
       <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
@@ -427,6 +444,7 @@ function renderBooks(){
   });
   $('bookCount').textContent = state.books.length ? `${state.books.length} kayıt` : 'Henüz kayıt yok.';
   updateRosterToggle('books');
+  renderReturns();
 }
 function renderStudents(){
   state.students.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.name,b.name));
@@ -449,6 +467,7 @@ function renderStudents(){
   $('studentCount').textContent = state.students.length ? `${state.students.length} kayıt` : 'Henüz kayıt yok.';
   updateRosterToggle('students');
   updateRoundDatesUI();
+  renderReturns();
 }
 
 // --- Confirm-before-delete helper (two-step click) ---
@@ -479,7 +498,8 @@ const ADD_FIELDS = {
     {key:'pages', label:'Sayfa Sayısı', type:'number', placeholder:'96'},
     {key:'publisher', label:'Yayınevi', placeholder:'Can Yayınları'},
     {key:'ageRange', label:'Yaş Aralığı', placeholder:'9-12'},
-    {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'}
+    {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'},
+    {key:'ownerId', label:'Getiren öğrenci'}
   ],
   students: [
     {key:'name', label:'Ad Soyad', required:true, placeholder:'Ahmet Yılmaz'},
@@ -495,7 +515,12 @@ function buildAddFields(){
   ADD_FIELDS[addTarget].forEach(f=>{
     const wrap = document.createElement('div'); wrap.className='fieldrow';
     const lbl = document.createElement('label'); lbl.textContent = f.label + (f.required?' *':''); wrap.appendChild(lbl);
-    if(f.key === 'level'){
+    if(f.key === 'ownerId'){
+      const sel = document.createElement('select'); sel.dataset.field = 'ownerId';
+      const none = document.createElement('option'); none.value = ''; none.textContent = '— Sınıf kütüphanesi (sahibi yok) —'; sel.appendChild(none);
+      state.students.forEach(s=>{ const o = document.createElement('option'); o.value = s.id; o.textContent = s.name + (s.level ? ' (' + s.level + ')' : ''); sel.appendChild(o); });
+      wrap.appendChild(sel);
+    } else if(f.key === 'level'){
       const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:.5rem;align-items:center;';
       const sel = document.createElement('select'); sel.dataset.field = 'level'; sel.style.flex = '1';
       const none = document.createElement('option'); none.value=''; none.textContent='— Seviye Yok —'; sel.appendChild(none);
@@ -618,6 +643,7 @@ $('confirmAdd').addEventListener('click', ()=>{
     rec[f.key] = v;
   });
   if(!ok){ $('addFieldsBox').querySelector('input,select').focus(); return; }
+  if(addTarget === 'books'){ const st = state.students.find(s=>s.id === rec.ownerId); rec.ownerName = st ? st.name : ''; }
   const arr = addTarget==='books' ? state.books : state.students;
   if(addMode==='edit' && editIndex!==null){ rec.id = arr[editIndex].id || uid(); arr[editIndex] = rec; } else { rec.id = uid(); arr.push(rec); }
   if(addTarget==='books') renderBooks(); else renderStudents();
@@ -641,7 +667,8 @@ const IMPORT_FIELDS = {
     {key:'pages', label:'Sayfa Sayısı', kw:['sayfa','pages']},
     {key:'publisher', label:'Yayınevi', kw:['yayın','yayin','publisher']},
     {key:'ageRange', label:'Yaş Aralığı', kw:['yaş','yas','age']},
-    {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
+    {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']},
+    {key:'ownerName', label:'Getiren öğrenci', kw:['getiren','sahib','owner']}
   ],
   students: [
     {key:'name', label:'Ad Soyad', required:true, kw:['ad soyad','isim','ad','soyad','name']},
@@ -742,7 +769,7 @@ function updatePreview(){
   table.innerHTML = headRow + (bodyRows || `<tr><td colspan="${fields.length}">(Veri bulunamadı)</td></tr>`);
   if(records.length > 6){
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="${fields.length}" style="font-style:italic;color:#6b5d3f;">+${records.length-6} kayıt daha</td>`;
+    tr.innerHTML = `<td colspan="${fields.length}" style="font-style:italic;color:var(--muted);">+${records.length-6} kayıt daha</td>`;
     table.appendChild(tr);
   }
   return records;
@@ -760,7 +787,9 @@ $('confirmImport').addEventListener('click', ()=>{
   const records = mappedRecords();
   const arr = importTarget==='books' ? state.books : state.students;
   records.forEach(rec=>{
-    rec.id = uid(); arr.push(rec);
+    rec.id = uid();
+    if(importTarget==='books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(s.name, rec.ownerName)===0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = st.name; }
+    arr.push(rec);
     if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
   });
   if(importTarget==='books') renderBooks(); else renderStudents();
@@ -827,8 +856,14 @@ $('loadTestData').addEventListener('click', ()=>{
   btn.textContent = '🧪 Test Verisi Yükle';
   ['Giriş','Orta','İleri'].forEach(lv=>{ if(!state.levels.includes(lv)) state.levels.push(lv); });
   state.history = [];
+  state.manualStash = [];
   state.books = TEST_BOOKS.map(b=>({...b, id: uid()}));
   state.students = TEST_STUDENTS.map(s=>({...s, id: uid()}));
+  state.returned = {};
+  ['Giriş','Orta','İleri'].forEach(lv=>{
+    const bs = state.books.filter(b=>b.level === lv), ss = state.students.filter(s=>s.level === lv);
+    bs.forEach((b,i)=>{ if(ss[i]){ b.ownerId = ss[i].id; b.ownerName = ss[i].name; } });
+  });
   renderBooks(); renderStudents(); saveState();
   generate();
 });
@@ -879,6 +914,7 @@ function attachTwoStep(btn, idleText, armText, onConfirm){
   });
 }
 function unlockFrom(i){
+  state.manualStash = [];
   const removed = state.history.length - i;
   state.history.splice(i);
   let switched = false;
@@ -939,9 +975,25 @@ function updateLockUI(){
   if(next >= state.rounds.length){ btn.textContent = 'Kilitlenecek döngü kalmadı'; btn.disabled = true; }
   else { btn.disabled = false; btn.textContent = '🔒 Döngü ' + (next+1) + ' kilitle'; }
 }
+function restoreStash(){
+  const st = Array.isArray(state.manualStash) ? state.manualStash : [];
+  let note = '';
+  if(st.length && st[0].roundIndex === state.history.length && state.history.length + st.length <= state.rounds.length){
+    st.forEach(e=>state.history.push(e));
+    note = 'Elle kilitlediğin ' + st.length + ' döngü geri yüklendi (Döngü ' + (st[0].roundIndex+1) + (st.length > 1 ? '–' + (st[st.length-1].roundIndex+1) : '') + ').';
+  }
+  state.manualStash = [];
+  return note;
+}
 document.querySelectorAll('[data-lock]').forEach(b=>b.addEventListener('click', ()=>{
-  ui.lockMode = b.dataset.lock; saveUI(); updateLockUI();
-  if(ui.lockMode === 'auto' && state.students.length && state.books.length) generate();
+  const prev = ui.lockMode;
+  ui.lockMode = b.dataset.lock; saveUI();
+  let note = '';
+  if(ui.lockMode === 'manual' && prev !== 'manual') note = restoreStash();
+  updateLockUI();
+  if(state.students.length && state.books.length && (state.start || state.history.length)) generate(); else renderRounds();
+  if(note){ const m = $('msg'); m.textContent = note + (m.textContent ? '\n' + m.textContent : ''); }
+  saveState();
 }));
 let lockArmed = false;
 $('lockNext').addEventListener('click', ()=>{
@@ -981,6 +1033,7 @@ function assignRound(ri, readMap){
       for(let t=0; t<K; t++){
         const b = gB[(pos + ri + t) % K];
         if(read && read.has(b.id)) continue;
+        if(b.ownerId && b.ownerId === s.id) continue;
         if(seen[b.id]) continue;
         seen[b.id] = true;
         if(!owner[b.id] || tryS(owner[b.id].s, owner[b.id].pos, seen)){ owner[b.id] = {s, pos}; return true; }
@@ -1004,8 +1057,19 @@ function lockOne(i, readMap, dates){
     assignments:res.assignments, unassigned:res.unassigned, idle:res.idle});
   return true;
 }
+let lastUnlockNote = '';
 function buildAll(){
   const today = startOfDay(new Date());
+  lastUnlockNote = '';
+  // auto mode = "locked exactly when the start date has arrived": release rounds locked too early (e.g. in manual mode)
+  if(ui.lockMode !== 'manual'){
+    const k = state.history.findIndex(x=>parseISO(x.from) > today);
+    if(k >= 0){
+      const n = state.history.length - k;
+      state.manualStash = state.history.splice(k);
+      lastUnlockNote = 'Otomatik modda tarihi gelmemiş ' + n + ' döngünün kilidi açıldı (Döngü ' + (k+1) + (n > 1 ? ' ve sonrası' : '') + '). Manuel moda dönersen elle kilitlediğin haliyle geri gelir.';
+    }
+  }
   const readMap = readMapFrom(state.history);
   const dates = roundDates();
   // auto mode: lock every round whose start date has arrived (manual mode never locks by itself)
@@ -1095,7 +1159,7 @@ function render(groups){
     group.books.forEach(entry=>{
       const div = document.createElement('div'); div.className='book';
       const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
-      const metaText = [entry.book.author, entry.book.genre, entry.book.pages ? entry.book.pages+' sayfa':'', entry.book.ageRange ? entry.book.ageRange+' yaş':''].filter(Boolean).join(' · ');
+      const metaText = [entry.book.author, entry.book.genre, entry.book.pages ? entry.book.pages+' sayfa':'', entry.book.ageRange ? entry.book.ageRange+' yaş':'', ownerLabel(entry.book)].filter(Boolean).join(' · ');
       if(metaText){ const meta = document.createElement('div'); meta.className='meta'; meta.textContent = metaText; div.appendChild(meta); }
       const track = document.createElement('ul'); track.className='track'; div.appendChild(track);
       entry.stops.forEach(stop=>{
@@ -1142,6 +1206,55 @@ function renderHistory(){
   });
 }
 
+let lastRounds = [];
+function ownerName(b){ const st = state.students.find(s=>s.id === b.ownerId); return st ? st.name : (b.ownerName || ''); }
+function ownerLabel(b){ return (b.ownerId || b.ownerName) ? '📚 Getiren: ' + (ownerName(b) || '?') : ''; }
+function holderText(bookId){
+  if(!lastRounds.length) return '';
+  const today = startOfDay(new Date());
+  if(today < lastRounds[0].from) return 'Program henüz başlamadı';
+  if(today > lastRounds[lastRounds.length-1].to) return 'Program bitti — iade edilebilir';
+  for(let i = 0; i < lastRounds.length; i++){
+    const rd = lastRounds[i];
+    if(today >= rd.from && today <= rd.to){
+      const a = rd.assignments.find(x=>x.bookId === bookId);
+      return a ? 'Şu an: ' + a.studentName + ' (Döngü ' + (i+1) + ')' : 'Şu an: boşta';
+    }
+  }
+  return '';
+}
+function updateReturnToggle(){
+  const owned = state.books.filter(b=>b.ownerId || b.ownerName);
+  const done = owned.filter(b=>state.returned[b.id]).length;
+  $('toggleReturns').textContent = (ui.returns ? '▲ İade listesini gizle' : '▼ İade listesini göster') + ' (teslim edilen ' + done + '/' + owned.length + ')';
+  $('returnBody').style.display = ui.returns ? 'block' : 'none';
+}
+function renderReturns(rounds){
+  if(rounds) lastRounds = rounds;
+  if(!state.returned || typeof state.returned !== 'object') state.returned = {};
+  const owned = state.books.filter(b=>b.ownerId || b.ownerName);
+  const card = $('returnCard');
+  if(!owned.length){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const rows = owned.map(b=>({b, owner: ownerName(b) || '?'})).sort((x,y)=>trCmp(x.owner, y.owner) || trCmp(x.b.title, y.b.title));
+  const body = $('returnBody'); body.innerHTML = '';
+  rows.forEach(r=>{
+    const row = document.createElement('label'); row.className = 'retRow' + (state.returned[r.b.id] ? ' done' : '');
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!state.returned[r.b.id];
+    const t = document.createElement('span'); t.className = 'rt';
+    const main = document.createElement('b'); main.textContent = r.owner + ' ← ' + r.b.title; t.appendChild(main);
+    const hold = holderText(r.b.id);
+    if(hold){ const s = document.createElement('span'); s.className = 'rs'; s.textContent = hold; t.appendChild(s); }
+    cb.addEventListener('change', ()=>{
+      if(cb.checked) state.returned[r.b.id] = true; else delete state.returned[r.b.id];
+      row.classList.toggle('done', cb.checked); saveState(); updateReturnToggle();
+    });
+    row.appendChild(cb); row.appendChild(t); body.appendChild(row);
+  });
+  updateReturnToggle();
+}
+$('toggleReturns').addEventListener('click', ()=>{ ui.returns = !ui.returns; saveUI(); updateReturnToggle(); });
+
 function generate(){
   const msg = $('msg'); msg.textContent = '';
   if(!state.history.length) state.start = $('start').value;
@@ -1152,9 +1265,10 @@ function generate(){
   const { groups, warnings } = buildGroups(rounds);
   renderRounds();
   renderHistory();
+  renderReturns(rounds);
   if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
   render(groups);
-  msg.textContent = warnings.join('\n');
+  msg.textContent = (lastUnlockNote ? lastUnlockNote + '\n' : '') + warnings.join('\n');
   saveState();
 }
 $('generate').addEventListener('click', generate);
@@ -1170,6 +1284,7 @@ $('resetHistory').addEventListener('click', ()=>{
   }
   resetArmed = false; btn.textContent = '🗑 Geçmişi Sıfırla';
   state.history = [];
+  state.manualStash = [];
   generate();
 });
 
@@ -1178,6 +1293,8 @@ $('resetHistory').addEventListener('click', ()=>{
   if(s){ state = s; if(!Array.isArray(state.levels)) state.levels = ['Destek','Orta','İleri']; }
   else { state.start = new Date().toISOString().slice(0,10); }
   if(!Array.isArray(state.history)) state.history = [];
+  if(!Array.isArray(state.manualStash)) state.manualStash = [];
+  if(!state.returned || typeof state.returned !== 'object') state.returned = {};
   state.books.forEach(b=>{ if(!b.id) b.id = uid(); });
   state.students.forEach(x=>{ if(!x.id) x.id = uid(); });
   while(state.rounds.length < state.history.length) state.rounds.push({days: 7});
