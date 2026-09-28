@@ -179,7 +179,7 @@
   .boardToggle[hidden]{display:none;}
 
   @media print{
-    .boardToggle,.rosterToggle{display:none !important;}
+    .boardToggle,.rosterToggle,#todaySortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
     #shelf,#today-list{display:grid !important;}
     #roundsBody{display:block !important;}
     body{background:#fff;color:#000;}
@@ -194,7 +194,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.17 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.19 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -263,6 +263,13 @@
     <h2>2 — Döngüler</h2>
     <button class="secondary rosterToggle" id="toggleRounds" type="button" style="margin-top:0;"></button>
     <div id="roundsBody" style="display:none;margin-top:1rem;">
+    <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:.4rem;">Döngü kilitleme</label>
+    <div class="themeToggle" id="lockModeBar" style="margin-bottom:.4rem;">
+      <button data-lock="auto" type="button">Otomatik</button>
+      <button data-lock="manual" type="button">Manuel</button>
+    </div>
+    <div class="count" id="lockHint" style="margin:0 0 .6rem;"></div>
+    <button id="lockNext" type="button" style="display:none;margin-bottom:1rem;"></button>
     <div class="row3">
       <div><label style="font-size:.85rem;font-weight:600;">Başlangıç tarihi</label><input type="date" id="start"></div>
       <button class="secondary" id="addRound" type="button">+ Döngü Ekle</button>
@@ -278,6 +285,10 @@
 
   <section class="card" id="today-box">
     <h2>Bugün kim okuyor?</h2>
+    <div class="themeToggle" id="todaySortBar" style="margin-bottom:.7rem;">
+      <button data-tsort="book" type="button">Kitaba göre</button>
+      <button data-tsort="student" type="button">Öğrenciye göre</button>
+    </div>
     <button class="secondary rosterToggle" id="toggleToday" type="button" style="margin-top:0;"></button>
     <ul id="today-list" style="margin-top:.7rem;display:none;"></ul>
   </section>
@@ -375,7 +386,7 @@ function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
+let ui = {lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -856,8 +867,31 @@ function updateRoundDatesUI(){
     ? `Program ${info.finalEnd.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})} tarihinde biter.` + (L ? ` (${L} döngü kilitli, geçmişe kaydedildi.)` : '')
     : 'Tarih hesaplamak için başlangıç tarihi seçin.';
 }
+function attachTwoStep(btn, idleText, armText, onConfirm){
+  let armed = false, timer = null;
+  btn.addEventListener('click', ()=>{
+    if(!armed){
+      armed = true; btn.textContent = armText;
+      timer = setTimeout(()=>{ armed = false; btn.textContent = idleText; }, 3500);
+      return;
+    }
+    clearTimeout(timer); armed = false; btn.textContent = idleText; onConfirm();
+  });
+}
+function unlockFrom(i){
+  const removed = state.history.length - i;
+  state.history.splice(i);
+  let switched = false;
+  const dates = roundDates();
+  const nextRow = dates && dates.rows[state.history.length];
+  if(ui.lockMode !== 'manual' && nextRow && nextRow.from <= startOfDay(new Date())){ ui.lockMode = 'manual'; saveUI(); switched = true; }
+  generate();
+  const note = 'Döngü ' + (i+1) + (removed > 1 ? ' ve sonrası (' + removed + ' döngü)' : '') + ' kilitten çıktı, taslak oldu.' +
+    (switched ? ' Otomatik kilit hemen tekrar kilitleyeceği için Manuel moda geçtim; hazır olunca "kilitle" butonuyla kilitleyebilirsin.' : '');
+  const m = $('msg'); m.textContent = note + (m.textContent ? '\n' + m.textContent : '');
+}
 function updateRoundsToggle(){
-  $('toggleRounds').textContent = (ui.rounds ? '▲ Döngüleri gizle' : '▼ Döngüleri göster') + ' (' + state.rounds.length + ' döngü)';
+  $('toggleRounds').textContent = (ui.rounds ? '▲ Döngüleri gizle' : '▼ Döngüleri göster') + ' (' + state.rounds.length + ' döngü' + (state.history.length ? ', ' + state.history.length + ' kilitli 🔒' : '') + ')';
   $('roundsBody').style.display = ui.rounds ? 'block' : 'none';
 }
 $('toggleRounds').addEventListener('click', ()=>{ ui.rounds = !ui.rounds; saveUI(); updateRoundsToggle(); });
@@ -869,7 +903,10 @@ function renderRounds(){
     const locked = i < L;
     if(locked) r.days = state.history[i].days;
     const li = document.createElement('li');
-    li.innerHTML = `<span class="rlabel">${locked?'🔒 ':''}Döngü ${i+1}</span><input type="number" min="1" value="${r.days}" ${locked?'disabled':''}><span>gün</span><span class="rdate"></span>${locked?'':'<button class="ghost" title="Kaldır">×</button>'}`;
+    li.innerHTML = `<span class="rlabel">${locked?'🔒 ':''}Döngü ${i+1}</span><input type="number" min="1" value="${r.days}" ${locked?'disabled':''}><span>gün</span><span class="rdate"></span>${locked?'<button class="ghost unlockBtn" title="Kilidi aç">🔓</button>':'<button class="ghost" title="Kaldır">×</button>'}`;
+    if(locked){
+      attachTwoStep(li.querySelector('.unlockBtn'), '🔓', '⚠️ Aç?', ()=>unlockFrom(i));
+    }
     if(!locked){
       li.querySelector('input').addEventListener('input', e=>{ r.days = Math.max(1, parseInt(e.target.value,10)||1); saveState(); updateRoundDatesUI(); });
       li.querySelector('button').addEventListener('click', ()=>{
@@ -881,12 +918,46 @@ function renderRounds(){
   });
   updateRoundDatesUI();
   updateRoundsToggle();
+  updateLockUI();
 }
 $('start').addEventListener('change', updateRoundDatesUI);
 $('addRound').addEventListener('click', ()=>{
   const last = state.rounds[state.rounds.length-1];
   state.rounds.push({days: last ? last.days : 7});
   renderRounds(); saveState();
+});
+
+function updateLockUI(){
+  const manual = ui.lockMode === 'manual';
+  document.querySelectorAll('[data-lock]').forEach(b=>b.classList.toggle('active', b.dataset.lock === (manual ? 'manual' : 'auto')));
+  $('lockHint').textContent = manual
+    ? 'Döngüler sen "kilitle" butonuna basana kadar kilitlenmez; o zamana kadar liste değişirse plan güncellenir.'
+    : 'Her döngü, başlangıç tarihi gelince kendiliğinden kilitlenir.';
+  const btn = $('lockNext');
+  btn.style.display = manual ? 'block' : 'none';
+  const next = state.history.length;
+  if(next >= state.rounds.length){ btn.textContent = 'Kilitlenecek döngü kalmadı'; btn.disabled = true; }
+  else { btn.disabled = false; btn.textContent = '🔒 Döngü ' + (next+1) + ' kilitle'; }
+}
+document.querySelectorAll('[data-lock]').forEach(b=>b.addEventListener('click', ()=>{
+  ui.lockMode = b.dataset.lock; saveUI(); updateLockUI();
+  if(ui.lockMode === 'auto' && state.students.length && state.books.length) generate();
+}));
+let lockArmed = false;
+$('lockNext').addEventListener('click', ()=>{
+  const btn = $('lockNext'); const next = state.history.length;
+  if(!lockArmed){
+    lockArmed = true; btn.textContent = '⚠️ Döngü ' + (next+1) + ' kilitlenecek! Tekrar tıklayın';
+    setTimeout(()=>{ lockArmed = false; updateLockUI(); }, 4000);
+    return;
+  }
+  lockArmed = false;
+  const msg = $('msg'); msg.textContent = '';
+  const dates = roundDates();
+  if(!dates || next >= state.rounds.length){ msg.textContent = 'Kilitlenecek döngü yok ya da başlangıç tarihi seçilmedi.'; updateLockUI(); return; }
+  if(!state.students.length || !state.books.length){ msg.textContent = 'Önce kitap ve öğrenci ekleyin.'; updateLockUI(); return; }
+  if(!lockOne(next, readMapFrom(state.history), dates)){ msg.textContent = 'Bu döngüde atanabilecek kitap bulunamadı.'; updateLockUI(); return; }
+  generate();
 });
 
 // --- Assignment engine: nobody gets a book they already read ---
@@ -926,17 +997,23 @@ function assignRound(ri, readMap){
   assignments.forEach(a=>{ if(!readMap[a.studentId]) readMap[a.studentId] = new Set(); readMap[a.studentId].add(a.bookId); });
   return {assignments, unassigned, idle};
 }
+function lockOne(i, readMap, dates){
+  const res = assignRound(i, readMap);
+  if(!res.assignments.length) return false;
+  state.history.push({roundIndex:i, from:iso(dates.rows[i].from), to:iso(dates.rows[i].to), days:state.rounds[i].days,
+    assignments:res.assignments, unassigned:res.unassigned, idle:res.idle});
+  return true;
+}
 function buildAll(){
   const today = startOfDay(new Date());
   const readMap = readMapFrom(state.history);
   const dates = roundDates();
-  // auto-lock every round whose start date has arrived
-  for(let i = state.history.length; i < state.rounds.length; i++){
-    if(dates.rows[i].from > today) break;
-    const res = assignRound(i, readMap);
-    if(!res.assignments.length) break;
-    state.history.push({roundIndex:i, from:iso(dates.rows[i].from), to:iso(dates.rows[i].to), days:state.rounds[i].days,
-      assignments:res.assignments, unassigned:res.unassigned, idle:res.idle});
+  // auto mode: lock every round whose start date has arrived (manual mode never locks by itself)
+  if(ui.lockMode !== 'manual'){
+    for(let i = state.history.length; i < state.rounds.length; i++){
+      if(dates.rows[i].from > today) break;
+      if(!lockOne(i, readMap, dates)) break;
+    }
   }
   const d2 = roundDates();
   const rounds = state.history.map(h=>Object.assign({}, h, {locked:true, from:parseISO(h.from), to:parseISO(h.to)}));
@@ -970,6 +1047,23 @@ function buildGroups(rounds){
   return {groups, warnings};
 }
 
+let lastTodayItems = [];
+function renderToday(){
+  const list = $('today-list'); list.innerHTML = '';
+  const byStudent = ui.todaySort === 'student';
+  const key = byStudent ? 'name' : 'book';
+  const items = lastTodayItems.slice().sort((a,b)=>trCmp(a[key],b[key]) || trCmp(a.book,b.book) || trCmp(a.name,b.name));
+  items.forEach(it=>{
+    const row = document.createElement('li');
+    const s1 = document.createElement('span'); s1.textContent = byStudent ? it.name : it.book;
+    const s2 = document.createElement('b'); s2.textContent = byStudent ? it.book : it.name;
+    row.appendChild(s1); row.appendChild(s2); list.appendChild(row);
+  });
+  document.querySelectorAll('[data-tsort]').forEach(b=>b.classList.toggle('active', b.dataset.tsort === (byStudent ? 'student' : 'book')));
+  const n = items.length;
+  $('toggleToday').textContent = (ui.today ? '▲ Bugün okuyanları gizle' : '▼ Bugün okuyanları göster') + ' (' + n + ')';
+}
+document.querySelectorAll('[data-tsort]').forEach(b=>b.addEventListener('click', ()=>{ ui.todaySort = b.dataset.tsort; saveUI(); renderToday(); }));
 function applyBoardToggles(bookCount, todayCount){
   const noun = bookCount + ' kitap';
   $('toggleShelf').hidden = false;
@@ -989,6 +1083,7 @@ function render(groups){
   const today = startOfDay(new Date());
   const todayList = $('today-list'); todayList.innerHTML = '';
   let anyToday = false;
+  const todayItems = [];
   const showGroupHeaders = groups.length > 1;
   groups.forEach(group=>{
     if(showGroupHeaders){
@@ -1008,10 +1103,7 @@ function render(groups){
         const isNow = today >= stop.from && today <= stop.to;
         if(stop.name && isNow){
           li.classList.add('active'); anyToday = true;
-          const row = document.createElement('li');
-          const s1 = document.createElement('span'); s1.textContent = entry.book.title;
-          const s2 = document.createElement('b'); s2.textContent = stop.name;
-          row.appendChild(s1); row.appendChild(s2); todayList.appendChild(row);
+          todayItems.push({book: entry.book.title, name: stop.name});
         } else if(today > stop.to){ li.classList.add('past'); }
         const w1 = document.createElement('span'); w1.className='when'; w1.textContent = (stop.locked?'🔒 ':'') + 'Döngü ' + (stop.roundIndex+1);
         const who = document.createElement('span'); who.className='who'; who.textContent = stop.name || '— boşta —';
@@ -1023,7 +1115,7 @@ function render(groups){
     });
   });
   $('today-box').style.display = anyToday ? 'block' : 'none';
-  Array.from(todayList.children).sort((x,y)=>trCmp(x.firstChild.textContent, y.firstChild.textContent)).forEach(li=>todayList.appendChild(li));
+  lastTodayItems = todayItems; renderToday();
   applyBoardToggles(shelf.querySelectorAll('.book').length, todayList.children.length);
 }
 
