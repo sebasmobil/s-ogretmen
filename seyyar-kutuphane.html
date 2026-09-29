@@ -185,20 +185,29 @@
     box-shadow:0 8px 0 -5px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.22);cursor:pointer;}
   .boardToggle[hidden]{display:none;}
 
+  .matchRow{display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;background:var(--paper);
+    border:1px solid var(--card-line);border-radius:3px;margin-bottom:.4rem;font-size:.88rem;}
+  .matchRow .mt{flex:1;min-width:0;overflow-wrap:anywhere;}
+  .matchRow select{flex:0 0 auto;max-width:56%;}
+  .matchRow.matched{border-color:var(--gold);}
   .retRow{display:flex;gap:.6rem;align-items:flex-start;padding:.5rem .6rem;background:var(--paper);border:1px solid var(--card-line);
     border-radius:3px;margin-bottom:.4rem;font-size:.88rem;}
   .retRow input{width:22px;height:22px;padding:0;margin-top:.1rem;flex:none;}
   .retRow .rt{flex:1;min-width:0;overflow-wrap:anywhere;}
   .retRow .rs{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem;}
   .retRow.done{opacity:.55;}
+  #reportOutput{display:none;}
+
   @media print{
     #returnBody{display:block !important;}
     html,html[data-theme]{--ink:#000;--card:#fff;--card-line:#999;--paper:#fff;--muted:#333;--muted2:#333;--danger:#900;}
     .boardToggle,.rosterToggle,#todaySortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
+    body.report-mode #shelf,body.report-mode #today-box,body.report-mode #returnCard,body.report-mode #roundsCard,body.report-mode #historyCard{display:none !important;}
+    body.report-mode #reportOutput{display:block !important;}
     #shelf,#today-list{display:grid !important;}
     #roundsBody{display:block !important;}
     body{background:#fff;color:#000;}
-    header p,#setup,#roundsCard .msg,footer,.topbar{display:none;}
+    header p,#setup,#roundsCard .msg,footer,.topbar,.profileBar,#matchCard{display:none;}
     .card,.book{box-shadow:none;border:1px solid #999;background:#fff;}
     .stop.active{background:#eee;color:#000;}
     .track{overflow-x:visible;flex-wrap:wrap;}
@@ -209,7 +218,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.25 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.29 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -312,6 +321,7 @@
     <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
     <button id="generate">Programı Oluştur</button>
     <button class="secondary" id="printBtn" type="button">Yazdır</button>
+    <button class="secondary" id="openReport" type="button">📄 Rapor Oluştur (PDF)</button>
     <button class="secondary" id="resetHistory" type="button">🗑 Geçmişi Sıfırla</button>
     </div>
     <div class="msg" id="msg"></div>
@@ -333,6 +343,13 @@
     <details id="det2"><summary>Öğrenci okuma listesi</summary><div id="histStudents"></div></details>
   </section>
 
+  <section class="card" id="matchCard" style="display:none;">
+    <h2>🔗 Kitap Sahiplerini Eşleştir</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Her kitabın yanından, o kitabı hangi öğrencinin getirdiğini seç — tek tek düzenleme penceresine girmeden.</p>
+    <button class="secondary rosterToggle" id="toggleMatch" type="button" style="margin-top:0;"></button>
+    <div id="matchBody" style="display:none;margin-top:.8rem;"></div>
+  </section>
+
   <section class="card" id="returnCard" style="display:none;">
     <h2>📦 İade Listesi</h2>
     <button class="secondary rosterToggle" id="toggleReturns" type="button" style="margin-top:0;"></button>
@@ -341,6 +358,7 @@
 
   <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
   <div class="shelf" id="shelf" style="display:none;"></div>
+  <div id="reportOutput"></div>
 </main>
 
 <footer>Veriler yalnızca bu tarayıcıda saklanır.</footer>
@@ -368,6 +386,22 @@
     <div class="modal-actions">
       <button class="secondary" id="closeAddModal" type="button">Kapat</button>
       <button id="confirmAdd" type="button">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="reportBackdrop">
+  <div class="modal">
+    <h2>Rapor Oluştur</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Bu rapor ayrı bir PDF/yazdırma çıktısıdır. Uygulamadaki ekranda isimler her zaman tam görünmeye devam eder, sadece bu rapor seçtiğin biçimi kullanır.</p>
+    <label style="font-size:.85rem;font-weight:600;">Öğrenci adı</label>
+    <div class="themeToggle" id="reportStyleBar" style="margin-top:.4rem;">
+      <button data-rstyle="full" type="button">Ad Soyad</button>
+      <button data-rstyle="short" type="button">Ad S.</button>
+    </div>
+    <div class="modal-actions">
+      <button class="secondary" id="closeReport" type="button">İptal</button>
+      <button id="confirmReport" type="button">Oluştur ve Yazdır</button>
     </div>
   </div>
 </div>
@@ -404,6 +438,13 @@ function normalizeState(s){
   if(!Array.isArray(s.manualStash)) s.manualStash = [];
   if(!s.returned || typeof s.returned !== 'object') s.returned = {};
   if(!Array.isArray(s.rounds) || !s.rounds.length) s.rounds = [{days:7}];
+  s.students.forEach(x=>{
+    if(!x.firstName && !x.lastName && x.name){
+      const parts = String(x.name).trim().split(/\s+/);
+      x.lastName = parts.length > 1 ? parts.pop() : '';
+      x.firstName = parts.join(' ');
+    }
+  });
   s.books.forEach(b=>{ if(!b.id) b.id = uid(); });
   s.students.forEach(x=>{ if(!x.id) x.id = uid(); });
   while(s.rounds.length < s.history.length) s.rounds.push({days:7});
@@ -477,7 +518,7 @@ function loadActiveProfileIntoApp(){
   lastRounds = [];
   renderBooks(); renderStudents(); renderRounds();
   if(state.students.length>=1 && state.books.length>=1 && (state.start || state.history.length)) generate();
-  else { renderHistory(); renderReturns([]); }
+  else { renderHistory(); renderReturns([]); renderMatchList(); }
   renderProfileSelect();
 }
 function switchProfile(id){
@@ -525,7 +566,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
+let ui = {match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -567,9 +608,10 @@ function renderBooks(){
   $('bookCount').textContent = state.books.length ? `${state.books.length} kayıt` : 'Henüz kayıt yok.';
   updateRosterToggle('books');
   renderReturns();
+  renderMatchList();
 }
 function renderStudents(){
-  state.students.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.name,b.name));
+  state.students.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
   const ul = $('studentRoster'); ul.innerHTML = '';
   const gS = showGroups(state.students); let lastS = null;
   state.students.forEach((s,i)=>{
@@ -579,7 +621,7 @@ function renderStudents(){
     li.innerHTML = `<span class="tag">${i+1}</span>
       <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
       <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
-    li.querySelector('.primary').textContent = s.name;
+    li.querySelector('.primary').textContent = fullName(s);
     if(secondary) li.querySelector('.secondary').textContent = secondary;
     const [editBtn, delBtn] = li.querySelectorAll('.cardActions button');
     editBtn.addEventListener('click', ()=>openEditModal('students', i));
@@ -590,6 +632,7 @@ function renderStudents(){
   updateRosterToggle('students');
   updateRoundDatesUI();
   renderReturns();
+  renderMatchList();
 }
 
 // --- Confirm-before-delete helper (two-step click) ---
@@ -624,7 +667,8 @@ const ADD_FIELDS = {
     {key:'ownerId', label:'Getiren öğrenci'}
   ],
   students: [
-    {key:'name', label:'Ad Soyad', required:true, placeholder:'Ahmet Yılmaz'},
+    {key:'firstName', label:'Ad', required:true, placeholder:'Ahmet'},
+    {key:'lastName', label:'Soyad', required:true, placeholder:'Yılmaz'},
     {key:'grade', label:'Sınıf', placeholder:'6'},
     {key:'section', label:'Şube', placeholder:'B'},
     {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'}
@@ -640,7 +684,7 @@ function buildAddFields(){
     if(f.key === 'ownerId'){
       const sel = document.createElement('select'); sel.dataset.field = 'ownerId';
       const none = document.createElement('option'); none.value = ''; none.textContent = '— Sınıf kütüphanesi (sahibi yok) —'; sel.appendChild(none);
-      state.students.forEach(s=>{ const o = document.createElement('option'); o.value = s.id; o.textContent = s.name + (s.level ? ' (' + s.level + ')' : ''); sel.appendChild(o); });
+      state.students.forEach(s=>{ const o = document.createElement('option'); o.value = s.id; o.textContent = fullName(s) + (s.level ? ' (' + s.level + ')' : ''); sel.appendChild(o); });
       wrap.appendChild(sel);
     } else if(f.key === 'level'){
       const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:.5rem;align-items:center;';
@@ -765,7 +809,7 @@ $('confirmAdd').addEventListener('click', ()=>{
     rec[f.key] = v;
   });
   if(!ok){ $('addFieldsBox').querySelector('input,select').focus(); return; }
-  if(addTarget === 'books'){ const st = state.students.find(s=>s.id === rec.ownerId); rec.ownerName = st ? st.name : ''; }
+  if(addTarget === 'books'){ const st = state.students.find(s=>s.id === rec.ownerId); rec.ownerName = st ? fullName(st) : ''; }
   const arr = addTarget==='books' ? state.books : state.students;
   if(addMode==='edit' && editIndex!==null){ rec.id = arr[editIndex].id || uid(); arr[editIndex] = rec; } else { rec.id = uid(); arr.push(rec); }
   if(addTarget==='books') renderBooks(); else renderStudents();
@@ -793,7 +837,8 @@ const IMPORT_FIELDS = {
     {key:'ownerName', label:'Getiren öğrenci', kw:['getiren','sahib','owner']}
   ],
   students: [
-    {key:'name', label:'Ad Soyad', required:true, kw:['ad soyad','isim','ad','soyad','name']},
+    {key:'firstName', label:'Ad', required:true, kw:['ad','isim','first','ilk']},
+    {key:'lastName', label:'Soyad', required:true, kw:['soyad','last','surname']},
     {key:'grade', label:'Sınıf', kw:['sınıf','sinif','grade']},
     {key:'section', label:'Şube', kw:['şube','sube','section','şb']},
     {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
@@ -910,7 +955,7 @@ $('confirmImport').addEventListener('click', ()=>{
   const arr = importTarget==='books' ? state.books : state.students;
   records.forEach(rec=>{
     rec.id = uid();
-    if(importTarget==='books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(s.name, rec.ownerName)===0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = st.name; }
+    if(importTarget==='books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(fullName(s), rec.ownerName)===0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = fullName(st); }
     arr.push(rec);
     if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
   });
@@ -962,7 +1007,10 @@ const TEST_STUDENT_NAMES = {
   'Giriş': ['Duru Keskin','Alp Uçar','Defne Bozkurt','Kaan Tekin','Sude Avcı']
 };
 const TEST_STUDENTS = Object.entries(TEST_STUDENT_NAMES).flatMap(([level,names])=>
-  names.map(name=>({name, grade:'6', section:'B', level}))
+  names.map(name=>{
+    const parts = name.trim().split(/\s+/); const lastName = parts.pop(); const firstName = parts.join(' ');
+    return {firstName, lastName, grade:'6', section:'B', level};
+  })
 );
 
 let testDataArmed = false;
@@ -984,7 +1032,7 @@ $('loadTestData').addEventListener('click', ()=>{
   state.returned = {};
   ['Giriş','Orta','İleri'].forEach(lv=>{
     const bs = state.books.filter(b=>b.level === lv), ss = state.students.filter(s=>s.level === lv);
-    bs.forEach((b,i)=>{ if(ss[i]){ b.ownerId = ss[i].id; b.ownerName = ss[i].name; } });
+    bs.forEach((b,i)=>{ if(ss[i]){ b.ownerId = ss[i].id; b.ownerName = fullName(ss[i]); } });
   });
   renderBooks(); renderStudents(); saveState();
   generate();
@@ -992,6 +1040,7 @@ $('loadTestData').addEventListener('click', ()=>{
 // --- Helpers ---
 function trCmp(a,b){ return String(a||'').localeCompare(String(b||''), 'tr', {sensitivity:'base', numeric:true}); }
 function levelCmp(a,b){ if(a===b) return 0; if(a==='') return 1; if(b==='') return -1; return trCmp(a,b); }
+function fullName(s){ return [s && s.firstName, s && s.lastName].filter(Boolean).join(' '); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function parseISO(s){ const p = s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
@@ -1162,10 +1211,10 @@ function assignRound(ri, readMap){
       }
       return false;
     }
-    order.forEach(o=>{ if(!tryS(o.s, o.i, {})) unassigned.push({studentId:o.s.id, studentName:o.s.name, level}); });
+    order.forEach(o=>{ if(!tryS(o.s, o.i, {})) unassigned.push({studentId:o.s.id, studentName:fullName(o.s), level}); });
     gB.forEach(b=>{
       const o = owner[b.id];
-      if(o) assignments.push({bookId:b.id, bookTitle:b.title, studentId:o.s.id, studentName:o.s.name, level});
+      if(o) assignments.push({bookId:b.id, bookTitle:b.title, studentId:o.s.id, studentName:fullName(o.s), level});
       else idle.push({bookId:b.id, bookTitle:b.title, level});
     });
   });
@@ -1322,14 +1371,57 @@ function renderHistory(){
   state.history.forEach(h=>h.assignments.forEach(a=>{ (titles[a.studentId] = titles[a.studentId] || []).push(a.bookTitle); }));
   state.students.forEach(s=>{
     const d = document.createElement('div'); d.className = 'histRound';
-    const t = document.createElement('b'); t.textContent = s.name; d.appendChild(t);
+    const t = document.createElement('b'); t.textContent = fullName(s); d.appendChild(t);
     const p = document.createElement('div'); p.textContent = titles[s.id] ? titles[s.id].slice().sort(trCmp).join(' · ') : '—'; d.appendChild(p);
     hs.appendChild(d);
   });
 }
 
 let lastRounds = [];
-function ownerName(b){ const st = state.students.find(s=>s.id === b.ownerId); return st ? st.name : (b.ownerName || ''); }
+function renderMatchList(){
+  const card = $('matchCard');
+  if(!state.books.length || !state.students.length){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const body = $('matchBody'); body.innerHTML = '';
+  const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
+  const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
+  books.forEach(b=>{
+    const row = document.createElement('div'); row.className = 'matchRow' + (b.ownerId ? ' matched' : '');
+    const t = document.createElement('span'); t.className = 'mt'; t.textContent = b.title;
+    const sel = document.createElement('select');
+    const none = document.createElement('option'); none.value=''; none.textContent='— Getiren yok —'; sel.appendChild(none);
+    students.forEach(s=>{
+      const o = document.createElement('option'); o.value = s.id; o.textContent = fullName(s) + (s.level ? ' (' + s.level + ')' : '');
+      if(b.ownerId === s.id) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', ()=>{
+      const st = students.find(s=>s.id === sel.value);
+      b.ownerId = sel.value || '';
+      b.ownerName = st ? fullName(st) : '';
+      row.classList.toggle('matched', !!b.ownerId);
+      saveState();
+      updateMatchToggle();
+      generate();
+    });
+    row.appendChild(t); row.appendChild(sel);
+    body.appendChild(row);
+  });
+  updateMatchToggle();
+}
+function updateMatchToggle(){
+  const n = state.books.filter(b=>b.ownerId).length;
+  $('toggleMatch').textContent = (ui.match ? '▲ Eşleştirmeyi gizle' : '▼ Eşleştirmeyi göster') + ' (' + n + '/' + state.books.length + ' eşleşti)';
+  $('matchBody').style.display = ui.match ? 'block' : 'none';
+}
+$('toggleMatch').addEventListener('click', ()=>{ ui.match = !ui.match; saveUI(); updateMatchToggle(); });
+function shortName(name){
+  const parts = String(name||'').trim().split(/\s+/);
+  if(parts.length < 2) return name || '';
+  const last = parts.pop();
+  return parts.join(' ') + ' ' + last.charAt(0).toLocaleUpperCase('tr-TR') + '.';
+}
+function ownerName(b){ const st = state.students.find(s=>s.id === b.ownerId); return st ? fullName(st) : (b.ownerName || ''); }
 function ownerLabel(b){ return (b.ownerId || b.ownerName) ? '📚 Getiren: ' + (ownerName(b) || '?') : ''; }
 function holderText(bookId){
   if(!lastRounds.length) return '';
@@ -1377,6 +1469,65 @@ function renderReturns(rounds){
 }
 $('toggleReturns').addEventListener('click', ()=>{ ui.returns = !ui.returns; saveUI(); updateReturnToggle(); });
 
+function buildReportOutput(style){
+  const dn = name => style === 'short' ? shortName(name) : (name || '');
+  const rounds = buildAll();
+  const { groups } = buildGroups(rounds);
+  const out = $('reportOutput'); out.innerHTML = '';
+  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
+  const h1 = document.createElement('h2');
+  h1.textContent = 'Okuma Programı Raporu — ' + profName + ' (' + new Date().toLocaleDateString('tr-TR') + ')';
+  out.appendChild(h1);
+  const shelfWrap = document.createElement('div'); shelfWrap.className = 'shelf';
+  groups.forEach(group=>{
+    if(groups.length > 1){
+      const gh = document.createElement('div'); gh.style.cssText = 'font-weight:700;margin:.6rem 0 -.2rem;';
+      gh.textContent = '🏷 ' + (group.label || 'Seviyesiz'); shelfWrap.appendChild(gh);
+    }
+    group.books.forEach(entry=>{
+      const div = document.createElement('div'); div.className = 'book';
+      const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
+      let curRound = -1, track;
+      entry.stops.forEach(stop=>{
+        if(stop.roundIndex !== curRound){
+          curRound = stop.roundIndex;
+          const rh = document.createElement('div'); rh.className = 'roundhead';
+          rh.textContent = (stop.locked ? '🔒 ' : '') + 'Döngü ' + (curRound+1); div.appendChild(rh);
+          track = document.createElement('ul'); track.className = 'track'; div.appendChild(track);
+        }
+        const li = document.createElement('li'); li.className = 'stop';
+        const who = document.createElement('span'); who.className = 'who'; who.textContent = stop.name ? dn(stop.name) : '— boşta —';
+        const when = document.createElement('span'); when.className = 'when'; when.textContent = fmtDate(stop.from) + ' – ' + fmtDate(stop.to);
+        li.appendChild(when); li.appendChild(who); track.appendChild(li);
+      });
+      shelfWrap.appendChild(div);
+    });
+  });
+  out.appendChild(shelfWrap);
+  const owned = state.books.filter(b=>b.ownerId || b.ownerName);
+  if(owned.length){
+    const h2 = document.createElement('h2'); h2.style.cssText = 'margin:1.2rem 0 .5rem;'; h2.textContent = 'İade Listesi'; out.appendChild(h2);
+    owned.map(b=>({b, owner: ownerName(b) || '?'})).sort((x,y)=>trCmp(x.owner,y.owner) || trCmp(x.b.title,y.b.title)).forEach(r=>{
+      const row = document.createElement('div'); row.style.cssText = 'padding:.3rem 0;';
+      row.textContent = (state.returned[r.b.id] ? '✓ ' : '☐ ') + dn(r.owner) + ' ← ' + r.b.title;
+      out.appendChild(row);
+    });
+  }
+}
+let reportStyle = ui.reportNameStyle || 'full';
+function updateReportStyleUI(){ document.querySelectorAll('[data-rstyle]').forEach(b=>b.classList.toggle('active', b.dataset.rstyle === reportStyle)); }
+$('openReport').addEventListener('click', ()=>{ updateReportStyleUI(); $('reportBackdrop').classList.add('open'); });
+$('closeReport').addEventListener('click', ()=>$('reportBackdrop').classList.remove('open'));
+document.querySelectorAll('[data-rstyle]').forEach(b=>b.addEventListener('click', ()=>{
+  reportStyle = b.dataset.rstyle; ui.reportNameStyle = reportStyle; saveUI(); updateReportStyleUI();
+}));
+$('confirmReport').addEventListener('click', ()=>{
+  buildReportOutput(reportStyle);
+  document.body.classList.add('report-mode');
+  $('reportBackdrop').classList.remove('open');
+  window.print();
+});
+
 function generate(){
   const msg = $('msg'); msg.textContent = '';
   if(!state.history.length) state.start = $('start').value;
@@ -1388,13 +1539,14 @@ function generate(){
   renderRounds();
   renderHistory();
   renderReturns(rounds);
+  renderMatchList();
   if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
   render(groups);
   msg.textContent = (lastUnlockNote ? lastUnlockNote + '\n' : '') + warnings.join('\n');
   saveState();
 }
 $('generate').addEventListener('click', generate);
-$('printBtn').addEventListener('click', ()=>window.print());
+$('printBtn').addEventListener('click', ()=>{ document.body.classList.remove('report-mode'); window.print(); });
 
 let resetArmed = false;
 $('resetHistory').addEventListener('click', ()=>{
