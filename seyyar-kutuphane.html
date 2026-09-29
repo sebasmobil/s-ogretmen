@@ -101,6 +101,10 @@
   .levelsList li input{flex:1;}
   .newlevel{display:flex;gap:.5rem;margin-top:.4rem;}
   .newlevel input{flex:1;}
+  .profileBar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;max-width:960px;margin:0 auto;padding:.8rem 1.5rem 0;}
+  .profileLabel{font-family:var(--font-stamp);font-size:.85rem;color:var(--board-muted);}
+  .profileBar select{flex:1;min-width:120px;max-width:260px;}
+  @media (max-width:520px){ .profileBar{padding:.8rem 1rem 0;} }
   .themeToggle{display:flex;gap:.5rem;margin-bottom:1rem;}
   .themeToggle button{flex:1;background:transparent;border:1px solid var(--ink);color:var(--ink);
     font-family:var(--font-body);font-size:.85rem;padding:.5rem;border-radius:3px;cursor:pointer;}
@@ -205,7 +209,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.24 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.25 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -225,6 +229,25 @@
       <button data-palette-choice="brown" style="background:#7A4A2B" title="Kahve"></button>
     </div>
     <div class="modal-actions"><button id="closeTheme" type="button">Kapat</button></div>
+  </div>
+</div>
+
+<div class="profileBar">
+  <span class="profileLabel">📂 Profil:</span>
+  <select id="profileSelect"></select>
+  <button class="secondary" id="openProfiles" type="button">⚙ Profilleri Yönet</button>
+</div>
+
+<div class="modal-backdrop" id="profilesBackdrop">
+  <div class="modal">
+    <h2>Profilleri Yönet</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Her profil (ör. bir sınıf) kendi kütüphanesine, sınıf listesine, döngülerine ve geçmişine sahiptir; birbirinden tamamen bağımsızdır.</p>
+    <ul class="levelsList" id="profilesList"></ul>
+    <div class="newlevel">
+      <input type="text" id="newProfileInput" placeholder="Örn. 7/A">
+      <button id="addProfileBtn" type="button">+ Yeni Profil</button>
+    </div>
+    <div class="modal-actions"><button id="closeProfiles" type="button">Kapat</button></div>
   </div>
 </div>
 
@@ -371,6 +394,48 @@
 <script>
 const $ = id => document.getElementById(id);
 const STORE_KEY = 'kb-dongusu-6b-v3';
+const PROFILES_KEY = 'kb-profiles-v1';
+
+function defaultState(){ return { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [], manualStash: [], returned: {} }; }
+function normalizeState(s){
+  if(!s) return defaultState();
+  if(!Array.isArray(s.levels)) s.levels = ['Destek','Orta','İleri'];
+  if(!Array.isArray(s.history)) s.history = [];
+  if(!Array.isArray(s.manualStash)) s.manualStash = [];
+  if(!s.returned || typeof s.returned !== 'object') s.returned = {};
+  if(!Array.isArray(s.rounds) || !s.rounds.length) s.rounds = [{days:7}];
+  s.books.forEach(b=>{ if(!b.id) b.id = uid(); });
+  s.students.forEach(x=>{ if(!x.id) x.id = uid(); });
+  while(s.rounds.length < s.history.length) s.rounds.push({days:7});
+  return s;
+}
+function profileKey(id){ return STORE_KEY + ':' + id; }
+function loadProfiles(){
+  try{
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.profiles) && p.profiles.length) return p; }
+  }catch(e){}
+  return null;
+}
+function saveProfiles(){ try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); }catch(e){} }
+function loadStateFor(id){
+  try{ const raw = localStorage.getItem(profileKey(id)); if(raw) return normalizeState(JSON.parse(raw)); }catch(e){}
+  return defaultState();
+}
+function bootstrapProfiles(){
+  let p = loadProfiles();
+  if(p) return p;
+  // migrate a pre-existing single-profile save, if any
+  let legacy = null;
+  try{ const raw = localStorage.getItem(STORE_KEY); if(raw) legacy = JSON.parse(raw); }catch(e){}
+  const id = uid();
+  p = { profiles: [{id, name: '6/B'}], activeId: id };
+  try{ localStorage.setItem(profileKey(id), JSON.stringify(normalizeState(legacy || defaultState()))); }catch(e){}
+  saveProfilesRaw(p);
+  return p;
+}
+function saveProfilesRaw(p){ try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(p)); }catch(e){} }
+let profiles = bootstrapProfiles();
 
 // --- Theme & color palette ---
 const THEME_KEY = 'kb-theme-v1';
@@ -395,11 +460,68 @@ document.querySelectorAll('[data-palette-choice]').forEach(b=>b.addEventListener
 
 let state = { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [] };
 
-function loadState(){
-  try{ const raw = localStorage.getItem(STORE_KEY); if(raw){ const s = JSON.parse(raw); if(s && s.rounds && s.rounds.length) return s; } }catch(e){}
-  return null;
+function saveState(){ try{ localStorage.setItem(profileKey(profiles.activeId), JSON.stringify(state)); }catch(e){} }
+
+function renderProfileSelect(){
+  const sel = $('profileSelect'); sel.innerHTML = '';
+  profiles.profiles.slice().sort((a,b)=>trCmp(a.name,b.name)).forEach(pr=>{
+    const o = document.createElement('option'); o.value = pr.id; o.textContent = pr.name;
+    if(pr.id === profiles.activeId) o.selected = true;
+    sel.appendChild(o);
+  });
 }
-function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+function loadActiveProfileIntoApp(){
+  state = loadStateFor(profiles.activeId);
+  if(!state.start) state.start = new Date().toISOString().slice(0,10);
+  $('start').value = state.start;
+  lastRounds = [];
+  renderBooks(); renderStudents(); renderRounds();
+  if(state.students.length>=1 && state.books.length>=1 && (state.start || state.history.length)) generate();
+  else { renderHistory(); renderReturns([]); }
+  renderProfileSelect();
+}
+function switchProfile(id){
+  saveState();
+  profiles.activeId = id; saveProfilesRaw(profiles);
+  loadActiveProfileIntoApp();
+}
+$('profileSelect').addEventListener('change', e=>switchProfile(e.target.value));
+
+function renderProfilesList(){
+  const ul = $('profilesList'); ul.innerHTML = '';
+  profiles.profiles.slice().sort((a,b)=>trCmp(a.name,b.name)).forEach(pr=>{
+    const li = document.createElement('li');
+    const inp = document.createElement('input'); inp.type = 'text'; inp.value = pr.name;
+    if(pr.id === profiles.activeId) inp.style.fontWeight = '700';
+    inp.addEventListener('change', ()=>{
+      const v = inp.value.trim(); if(!v) { inp.value = pr.name; return; }
+      pr.name = v; saveProfilesRaw(profiles); renderProfilesList(); renderProfileSelect();
+    });
+    li.appendChild(inp);
+    const del = document.createElement('button'); del.className = 'ghost'; del.title = 'Sil'; del.textContent = '×';
+    attachTwoStep(del, '×', '⚠️', ()=>{
+      if(profiles.profiles.length <= 1) return;
+      try{ localStorage.removeItem(profileKey(pr.id)); }catch(e){}
+      profiles.profiles = profiles.profiles.filter(x=>x.id !== pr.id);
+      if(profiles.activeId === pr.id) profiles.activeId = profiles.profiles[0].id;
+      saveProfilesRaw(profiles);
+      renderProfilesList(); loadActiveProfileIntoApp();
+    });
+    li.appendChild(del);
+    ul.appendChild(li);
+  });
+}
+$('openProfiles').addEventListener('click', ()=>{ renderProfilesList(); $('profilesBackdrop').classList.add('open'); });
+$('closeProfiles').addEventListener('click', ()=>$('profilesBackdrop').classList.remove('open'));
+$('addProfileBtn').addEventListener('click', ()=>{
+  const v = $('newProfileInput').value.trim(); if(!v) return;
+  const id = uid();
+  try{ localStorage.setItem(profileKey(id), JSON.stringify(defaultState())); }catch(e){}
+  profiles.profiles.push({id, name: v}); profiles.activeId = id; saveProfilesRaw(profiles);
+  $('newProfileInput').value = '';
+  renderProfilesList(); loadActiveProfileIntoApp();
+});
+$('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('addProfileBtn').click(); }});
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
@@ -1289,18 +1411,8 @@ $('resetHistory').addEventListener('click', ()=>{
 });
 
 (function init(){
-  const s = loadState();
-  if(s){ state = s; if(!Array.isArray(state.levels)) state.levels = ['Destek','Orta','İleri']; }
-  else { state.start = new Date().toISOString().slice(0,10); }
-  if(!Array.isArray(state.history)) state.history = [];
-  if(!Array.isArray(state.manualStash)) state.manualStash = [];
-  if(!state.returned || typeof state.returned !== 'object') state.returned = {};
-  state.books.forEach(b=>{ if(!b.id) b.id = uid(); });
-  state.students.forEach(x=>{ if(!x.id) x.id = uid(); });
-  while(state.rounds.length < state.history.length) state.rounds.push({days: 7});
-  $('start').value = state.start || new Date().toISOString().slice(0,10);
-  renderBooks(); renderStudents(); renderRounds();
-  if(state.students.length>=1 && state.books.length>=1 && (state.start || state.history.length)) generate();
+  renderProfileSelect();
+  loadActiveProfileIntoApp();
 })();
 </script>
 </body>
