@@ -13,8 +13,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seyyar Kütüphane</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     box-sizing:border-box;
@@ -200,14 +198,10 @@
   .retRow .rt{flex:1;min-width:0;overflow-wrap:anywhere;}
   .retRow .rs{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem;}
   .retRow.done{opacity:.55;}
-  #reportOutput{display:none;}
-
   @media print{
     #returnBody{display:block !important;}
     html,html[data-theme]{--ink:#000;--card:#fff;--card-line:#999;--paper:#fff;--muted:#333;--muted2:#333;--danger:#900;}
     .boardToggle,.rosterToggle,#todaySortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
-    body.report-mode #shelf,body.report-mode #today-box,body.report-mode #returnCard,body.report-mode #roundsCard,body.report-mode #historyCard{display:none !important;}
-    body.report-mode #reportOutput{display:block !important;}
     #shelf,#today-list{display:grid !important;}
     #roundsBody{display:block !important;}
     body{background:#fff;color:#000;}
@@ -222,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.32 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.34 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -324,8 +318,7 @@
     <ul class="rounds" id="roundList" style="margin-top:1rem;"></ul>
     <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
     <button id="generate">Programı Oluştur</button>
-    <button class="secondary" id="openReport" type="button">📄 Rapor Oluştur (PDF)</button>
-    <button class="secondary" id="openMatrixPdf" type="button">📊 Öğrenci Tablosu (Gerçek PDF)</button>
+    <button class="secondary" id="openMatrixPdf" type="button">📄 Rapor Oluştur</button>
     <button class="secondary" id="resetHistory" type="button">🗑 Geçmişi Sıfırla</button>
     </div>
     <div class="msg" id="msg"></div>
@@ -362,7 +355,6 @@
 
   <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
   <div class="shelf" id="shelf" style="display:none;"></div>
-  <div id="reportOutput"></div>
 </main>
 
 <footer>Veriler yalnızca bu tarayıcıda saklanır.</footer>
@@ -394,26 +386,10 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="reportBackdrop">
-  <div class="modal">
-    <h2>Rapor Oluştur</h2>
-    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Bu rapor ayrı bir PDF/yazdırma çıktısıdır. Uygulamadaki ekranda isimler her zaman tam görünmeye devam eder, sadece bu rapor seçtiğin biçimi kullanır.</p>
-    <label style="font-size:.85rem;font-weight:600;">Öğrenci adı</label>
-    <div class="themeToggle" id="reportStyleBar" style="margin-top:.4rem;">
-      <button data-rstyle="full" type="button">Ad Soyad</button>
-      <button data-rstyle="short" type="button">Ad S.</button>
-    </div>
-    <div class="modal-actions">
-      <button class="secondary" id="closeReport" type="button">İptal</button>
-      <button id="confirmReport" type="button">Oluştur ve Yazdır</button>
-    </div>
-  </div>
-</div>
-
 <div class="modal-backdrop" id="matrixBackdrop">
   <div class="modal">
-    <h2>Öğrenci Tablosu — Gerçek PDF</h2>
-    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu. İndirilen dosya gerçek bir A4 PDF'tir.</p>
+    <h2>Rapor Oluştur</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu.</p>
     <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
     <div class="themeToggle" id="matrixOrientBar" style="margin:.4rem 0 .8rem;">
       <button data-orient="p" type="button">Dikey</button>
@@ -1510,65 +1486,6 @@ function renderReturns(rounds){
 }
 $('toggleReturns').addEventListener('click', ()=>{ ui.returns = !ui.returns; saveUI(); updateReturnToggle(); });
 
-function buildReportOutput(style){
-  const dn = name => style === 'short' ? shortName(name) : (name || '');
-  const rounds = buildAll();
-  const { groups } = buildGroups(rounds);
-  const out = $('reportOutput'); out.innerHTML = '';
-  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
-  const h1 = document.createElement('h2');
-  h1.textContent = 'Okuma Programı Raporu — ' + profName + ' (' + new Date().toLocaleDateString('tr-TR') + ')';
-  out.appendChild(h1);
-  const shelfWrap = document.createElement('div'); shelfWrap.className = 'shelf';
-  groups.forEach(group=>{
-    if(groups.length > 1){
-      const gh = document.createElement('div'); gh.style.cssText = 'font-weight:700;margin:.6rem 0 -.2rem;';
-      gh.textContent = '🏷 ' + (group.label || 'Seviyesiz'); shelfWrap.appendChild(gh);
-    }
-    group.books.forEach(entry=>{
-      const div = document.createElement('div'); div.className = 'book';
-      const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
-      let curRound = -1, track;
-      entry.stops.forEach(stop=>{
-        if(stop.roundIndex !== curRound){
-          curRound = stop.roundIndex;
-          const rh = document.createElement('div'); rh.className = 'roundhead';
-          rh.textContent = (stop.locked ? '🔒 ' : '') + 'Döngü ' + (curRound+1); div.appendChild(rh);
-          track = document.createElement('ul'); track.className = 'track'; div.appendChild(track);
-        }
-        const li = document.createElement('li'); li.className = 'stop';
-        const who = document.createElement('span'); who.className = 'who'; who.textContent = stop.name ? dn(stop.name) : '— boşta —';
-        const when = document.createElement('span'); when.className = 'when'; when.textContent = fmtDate(stop.from) + ' – ' + fmtDate(stop.to);
-        li.appendChild(when); li.appendChild(who); track.appendChild(li);
-      });
-      shelfWrap.appendChild(div);
-    });
-  });
-  out.appendChild(shelfWrap);
-  const owned = state.books.filter(b=>b.ownerId || b.ownerName);
-  if(owned.length){
-    const h2 = document.createElement('h2'); h2.style.cssText = 'margin:1.2rem 0 .5rem;'; h2.textContent = 'İade Listesi'; out.appendChild(h2);
-    owned.map(b=>({b, owner: ownerName(b) || '?'})).sort((x,y)=>trCmp(x.owner,y.owner) || trCmp(x.b.title,y.b.title)).forEach(r=>{
-      const row = document.createElement('div'); row.style.cssText = 'padding:.3rem 0;';
-      row.textContent = (state.returned[r.b.id] ? '✓ ' : '☐ ') + dn(r.owner) + ' ← ' + r.b.title;
-      out.appendChild(row);
-    });
-  }
-}
-let reportStyle = ui.reportNameStyle || 'full';
-function updateReportStyleUI(){ document.querySelectorAll('[data-rstyle]').forEach(b=>b.classList.toggle('active', b.dataset.rstyle === reportStyle)); }
-$('openReport').addEventListener('click', ()=>{ updateReportStyleUI(); $('reportBackdrop').classList.add('open'); });
-$('closeReport').addEventListener('click', ()=>$('reportBackdrop').classList.remove('open'));
-document.querySelectorAll('[data-rstyle]').forEach(b=>b.addEventListener('click', ()=>{
-  reportStyle = b.dataset.rstyle; ui.reportNameStyle = reportStyle; saveUI(); updateReportStyleUI();
-}));
-$('confirmReport').addEventListener('click', ()=>{
-  buildReportOutput(reportStyle);
-  document.body.classList.add('report-mode');
-  $('reportBackdrop').classList.remove('open');
-  window.print();
-});
-
 // --- Real downloadable PDF: student x round matrix ---
 let matrixOrient = 'p', matrixName = ui.reportNameStyle || 'full';
 function openMatrixModal(){
@@ -1602,104 +1519,167 @@ $('matrixAllRounds').addEventListener('click', ()=>{
   boxes.forEach(b=>{ b.checked = !allOn; });
 });
 
+function base64FromDataUrl(u){ return u.split(',')[1]; }
+function base64ToBytes(b64){
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+function buildMinimalPdfBlob(pages){
+  const enc = new TextEncoder();
+  const parts = []; let offset = 0; const xref = [0];
+  function pushStr(s){ const b = enc.encode(s); parts.push(b); offset += b.length; }
+  function pushBytes(b){ parts.push(b); offset += b.length; }
+  function obj(n, body){ xref[n] = offset; pushStr(n + ' 0 obj\n' + body + '\nendobj\n'); }
+  function objStream(n, dict, bytes){ xref[n] = offset; pushStr(n + ' 0 obj\n' + dict + '\nstream\n'); pushBytes(bytes); pushStr('\nendstream\nendobj\n'); }
+
+  pushStr('%PDF-1.4\n');
+  const catalogN = 1, pagesN = 2; let n = 3;
+  const pageN = [], imgN = [], contN = [];
+  pages.forEach(()=>{ pageN.push(n++); imgN.push(n++); contN.push(n++); });
+
+  obj(catalogN, '<< /Type /Catalog /Pages ' + pagesN + ' 0 R >>');
+  obj(pagesN, '<< /Type /Pages /Count ' + pages.length + ' /Kids [' + pageN.map(x=>x+' 0 R').join(' ') + '] >>');
+
+  pages.forEach((pg,i)=>{
+    obj(pageN[i], '<< /Type /Page /Parent ' + pagesN + ' 0 R /MediaBox [0 0 ' + pg.wPt.toFixed(2) + ' ' + pg.hPt.toFixed(2) + '] /Resources << /XObject << /Im' + i + ' ' + imgN[i] + ' 0 R >> >> /Contents ' + contN[i] + ' 0 R >>');
+    const content = 'q ' + pg.wPt.toFixed(2) + ' 0 0 ' + pg.hPt.toFixed(2) + ' 0 0 cm /Im' + i + ' Do Q';
+    const cBytes = enc.encode(content);
+    objStream(contN[i], '<< /Length ' + cBytes.length + ' >>', cBytes);
+    const jpegBytes = base64ToBytes(base64FromDataUrl(pg.jpegDataUrl));
+    objStream(imgN[i], '<< /Type /XObject /Subtype /Image /Width ' + pg.wPx + ' /Height ' + pg.hPx + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpegBytes.length + ' >>', jpegBytes);
+  });
+
+  const xrefStart = offset; const total = n - 1;
+  let xrefTable = 'xref\n0 ' + (total+1) + '\n0000000000 65535 f \n';
+  for(let i=1;i<=total;i++) xrefTable += String(xref[i]).padStart(10,'0') + ' 00000 n \n';
+  pushStr(xrefTable);
+  pushStr('trailer\n<< /Size ' + (total+1) + ' /Root ' + catalogN + ' 0 R >>\nstartxref\n' + xrefStart + '\n%%EOF');
+  return new Blob(parts, { type: 'application/pdf' });
+}
+
+function wrapLines(ctx, text, maxW){
+  const words = String(text == null ? '' : text).split(/\s+/).filter(Boolean);
+  if(!words.length) return [''];
+  const lines = []; let cur = '';
+  words.forEach(w=>{
+    const test = cur ? cur + ' ' + w : w;
+    if(ctx.measureText(test).width > maxW && cur){ lines.push(cur); cur = w; }
+    else cur = test;
+  });
+  if(cur) lines.push(cur);
+  return lines.length ? lines : [''];
+}
+
 async function generateMatrixPdf(){
   const boxes = Array.from($('matrixRoundList').querySelectorAll('input'));
   const roundIdx = boxes.filter(b=>b.checked).map(b=>parseInt(b.dataset.ri,10));
   const msg = $('matrixMsg'); msg.textContent = '';
   if(!roundIdx.length){ msg.textContent = 'En az bir döngü seçin.'; return; }
   if(!state.students.length){ msg.textContent = 'Önce öğrenci ekleyin.'; return; }
-  if(typeof window.jspdf === 'undefined' || typeof window.html2canvas === 'undefined'){
-    msg.textContent = 'PDF kütüphanesi yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.'; return;
-  }
   const btn = $('confirmMatrixPdf'); const oldTxt = btn.textContent; btn.textContent = 'Hazırlanıyor…'; btn.disabled = true;
 
-  const rounds = buildAll();
-  const perRound = roundIdx.map(ri=>{
-    const m = {}; const rd = rounds[ri];
-    if(rd) rd.assignments.forEach(a=>{ m[a.studentId] = a.bookTitle; });
-    return m;
-  });
-  const dn = name => matrixName === 'short' ? shortName(name) : name;
-  const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
-  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
-
-  const orient = matrixOrient;
-  const pageWmm = orient === 'l' ? 297 : 210, pageHmm = orient === 'l' ? 210 : 297;
-  const marginMm = 10, usableWmm = pageWmm - marginMm*2, usableHmm = pageHmm - marginMm*2;
-  const pxWidth = 1000; // CSS px representing usableWmm on screen
-  const pxPerMm = pxWidth / usableWmm;
-  const pageHpx = usableHmm * pxPerMm;
-
-  const thtd = 'border:1px solid #999;padding:6px 8px;text-align:left;';
-  function buildTable(withTitle, rowsChunk){
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:fixed;left:-99999px;top:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;width:' + pxWidth + 'px;padding:0;';
-    if(withTitle){
-      const t = document.createElement('div');
-      t.style.cssText = 'font-size:20px;font-weight:700;margin-bottom:10px;';
-      t.textContent = 'Okuma Programı — Öğrenci Tablosu' + (profName ? ' — ' + profName : '');
-      wrap.appendChild(t);
-    }
-    const table = document.createElement('table');
-    table.style.cssText = 'border-collapse:collapse;width:100%;font-size:13px;table-layout:fixed;';
-    const thead = document.createElement('tr');
-    const th0 = document.createElement('th'); th0.textContent = 'Öğrenci'; th0.style.cssText = thtd + 'background:#eee;width:22%;'; thead.appendChild(th0);
-    roundIdx.forEach(ri=>{
-      const rd = rounds[ri];
-      const th = document.createElement('th'); th.style.cssText = thtd + 'background:#eee;';
-      th.innerHTML = 'Döngü ' + (ri+1) + (rd ? '<br><span style="font-weight:400;font-size:11px;">' + fmtDate(rd.from) + ' – ' + fmtDate(rd.to) + '</span>' : '');
-      thead.appendChild(th);
-    });
-    table.appendChild(thead);
-    rowsChunk.forEach(s=>{
-      const tr = document.createElement('tr');
-      const td0 = document.createElement('td'); td0.textContent = dn(fullName(s)); td0.style.cssText = thtd + 'font-weight:700;'; tr.appendChild(td0);
-      perRound.forEach(map=>{
-        const td = document.createElement('td'); td.textContent = map[s.id] || '—'; td.style.cssText = thtd; tr.appendChild(td);
-      });
-      table.appendChild(tr);
-    });
-    wrap.appendChild(table);
-    document.body.appendChild(wrap);
-    return wrap;
-  }
-
   try{
-    // measure a single sample row to compute rows-per-page
-    const sample = buildTable(true, students.slice(0,1));
-    const titleH = sample.firstElementChild.offsetHeight + 10;
-    const headH = sample.querySelector('table').rows[0].offsetHeight;
-    const rowH = sample.querySelector('table').rows[1] ? sample.querySelector('table').rows[1].offsetHeight : 24;
-    document.body.removeChild(sample);
+    const rounds = buildAll();
+    const perRound = roundIdx.map(ri=>{ const m = {}; const rd = rounds[ri]; if(rd) rd.assignments.forEach(a=>{ m[a.studentId] = a.bookTitle; }); return m; });
+    const dn = name => matrixName === 'short' ? shortName(name) : name;
+    const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
+    const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
 
-    const firstPageRows = Math.max(1, Math.floor((pageHpx - titleH - headH) / rowH));
-    const otherPageRows = Math.max(1, Math.floor((pageHpx - headH) / rowH));
+    const DPI = 150, PT2PX = DPI/72;
+    const A4 = { w: 595.28, h: 841.89 };
+    const pageWpt = matrixOrient === 'l' ? A4.h : A4.w;
+    const pageHpt = matrixOrient === 'l' ? A4.w : A4.h;
+    const pageWpx = Math.round(pageWpt * PT2PX), pageHpx = Math.round(pageHpt * PT2PX);
+    const marginPx = Math.round(28 * PT2PX);
+    const usableWpx = pageWpx - marginPx*2, usableHpx = pageHpx - marginPx*2;
 
-    const chunks = [];
-    let i = 0;
-    if(students.length){
-      chunks.push({ withTitle:true, rows: students.slice(0, firstPageRows) });
-      i = firstPageRows;
-      while(i < students.length){
-        chunks.push({ withTitle:false, rows: students.slice(i, i+otherPageRows) });
-        i += otherPageRows;
+    const cellFont = Math.round(9 * PT2PX) + 'px Arial';
+    const headFont = 'bold ' + Math.round(9 * PT2PX) + 'px Arial';
+    const subHeadFont = Math.round(8 * PT2PX) + 'px Arial';
+    const titleFont = 'bold ' + Math.round(15 * PT2PX) + 'px Arial';
+    const lineH = Math.round(12 * PT2PX);
+    const cellPad = Math.round(5 * PT2PX);
+    const titleH = Math.round(26 * PT2PX);
+    const headerRowH = lineH*2 + cellPad*2;
+
+    const firstColW = Math.round(usableWpx * 0.24);
+    const colW = Math.floor((usableWpx - firstColW) / roundIdx.length);
+
+    const mcanvas = document.createElement('canvas'); const mctx = mcanvas.getContext('2d');
+
+    mctx.font = headFont;
+    const headerLines = roundIdx.map(ri=>{
+      const rd = rounds[ri];
+      return ['Döngü ' + (ri+1), rd ? (fmtDate(rd.from) + '–' + fmtDate(rd.to)) : ''];
+    });
+
+    mctx.font = cellFont;
+    const rowsData = students.map(s=>{
+      const nameLines = wrapLines(mctx, dn(fullName(s)), firstColW - cellPad*2);
+      const cellsLines = roundIdx.map((ri,ci)=>wrapLines(mctx, perRound[ci][s.id] || '—', colW - cellPad*2));
+      const maxLines = Math.max(nameLines.length, ...cellsLines.map(l=>l.length));
+      return { nameLines, cellsLines, h: maxLines*lineH + cellPad*2 };
+    });
+
+    const pagesRows = [];
+    let cur = [], curH = 0, isFirst = true;
+    const firstBudget = usableHpx - titleH - headerRowH, otherBudget = usableHpx - headerRowH;
+    let budget = firstBudget;
+    rowsData.forEach(r=>{
+      if(cur.length && curH + r.h > budget){ pagesRows.push({ withTitle: isFirst, rows: cur }); cur = []; curH = 0; isFirst = false; budget = otherBudget; }
+      cur.push(r); curH += r.h;
+    });
+    pagesRows.push({ withTitle: isFirst, rows: cur });
+
+    const pdfPages = [];
+    for(const pg of pagesRows){
+      const canvas = document.createElement('canvas'); canvas.width = pageWpx; canvas.height = pageHpx;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,pageWpx,pageHpx);
+      ctx.textBaseline = 'top'; ctx.strokeStyle = '#999999'; ctx.lineWidth = 1;
+      let y = marginPx;
+      if(pg.withTitle){
+        ctx.fillStyle = '#000000'; ctx.font = titleFont;
+        ctx.fillText('Okuma Programı — Öğrenci Tablosu' + (profName ? ' — ' + profName : ''), marginPx, y);
+        y += titleH;
       }
+      const headerY = y;
+      ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, usableWpx, headerRowH);
+      ctx.fillStyle = '#000000'; ctx.font = headFont;
+      ctx.strokeRect(marginPx, headerY, firstColW, headerRowH);
+      ctx.fillText('Öğrenci', marginPx+cellPad, headerY+cellPad);
+      let hx = marginPx + firstColW;
+      headerLines.forEach(([l1,l2])=>{
+        ctx.strokeRect(hx, headerY, colW, headerRowH);
+        ctx.font = headFont; ctx.fillText(l1, hx+cellPad, headerY+cellPad);
+        ctx.font = subHeadFont; ctx.fillText(l2, hx+cellPad, headerY+cellPad+lineH);
+        hx += colW;
+      });
+      y = headerY + headerRowH;
+      pg.rows.forEach(r=>{
+        ctx.strokeRect(marginPx, y, firstColW, r.h);
+        ctx.font = 'bold ' + cellFont; ctx.fillStyle = '#000000';
+        r.nameLines.forEach((line,li)=>ctx.fillText(line, marginPx+cellPad, y+cellPad+li*lineH));
+        ctx.font = cellFont;
+        let cx = marginPx + firstColW;
+        r.cellsLines.forEach(lines=>{
+          ctx.strokeRect(cx, y, colW, r.h);
+          lines.forEach((line,li)=>ctx.fillText(line, cx+cellPad, y+cellPad+li*lineH));
+          cx += colW;
+        });
+        y += r.h;
+      });
+      pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: orient === 'l' ? 'landscape' : 'portrait', unit: 'mm', format: 'a4' });
-
-    for(let c = 0; c < chunks.length; c++){
-      const el = buildTable(chunks[c].withTitle, chunks[c].rows);
-      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
-      document.body.removeChild(el);
-      const imgH = (canvas.height / canvas.width) * usableWmm;
-      if(c > 0) doc.addPage();
-      doc.addImage(canvas.toDataURL('image/png'), 'PNG', marginMm, marginMm, usableWmm, imgH);
-    }
-
+    const blob = buildMinimalPdfBlob(pdfPages);
     const fname = 'okuma-programi-ogrenci-tablosu' + (profName ? '-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') : '') + '.pdf';
-    doc.save(fname);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
     $('matrixBackdrop').classList.remove('open');
   }catch(err){
     msg.textContent = 'PDF oluşturulamadı: ' + (err && err.message ? err.message : err);
