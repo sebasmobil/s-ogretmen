@@ -201,7 +201,7 @@
   @media print{
     #returnBody{display:block !important;}
     html,html[data-theme]{--ink:#000;--card:#fff;--card-line:#999;--paper:#fff;--muted:#333;--muted2:#333;--danger:#900;}
-    .boardToggle,.rosterToggle,#todaySortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
+    .boardToggle,.rosterToggle,#todaySortBar,#shelfSortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
     #shelf,#today-list{display:grid !important;}
     #roundsBody{display:block !important;}
     body{background:#fff;color:#000;}
@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.35 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.37 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -354,7 +354,11 @@
   </section>
 
   <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
-  <div class="shelf" id="shelf" style="display:none;"></div>
+  <div class="themeToggle" id="shelfSortBar" hidden style="margin:.8rem 0 0;">
+    <button data-shelfsort="book" type="button">Kitaba göre</button>
+    <button data-shelfsort="student" type="button">Öğrenciye göre</button>
+  </div>
+  <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
 </main>
 
 <footer>Veriler yalnızca bu tarayıcıda saklanır.</footer>
@@ -580,7 +584,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
+let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -1283,7 +1287,7 @@ function buildGroups(rounds){
     if(!gS.length){ warnings.push(`"${label}" grubunda kitap var ama öğrenci yok.`); return; }
     const books = gB.map(book=>({book, stops: rounds.map((rd,ri)=>{
       const a = rd.assignments.find(x=>x.bookId===book.id);
-      return {roundIndex:ri, from:rd.from, to:rd.to, locked:rd.locked, name: a ? a.studentName : null};
+      return {roundIndex:ri, from:rd.from, to:rd.to, locked:rd.locked, name: a ? a.studentName : null, studentId: a ? a.studentId : null};
     })}));
     groups.push({level, label, books});
   });
@@ -1315,28 +1319,64 @@ function renderToday(){
   $('toggleToday').textContent = (ui.today ? '▲ Bugün okuyanları gizle' : '▼ Bugün okuyanları göster') + ' (' + n + ')';
 }
 document.querySelectorAll('[data-tsort]').forEach(b=>b.addEventListener('click', ()=>{ ui.todaySort = b.dataset.tsort; saveUI(); renderToday(); }));
-function applyBoardToggles(bookCount, todayCount){
-  const noun = bookCount + ' kitap';
-  $('toggleShelf').hidden = false;
-  $('toggleShelf').textContent = (ui.shelf ? '▲ Okuma programını gizle' : '▼ Okuma programını göster') + ' (' + noun + ')';
+function applyBoardVisibility(){
   $('shelf').style.display = ui.shelf ? 'grid' : 'none';
-  $('toggleToday').textContent = (ui.today ? '▲ Bugün okuyanları gizle' : '▼ Bugün okuyanları göster') + ' (' + todayCount + ')';
+  $('shelfSortBar').style.display = ui.shelf ? 'flex' : 'none';
   $('today-list').style.display = ui.today ? 'grid' : 'none';
 }
-$('toggleShelf').addEventListener('click', ()=>{ ui.shelf = !ui.shelf; saveUI(); $('toggleShelf').textContent = (ui.shelf ? '▲ Okuma programını gizle' : '▼ Okuma programını göster') + ' (' + $('shelf').querySelectorAll('.book').length + ' kitap)'; $('shelf').style.display = ui.shelf ? 'grid' : 'none'; });
-$('toggleToday').addEventListener('click', ()=>{ ui.today = !ui.today; saveUI(); const n = $('today-list').children.length; $('toggleToday').textContent = (ui.today ? '▲ Bugün okuyanları gizle' : '▼ Bugün okuyanları göster') + ' (' + n + ')'; $('today-list').style.display = ui.today ? 'grid' : 'none'; });
+$('toggleShelf').addEventListener('click', ()=>{ ui.shelf = !ui.shelf; saveUI(); updateShelfToggleLabel(); applyBoardVisibility(); });
+$('toggleToday').addEventListener('click', ()=>{ ui.today = !ui.today; saveUI(); const n = $('today-list').children.length; $('toggleToday').textContent = (ui.today ? '▲ Bugün okuyanları gizle' : '▼ Bugün okuyanları göster') + ' (' + n + ')'; applyBoardVisibility(); });
 $('det1').open = ui.hist1; $('det2').open = ui.hist2;
 $('det1').addEventListener('toggle', ()=>{ ui.hist1 = $('det1').open; saveUI(); });
 $('det2').addEventListener('toggle', ()=>{ ui.hist2 = $('det2').open; saveUI(); });
 
-function render(groups){
+// --- student-centric view: same card/track shape, roles inverted (card = student, stop = book) ---
+function toStudentView(groups){
+  return groups.map(group=>{
+    const gS = state.students.filter(s=>(s.level||'')===group.level).slice()
+      .sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
+    const roundCount = group.books.length ? group.books[0].stops.length : 0;
+    const books = gS.map(s=>{
+      const stops = [];
+      for(let ri=0; ri<roundCount; ri++){
+        let found = null;
+        for(const entry of group.books){
+          const st = entry.stops[ri];
+          if(st && st.studentId === s.id){ found = { roundIndex:ri, from:st.from, to:st.to, locked:st.locked, name: entry.book.title }; break; }
+        }
+        if(!found){
+          const proto = group.books[0] ? group.books[0].stops[ri] : null;
+          found = { roundIndex:ri, from: proto?proto.from:null, to: proto?proto.to:null, locked: proto?proto.locked:false, name:null };
+        }
+        stops.push(found);
+      }
+      return { book: { title: fullName(s) }, stops };
+    });
+    return { level: group.level, label: group.label, books };
+  });
+}
+
+let lastGroups = [];
+function updateShelfToggleLabel(){
+  const count = $('shelf').querySelectorAll('.book').length;
+  const noun = count + (ui.shelfSort === 'student' ? ' öğrenci' : ' kitap');
+  $('toggleShelf').hidden = false;
+  $('toggleShelf').textContent = (ui.shelf ? '▲ Okuma programını gizle' : '▼ Okuma programını göster') + ' (' + noun + ')';
+}
+document.querySelectorAll('[data-shelfsort]').forEach(b=>b.addEventListener('click', ()=>{
+  ui.shelfSort = b.dataset.shelfsort; saveUI();
+  document.querySelectorAll('[data-shelfsort]').forEach(x=>x.classList.toggle('active', x===b));
+  drawShelf(lastGroups);
+}));
+
+function drawShelf(groups){
+  $('shelfSortBar').hidden = false;
+  document.querySelectorAll('[data-shelfsort]').forEach(b=>b.classList.toggle('active', b.dataset.shelfsort === (ui.shelfSort||'book')));
+  const displayGroups = ui.shelfSort === 'student' ? toStudentView(groups) : groups;
   const shelf = $('shelf'); shelf.innerHTML = '';
   const today = startOfDay(new Date());
-  const todayList = $('today-list'); todayList.innerHTML = '';
-  let anyToday = false;
-  const todayItems = [];
-  const showGroupHeaders = groups.length > 1;
-  groups.forEach(group=>{
+  const showGroupHeaders = displayGroups.length > 1;
+  displayGroups.forEach(group=>{
     if(showGroupHeaders){
       const gh = document.createElement('div');
       gh.style.cssText = 'font-family:var(--font-stamp);color:var(--board-text);font-size:1rem;margin:.4rem 0 -.2rem;';
@@ -1358,14 +1398,11 @@ function render(groups){
           if(nextStop && nextStop.name) handoff = 'sonra: ' + nextStop.name;
           else if(entry.book.ownerId || entry.book.ownerName) handoff = 'iade: ' + ownerName(entry.book);
           else handoff = 'son döngü';
-        }
-        if(stop.name && isNow){
-          li.classList.add('active'); anyToday = true;
-          todayItems.push({book: entry.book.title, name: stop.name, handoff});
         } else if(today > stop.to){ li.classList.add('past'); }
+        if(stop.name && isNow) li.classList.add('active');
         const w1 = document.createElement('span'); w1.className='when'; w1.textContent = (stop.locked?'🔒 ':'') + 'Döngü ' + (stop.roundIndex+1);
         const who = document.createElement('span'); who.className='who'; who.textContent = stop.name || '— boşta —';
-        const w2 = document.createElement('span'); w2.className='when'; w2.textContent = fmtDate(stop.from) + ' – ' + fmtDate(stop.to);
+        const w2 = document.createElement('span'); w2.className='when'; w2.textContent = stop.from ? (fmtDate(stop.from) + ' – ' + fmtDate(stop.to)) : '';
         li.appendChild(w1); li.appendChild(who); li.appendChild(w2);
         if(handoff){ const hint = document.createElement('span'); hint.className = 'when handoff'; hint.textContent = '→ ' + handoff; li.appendChild(hint); }
         track.appendChild(li);
@@ -1373,9 +1410,32 @@ function render(groups){
       shelf.appendChild(div);
     });
   });
+  updateShelfToggleLabel();
+  applyBoardVisibility();
+}
+
+function render(groups){
+  lastGroups = groups;
+  const today = startOfDay(new Date());
+  let anyToday = false;
+  const todayItems = [];
+  groups.forEach(group=>group.books.forEach(entry=>{
+    entry.stops.forEach((stop, si)=>{
+      const isNow = today >= stop.from && today <= stop.to;
+      if(stop.name && isNow){
+        anyToday = true;
+        const nextStop = entry.stops[si+1];
+        let handoff;
+        if(nextStop && nextStop.name) handoff = 'sonra: ' + nextStop.name;
+        else if(entry.book.ownerId || entry.book.ownerName) handoff = 'iade: ' + ownerName(entry.book);
+        else handoff = 'son döngü';
+        todayItems.push({book: entry.book.title, name: stop.name, handoff});
+      }
+    });
+  }));
   $('today-box').style.display = anyToday ? 'block' : 'none';
   lastTodayItems = todayItems; renderToday();
-  applyBoardToggles(shelf.querySelectorAll('.book').length, todayList.children.length);
+  drawShelf(groups);
 }
 
 function renderHistory(){
