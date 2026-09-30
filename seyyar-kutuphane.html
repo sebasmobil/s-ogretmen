@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.34 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.35 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -405,6 +405,13 @@
       <button class="ghost" id="matrixAllRounds" type="button" style="font-size:.78rem;color:var(--ink);">Tümünü seç/kaldır</button>
     </label>
     <div id="matrixRoundList" style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;max-height:180px;overflow-y:auto;"></div>
+    <label style="font-size:.85rem;font-weight:600;">Rapor içeriği</label>
+    <div style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;">
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptNext">Döngü sonrası kime geçeceğini göster</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptAuthor">Yazar</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPages">Sayfa sayısı</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPublisher">Yayınevi</label>
+    </div>
     <div class="count" id="matrixMsg"></div>
     <div class="modal-actions">
       <button class="secondary" id="closeMatrixPdf" type="button">İptal</button>
@@ -1488,6 +1495,7 @@ $('toggleReturns').addEventListener('click', ()=>{ ui.returns = !ui.returns; sav
 
 // --- Real downloadable PDF: student x round matrix ---
 let matrixOrient = 'p', matrixName = ui.reportNameStyle || 'full';
+if(!ui.matrixOpts || typeof ui.matrixOpts !== 'object') ui.matrixOpts = { next:false, author:false, pages:false, publisher:false };
 function openMatrixModal(){
   document.querySelectorAll('[data-orient]').forEach(b=>b.classList.toggle('active', b.dataset.orient === matrixOrient));
   document.querySelectorAll('[data-mname]').forEach(b=>b.classList.toggle('active', b.dataset.mname === matrixName));
@@ -1500,11 +1508,21 @@ function openMatrixModal(){
     lab.appendChild(span);
     list.appendChild(lab);
   });
+  $('mOptNext').checked = !!ui.matrixOpts.next;
+  $('mOptAuthor').checked = !!ui.matrixOpts.author;
+  $('mOptPages').checked = !!ui.matrixOpts.pages;
+  $('mOptPublisher').checked = !!ui.matrixOpts.publisher;
   $('matrixMsg').textContent = '';
   $('matrixBackdrop').classList.add('open');
 }
 $('openMatrixPdf').addEventListener('click', openMatrixModal);
 $('closeMatrixPdf').addEventListener('click', ()=>$('matrixBackdrop').classList.remove('open'));
+['mOptNext','mOptAuthor','mOptPages','mOptPublisher'].forEach(id=>{
+  $(id).addEventListener('change', ()=>{
+    ui.matrixOpts = { next: $('mOptNext').checked, author: $('mOptAuthor').checked, pages: $('mOptPages').checked, publisher: $('mOptPublisher').checked };
+    saveUI();
+  });
+});
 document.querySelectorAll('[data-orient]').forEach(b=>b.addEventListener('click', ()=>{
   matrixOrient = b.dataset.orient;
   document.querySelectorAll('[data-orient]').forEach(x=>x.classList.toggle('active', x===b));
@@ -1582,8 +1600,15 @@ async function generateMatrixPdf(){
 
   try{
     const rounds = buildAll();
-    const perRound = roundIdx.map(ri=>{ const m = {}; const rd = rounds[ri]; if(rd) rd.assignments.forEach(a=>{ m[a.studentId] = a.bookTitle; }); return m; });
+    const perRound = roundIdx.map(ri=>{ const m = {}; const rd = rounds[ri]; if(rd) rd.assignments.forEach(a=>{ m[a.studentId] = a.bookId; }); return m; });
     const dn = name => matrixName === 'short' ? shortName(name) : name;
+    const opts = ui.matrixOpts || {};
+    function nextRecipientLine(bookId, ri, book){
+      const nr = rounds[ri+1];
+      if(nr){ const a = nr.assignments.find(x=>x.bookId===bookId); if(a) return 'Sonraki: ' + a.studentName; }
+      if(book && (book.ownerId || book.ownerName)) return 'İade: ' + ownerName(book);
+      return 'Son döngü';
+    }
     const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
     const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
 
@@ -1616,9 +1641,21 @@ async function generateMatrixPdf(){
     });
 
     mctx.font = cellFont;
+    function buildCellLines(bookId, ri){
+      const w = colW - cellPad*2;
+      if(!bookId){ return [{ text:'—', style:'normal' }]; }
+      const book = state.books.find(b=>b.id===bookId);
+      const out = [];
+      wrapLines(mctx, book ? book.title : '—', w).forEach(t=>out.push({ text:t, style:'bold' }));
+      if(opts.author && book && book.author) wrapLines(mctx, book.author, w).forEach(t=>out.push({ text:t, style:'normal' }));
+      if(opts.pages && book && book.pages) out.push({ text: book.pages + ' sayfa', style:'normal' });
+      if(opts.publisher && book && book.publisher) wrapLines(mctx, book.publisher, w).forEach(t=>out.push({ text:t, style:'normal' }));
+      if(opts.next) wrapLines(mctx, nextRecipientLine(bookId, ri, book), w).forEach(t=>out.push({ text:t, style:'muted' }));
+      return out;
+    }
     const rowsData = students.map(s=>{
       const nameLines = wrapLines(mctx, dn(fullName(s)), firstColW - cellPad*2);
-      const cellsLines = roundIdx.map((ri,ci)=>wrapLines(mctx, perRound[ci][s.id] || '—', colW - cellPad*2));
+      const cellsLines = roundIdx.map((ri,ci)=>buildCellLines(perRound[ci][s.id], ri));
       const maxLines = Math.max(nameLines.length, ...cellsLines.map(l=>l.length));
       return { nameLines, cellsLines, h: maxLines*lineH + cellPad*2 };
     });
@@ -1662,13 +1699,17 @@ async function generateMatrixPdf(){
         ctx.strokeRect(marginPx, y, firstColW, r.h);
         ctx.font = 'bold ' + cellFont; ctx.fillStyle = '#000000';
         r.nameLines.forEach((line,li)=>ctx.fillText(line, marginPx+cellPad, y+cellPad+li*lineH));
-        ctx.font = cellFont;
         let cx = marginPx + firstColW;
         r.cellsLines.forEach(lines=>{
           ctx.strokeRect(cx, y, colW, r.h);
-          lines.forEach((line,li)=>ctx.fillText(line, cx+cellPad, y+cellPad+li*lineH));
+          lines.forEach((ln,li)=>{
+            ctx.font = ln.style === 'bold' ? ('bold ' + cellFont) : cellFont;
+            ctx.fillStyle = ln.style === 'muted' ? '#666666' : '#000000';
+            ctx.fillText(ln.text, cx+cellPad, y+cellPad+li*lineH);
+          });
           cx += colW;
         });
+        ctx.fillStyle = '#000000';
         y += r.h;
       });
       pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
