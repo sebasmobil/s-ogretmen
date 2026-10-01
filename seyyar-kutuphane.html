@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.39 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.41 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -1135,9 +1135,9 @@ function renderRounds(){
     }
     if(!locked){
       li.querySelector('input').addEventListener('input', e=>{ r.days = Math.max(1, parseInt(e.target.value,10)||1); saveState(); updateRoundDatesUI(); });
-      li.querySelector('button').addEventListener('click', ()=>{
+      attachTwoStep(li.querySelector('button'), '×', '⚠️ Sil?', ()=>{
         if(state.rounds.length <= Math.max(1, L)) return;
-        state.rounds.splice(i,1); renderRounds(); saveState();
+        state.rounds.splice(i,1); renderRounds(); saveState(); generate();
       });
     }
     ul.appendChild(li);
