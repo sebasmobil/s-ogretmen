@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.41 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.42 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -319,6 +319,7 @@
     <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
     <button id="generate">Programı Oluştur</button>
     <button class="secondary" id="openMatrixPdf" type="button">📄 Rapor Oluştur</button>
+    <button class="secondary" id="openListPdf" type="button">📑 Liste Raporları (PDF)</button>
     <button class="secondary" id="resetHistory" type="button">🗑 Geçmişi Sıfırla</button>
     </div>
     <div class="msg" id="msg"></div>
@@ -386,6 +387,32 @@
     <div class="modal-actions">
       <button class="secondary" id="closeAddModal" type="button">Kapat</button>
       <button id="confirmAdd" type="button">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="listBackdrop">
+  <div class="modal">
+    <h2>Liste Raporu</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Kütüphane, sınıf listesi ya da kitap sahipleri için ayrı bir PDF oluşturur. Okuma programı için "Rapor Oluştur"u kullan.</p>
+    <label style="font-size:.85rem;font-weight:600;">Hangi liste?</label>
+    <div class="themeToggle" id="listTypeBar" style="margin:.4rem 0 .8rem;">
+      <button data-list="library" type="button">Kütüphane</button>
+      <button data-list="students" type="button">Öğrenciler</button>
+      <button data-list="owners" type="button">Kitap Sahipleri</button>
+    </div>
+    <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
+    <div class="themeToggle" id="listOrientBar" style="margin:.4rem 0 .8rem;">
+      <button data-lorient="p" type="button">Dikey</button>
+      <button data-lorient="l" type="button">Yatay</button>
+    </div>
+    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;margin-top:.4rem;">
+      <input type="checkbox" id="listBlankForm">Matbu evrak (boş form — isimler yazılı, diğer sütunlar elle doldurulmak üzere boş)
+    </label>
+    <div class="count" id="listMsg" style="margin-top:.6rem;"></div>
+    <div class="modal-actions">
+      <button class="secondary" id="closeListPdf" type="button">İptal</button>
+      <button id="confirmListPdf" type="button">PDF Oluştur ve İndir</button>
     </div>
   </div>
 </div>
@@ -1791,6 +1818,138 @@ async function generateMatrixPdf(){
   }
 }
 $('confirmMatrixPdf').addEventListener('click', generateMatrixPdf);
+
+// --- Separate list reports: library / students / owners, with an optional blank (matbu) form ---
+let listType = 'library', listOrient = 'p';
+function openListModal(){
+  document.querySelectorAll('[data-list]').forEach(b=>b.classList.toggle('active', b.dataset.list === listType));
+  document.querySelectorAll('[data-lorient]').forEach(b=>b.classList.toggle('active', b.dataset.lorient === listOrient));
+  $('listBlankForm').checked = false;
+  $('listMsg').textContent = '';
+  $('listBackdrop').classList.add('open');
+}
+$('openListPdf').addEventListener('click', openListModal);
+$('closeListPdf').addEventListener('click', ()=>$('listBackdrop').classList.remove('open'));
+document.querySelectorAll('[data-list]').forEach(b=>b.addEventListener('click', ()=>{
+  listType = b.dataset.list; document.querySelectorAll('[data-list]').forEach(x=>x.classList.toggle('active', x===b));
+}));
+document.querySelectorAll('[data-lorient]').forEach(b=>b.addEventListener('click', ()=>{
+  listOrient = b.dataset.lorient; document.querySelectorAll('[data-lorient]').forEach(x=>x.classList.toggle('active', x===b));
+}));
+
+async function generateListPdf(){
+  const msg = $('listMsg'); msg.textContent = '';
+  const blank = $('listBlankForm').checked;
+  const dn = name => matrixName === 'short' ? shortName(name) : name;
+  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
+
+  let titleTxt = '', headers = [], rows = [];
+  if(listType === 'library'){
+    if(!state.books.length){ msg.textContent = 'Kütüphanede kitap yok.'; return; }
+    const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
+    titleTxt = 'Sınıf Kütüphanesi';
+    if(blank){ headers = ['Kitap Adı','Alan Öğrenci','Tarih','İmza']; rows = books.map(b=>[b.title,'','','']); }
+    else { headers = ['Kitap Adı','Yazar','Tür','Sayfa','Yayınevi','Seviye']; rows = books.map(b=>[b.title, b.author||'—', b.genre||'—', b.pages||'—', b.publisher||'—', b.level||'—']); }
+  } else if(listType === 'students'){
+    if(!state.students.length){ msg.textContent = 'Sınıf listesinde öğrenci yok.'; return; }
+    const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
+    titleTxt = 'Sınıf Listesi';
+    if(blank){ headers = ['Öğrenci Adı','Kitap Adı','Tarih','İmza']; rows = students.map(s=>[dn(fullName(s)),'','','']); }
+    else { headers = ['Öğrenci Adı','Sınıf/Şube','Seviye']; rows = students.map(s=>[dn(fullName(s)), [s.grade,s.section].filter(Boolean).join('/') || '—', s.level||'—']); }
+  } else {
+    titleTxt = 'Kitap Sahipleri';
+    if(blank){
+      if(!state.books.length){ msg.textContent = 'Kütüphanede kitap yok.'; return; }
+      const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
+      headers = ['Kitap Adı','Getiren Öğrenci','İmza']; rows = books.map(b=>[b.title,'','']);
+    } else {
+      const owned = state.books.filter(b=>b.ownerId || b.ownerName).slice().sort((a,b)=>trCmp(a.title,b.title));
+      if(!owned.length){ msg.textContent = 'Henüz eşleştirilmiş kitap yok.'; return; }
+      headers = ['Kitap Adı','Getiren Öğrenci','İade Durumu'];
+      rows = owned.map(b=>[b.title, dn(ownerName(b)), state.returned[b.id] ? 'Teslim edildi' : 'Bekliyor']);
+    }
+  }
+
+  const btn = $('confirmListPdf'); const oldTxt = btn.textContent; btn.textContent = 'Hazırlanıyor…'; btn.disabled = true;
+  try{
+    const DPI = 150, PT2PX = DPI/72;
+    const A4 = { w: 595.28, h: 841.89 };
+    const pageWpt = listOrient === 'l' ? A4.h : A4.w, pageHpt = listOrient === 'l' ? A4.w : A4.h;
+    const pageWpx = Math.round(pageWpt*PT2PX), pageHpx = Math.round(pageHpt*PT2PX);
+    const marginPx = Math.round(28*PT2PX);
+    const usableWpx = pageWpx - marginPx*2, usableHpx = pageHpx - marginPx*2;
+    const cellFont = Math.round(9*PT2PX)+'px Arial', headFont = 'bold '+Math.round(9*PT2PX)+'px Arial', titleFont = 'bold '+Math.round(15*PT2PX)+'px Arial';
+    const lineH = Math.round(12*PT2PX), cellPad = Math.round(5*PT2PX), titleH = Math.round(26*PT2PX), headerRowH = lineH + cellPad*2;
+
+    const n = headers.length;
+    const firstW = Math.round(usableWpx * (blank ? 0.30 : 0.26));
+    const otherW = Math.floor((usableWpx - firstW) / (n-1));
+    const colW = [firstW]; for(let i=1;i<n;i++) colW.push(otherW);
+
+    const mcanvas = document.createElement('canvas'); const mctx = mcanvas.getContext('2d');
+    mctx.font = cellFont;
+    const rowsData = rows.map(cells=>{
+      const colLines = cells.map((txt,ci)=>wrapLines(mctx, txt, colW[ci]-cellPad*2));
+      const maxLines = Math.max(1, ...colLines.map(l=>l.length));
+      return { colLines, h: Math.max(maxLines*lineH + cellPad*2, blank ? lineH*2+cellPad*2 : 0) };
+    });
+
+    const pagesRows = [];
+    let cur = [], curH = 0, isFirst = true;
+    const firstBudget = usableHpx - titleH - headerRowH, otherBudget = usableHpx - headerRowH;
+    let budget = firstBudget;
+    rowsData.forEach(r=>{
+      if(cur.length && curH + r.h > budget){ pagesRows.push({ withTitle:isFirst, rows:cur }); cur=[]; curH=0; isFirst=false; budget=otherBudget; }
+      cur.push(r); curH += r.h;
+    });
+    pagesRows.push({ withTitle:isFirst, rows:cur });
+
+    const pdfPages = [];
+    for(const pg of pagesRows){
+      const canvas = document.createElement('canvas'); canvas.width = pageWpx; canvas.height = pageHpx;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,pageWpx,pageHpx);
+      ctx.textBaseline = 'top'; ctx.strokeStyle = '#999999'; ctx.lineWidth = 1;
+      let y = marginPx;
+      if(pg.withTitle){
+        ctx.fillStyle = '#000000'; ctx.font = titleFont;
+        ctx.fillText(titleTxt + (profName ? ' — ' + profName : ''), marginPx, y);
+        y += titleH;
+      }
+      const headerY = y;
+      ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, usableWpx, headerRowH);
+      ctx.fillStyle = '#000000'; ctx.font = headFont;
+      let hx = marginPx;
+      headers.forEach((htext,ci)=>{ ctx.strokeRect(hx, headerY, colW[ci], headerRowH); ctx.fillText(htext, hx+cellPad, headerY+cellPad); hx += colW[ci]; });
+      y = headerY + headerRowH;
+      pg.rows.forEach(r=>{
+        let cx = marginPx;
+        r.colLines.forEach((lines,ci)=>{
+          ctx.strokeRect(cx, y, colW[ci], r.h);
+          ctx.font = ci===0 ? ('bold '+cellFont) : cellFont; ctx.fillStyle = '#000000';
+          lines.forEach((line,li)=>ctx.fillText(line, cx+cellPad, y+cellPad+li*lineH));
+          cx += colW[ci];
+        });
+        y += r.h;
+      });
+      pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
+    }
+
+    const blob = buildMinimalPdfBlob(pdfPages);
+    const base = listType==='library' ? 'kutuphane-listesi' : listType==='students' ? 'sinif-listesi' : 'kitap-sahipleri';
+    const fname = base + (blank ? '-bos-form' : '') + (profName ? '-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') : '') + '.pdf';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    $('listBackdrop').classList.remove('open');
+  }catch(err){
+    msg.textContent = 'PDF oluşturulamadı: ' + (err && err.message ? err.message : err);
+  }finally{
+    btn.textContent = oldTxt; btn.disabled = false;
+  }
+}
+$('confirmListPdf').addEventListener('click', generateListPdf);
 
 function generate(){
   const msg = $('msg'); msg.textContent = '';
