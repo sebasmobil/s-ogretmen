@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.37 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.39 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -415,6 +415,7 @@
       <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptAuthor">Yazar</label>
       <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPages">Sayfa sayısı</label>
       <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPublisher">Yayınevi</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptReturnName">Son döngüde iade edilecek öğrencinin adını göster</label>
     </div>
     <div class="count" id="matrixMsg"></div>
     <div class="modal-actions">
@@ -620,7 +621,7 @@ function renderBooks(){
     if(secondary) li.querySelector('.secondary').textContent = secondary;
     const [editBtn, delBtn] = li.querySelectorAll('.cardActions button');
     editBtn.addEventListener('click', ()=>openEditModal('books', i));
-    attachConfirmDelete(delBtn, ()=>{ state.books.splice(i,1); renderBooks(); saveState(); });
+    attachConfirmDelete(delBtn, ()=>{ state.books.splice(i,1); renderBooks(); saveState(); generate(); });
     ul.appendChild(li);
   });
   $('bookCount').textContent = state.books.length ? `${state.books.length} kayıt` : 'Henüz kayıt yok.';
@@ -643,7 +644,7 @@ function renderStudents(){
     if(secondary) li.querySelector('.secondary').textContent = secondary;
     const [editBtn, delBtn] = li.querySelectorAll('.cardActions button');
     editBtn.addEventListener('click', ()=>openEditModal('students', i));
-    attachConfirmDelete(delBtn, ()=>{ state.students.splice(i,1); renderStudents(); saveState(); });
+    attachConfirmDelete(delBtn, ()=>{ state.students.splice(i,1); renderStudents(); saveState(); generate(); });
     ul.appendChild(li);
   });
   $('studentCount').textContent = state.students.length ? `${state.students.length} kayıt` : 'Henüz kayıt yok.';
@@ -1555,7 +1556,7 @@ $('toggleReturns').addEventListener('click', ()=>{ ui.returns = !ui.returns; sav
 
 // --- Real downloadable PDF: student x round matrix ---
 let matrixOrient = 'p', matrixName = ui.reportNameStyle || 'full';
-if(!ui.matrixOpts || typeof ui.matrixOpts !== 'object') ui.matrixOpts = { next:false, author:false, pages:false, publisher:false };
+if(!ui.matrixOpts || typeof ui.matrixOpts !== 'object') ui.matrixOpts = { next:false, author:false, pages:false, publisher:false, returnName:true };
 function openMatrixModal(){
   document.querySelectorAll('[data-orient]').forEach(b=>b.classList.toggle('active', b.dataset.orient === matrixOrient));
   document.querySelectorAll('[data-mname]').forEach(b=>b.classList.toggle('active', b.dataset.mname === matrixName));
@@ -1572,14 +1573,15 @@ function openMatrixModal(){
   $('mOptAuthor').checked = !!ui.matrixOpts.author;
   $('mOptPages').checked = !!ui.matrixOpts.pages;
   $('mOptPublisher').checked = !!ui.matrixOpts.publisher;
+  $('mOptReturnName').checked = ui.matrixOpts.returnName !== false;
   $('matrixMsg').textContent = '';
   $('matrixBackdrop').classList.add('open');
 }
 $('openMatrixPdf').addEventListener('click', openMatrixModal);
 $('closeMatrixPdf').addEventListener('click', ()=>$('matrixBackdrop').classList.remove('open'));
-['mOptNext','mOptAuthor','mOptPages','mOptPublisher'].forEach(id=>{
+['mOptNext','mOptAuthor','mOptPages','mOptPublisher','mOptReturnName'].forEach(id=>{
   $(id).addEventListener('change', ()=>{
-    ui.matrixOpts = { next: $('mOptNext').checked, author: $('mOptAuthor').checked, pages: $('mOptPages').checked, publisher: $('mOptPublisher').checked };
+    ui.matrixOpts = { next: $('mOptNext').checked, author: $('mOptAuthor').checked, pages: $('mOptPages').checked, publisher: $('mOptPublisher').checked, returnName: $('mOptReturnName').checked };
     saveUI();
   });
 });
@@ -1665,8 +1667,8 @@ async function generateMatrixPdf(){
     const opts = ui.matrixOpts || {};
     function nextRecipientLine(bookId, ri, book){
       const nr = rounds[ri+1];
-      if(nr){ const a = nr.assignments.find(x=>x.bookId===bookId); if(a) return 'Sonraki: ' + a.studentName; }
-      if(book && (book.ownerId || book.ownerName)) return 'İade: ' + ownerName(book);
+      if(nr){ const a = nr.assignments.find(x=>x.bookId===bookId); if(a) return 'Sonraki: ' + dn(a.studentName); }
+      if(opts.returnName && book && (book.ownerId || book.ownerName)) return 'İade: ' + dn(ownerName(book));
       return 'Son döngü';
     }
     const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
