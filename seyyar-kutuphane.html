@@ -216,7 +216,7 @@
 <body>
 
 <div class="topbar">
-  <span>v1.42 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.43 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -394,21 +394,27 @@
 <div class="modal-backdrop" id="listBackdrop">
   <div class="modal">
     <h2>Liste Raporu</h2>
-    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Kütüphane, sınıf listesi ya da kitap sahipleri için ayrı bir PDF oluşturur. Okuma programı için "Rapor Oluştur"u kullan.</p>
-    <label style="font-size:.85rem;font-weight:600;">Hangi liste?</label>
-    <div class="themeToggle" id="listTypeBar" style="margin:.4rem 0 .8rem;">
-      <button data-list="library" type="button">Kütüphane</button>
-      <button data-list="students" type="button">Öğrenciler</button>
-      <button data-list="owners" type="button">Kitap Sahipleri</button>
-    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Kütüphaneyi (istersen sınıf listesiyle birlikte) tek bir PDF'te toplar. Okuma programı için "Rapor Oluştur"u kullan.</p>
     <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
     <div class="themeToggle" id="listOrientBar" style="margin:.4rem 0 .8rem;">
       <button data-lorient="p" type="button">Dikey</button>
       <button data-lorient="l" type="button">Yatay</button>
     </div>
-    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;margin-top:.4rem;">
-      <input type="checkbox" id="listBlankForm">Matbu evrak (boş form — isimler yazılı, diğer sütunlar elle doldurulmak üzere boş)
-    </label>
+    <label style="font-size:.85rem;font-weight:600;">Kütüphane sütunları</label>
+    <div style="display:grid;gap:.3rem;margin:.4rem 0 .8rem;">
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;opacity:.6;"><input type="checkbox" checked disabled>Kitap Adı (her zaman görünür)</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colAuthor" checked>Yazar</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPages" checked>Sayfa Sayısı</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPublisher" checked>Yayınevi</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colLevel" checked>Seviye</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colOwner" checked>Kitap Sahibi</label>
+    </div>
+    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colIncludeStudents">Sınıf listesini de ekle (ayrı bir tablo olarak, aynı PDF'e)</label>
+    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;margin-top:.6rem;"><input type="checkbox" id="listBlankForm">Matbu evrak — tamamen boş form (seçili sütun başlıkları olur, veriler boş kalır)</label>
+    <div id="blankRowsWrap" style="display:none;margin:.5rem 0 0;">
+      <label style="font-size:.85rem;font-weight:600;">Kaç satır olsun?</label>
+      <input type="number" id="blankRowCount" min="1" max="300" value="30" style="width:6em;margin-top:.3rem;">
+    </div>
     <div class="count" id="listMsg" style="margin-top:.6rem;"></div>
     <div class="modal-actions">
       <button class="secondary" id="closeListPdf" type="button">İptal</button>
@@ -1819,54 +1825,94 @@ async function generateMatrixPdf(){
 }
 $('confirmMatrixPdf').addEventListener('click', generateMatrixPdf);
 
-// --- Separate list reports: library / students / owners, with an optional blank (matbu) form ---
-let listType = 'library', listOrient = 'p';
+// --- Unified list report: library (+ optional student roster), configurable columns, optional blank form ---
+let listOrient = 'p';
 function openListModal(){
-  document.querySelectorAll('[data-list]').forEach(b=>b.classList.toggle('active', b.dataset.list === listType));
   document.querySelectorAll('[data-lorient]').forEach(b=>b.classList.toggle('active', b.dataset.lorient === listOrient));
-  $('listBlankForm').checked = false;
   $('listMsg').textContent = '';
+  $('blankRowsWrap').style.display = $('listBlankForm').checked ? 'block' : 'none';
   $('listBackdrop').classList.add('open');
 }
 $('openListPdf').addEventListener('click', openListModal);
 $('closeListPdf').addEventListener('click', ()=>$('listBackdrop').classList.remove('open'));
-document.querySelectorAll('[data-list]').forEach(b=>b.addEventListener('click', ()=>{
-  listType = b.dataset.list; document.querySelectorAll('[data-list]').forEach(x=>x.classList.toggle('active', x===b));
-}));
 document.querySelectorAll('[data-lorient]').forEach(b=>b.addEventListener('click', ()=>{
   listOrient = b.dataset.lorient; document.querySelectorAll('[data-lorient]').forEach(x=>x.classList.toggle('active', x===b));
 }));
+$('listBlankForm').addEventListener('change', ()=>{ $('blankRowsWrap').style.display = $('listBlankForm').checked ? 'block' : 'none'; });
+
+function drawTablePage(ctx, pageWpx, pageHpx, marginPx, titleTxt, headers, colW, rowsChunk, withTitle, fonts){
+  const { cellFont, headFont, titleFont, lineH, cellPad, titleH, headerRowH } = fonts;
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,pageWpx,pageHpx);
+  ctx.textBaseline = 'top'; ctx.strokeStyle = '#999999'; ctx.lineWidth = 1;
+  let y = marginPx;
+  if(withTitle){
+    ctx.fillStyle = '#000000'; ctx.font = titleFont;
+    ctx.fillText(titleTxt, marginPx, y);
+    y += titleH;
+  }
+  const headerY = y;
+  ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, colW.reduce((a,b)=>a+b,0), headerRowH);
+  ctx.fillStyle = '#000000'; ctx.font = headFont;
+  let hx = marginPx;
+  headers.forEach((htext,ci)=>{ ctx.strokeRect(hx, headerY, colW[ci], headerRowH); ctx.fillText(htext, hx+cellPad, headerY+cellPad); hx += colW[ci]; });
+  y = headerY + headerRowH;
+  rowsChunk.forEach(r=>{
+    let cx = marginPx;
+    r.colLines.forEach((lines,ci)=>{
+      ctx.strokeRect(cx, y, colW[ci], r.h);
+      ctx.font = ci===0 ? ('bold '+cellFont) : cellFont; ctx.fillStyle = '#000000';
+      lines.forEach((line,li)=>ctx.fillText(line, cx+cellPad, y+cellPad+li*lineH));
+      cx += colW[ci];
+    });
+    y += r.h;
+  });
+  return y;
+}
 
 async function generateListPdf(){
   const msg = $('listMsg'); msg.textContent = '';
   const blank = $('listBlankForm').checked;
+  const includeStudents = $('colIncludeStudents').checked;
   const dn = name => matrixName === 'short' ? shortName(name) : name;
   const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
+  const rowCount = blank ? Math.max(1, Math.min(300, parseInt($('blankRowCount').value,10) || 30)) : null;
 
-  let titleTxt = '', headers = [], rows = [];
-  if(listType === 'library'){
-    if(!state.books.length){ msg.textContent = 'Kütüphanede kitap yok.'; return; }
-    const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
-    titleTxt = 'Sınıf Kütüphanesi';
-    if(blank){ headers = ['Kitap Adı','Alan Öğrenci','Tarih','İmza']; rows = books.map(b=>[b.title,'','','']); }
-    else { headers = ['Kitap Adı','Yazar','Tür','Sayfa','Yayınevi','Seviye']; rows = books.map(b=>[b.title, b.author||'—', b.genre||'—', b.pages||'—', b.publisher||'—', b.level||'—']); }
-  } else if(listType === 'students'){
-    if(!state.students.length){ msg.textContent = 'Sınıf listesinde öğrenci yok.'; return; }
-    const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
-    titleTxt = 'Sınıf Listesi';
-    if(blank){ headers = ['Öğrenci Adı','Kitap Adı','Tarih','İmza']; rows = students.map(s=>[dn(fullName(s)),'','','']); }
-    else { headers = ['Öğrenci Adı','Sınıf/Şube','Seviye']; rows = students.map(s=>[dn(fullName(s)), [s.grade,s.section].filter(Boolean).join('/') || '—', s.level||'—']); }
+  const libCols = [
+    { key:'title', label:'Kitap Adı', on:true },
+    { key:'author', label:'Yazar', on:$('colAuthor').checked },
+    { key:'pages', label:'Sayfa Sayısı', on:$('colPages').checked },
+    { key:'publisher', label:'Yayınevi', on:$('colPublisher').checked },
+    { key:'level', label:'Seviye', on:$('colLevel').checked },
+    { key:'owner', label:'Kitap Sahibi', on:$('colOwner').checked }
+  ].filter(c=>c.on);
+
+  if(!blank && !state.books.length){ msg.textContent = 'Kütüphanede kitap yok.'; return; }
+  if(includeStudents && !blank && !state.students.length){ msg.textContent = 'Sınıf listesinde öğrenci yok.'; return; }
+
+  const libHeaders = libCols.map(c=>c.label);
+  let libRows;
+  if(blank){
+    libRows = Array.from({length: rowCount}, ()=>libCols.map(()=>''));
   } else {
-    titleTxt = 'Kitap Sahipleri';
-    if(blank){
-      if(!state.books.length){ msg.textContent = 'Kütüphanede kitap yok.'; return; }
-      const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
-      headers = ['Kitap Adı','Getiren Öğrenci','İmza']; rows = books.map(b=>[b.title,'','']);
-    } else {
-      const owned = state.books.filter(b=>b.ownerId || b.ownerName).slice().sort((a,b)=>trCmp(a.title,b.title));
-      if(!owned.length){ msg.textContent = 'Henüz eşleştirilmiş kitap yok.'; return; }
-      headers = ['Kitap Adı','Getiren Öğrenci','İade Durumu'];
-      rows = owned.map(b=>[b.title, dn(ownerName(b)), state.returned[b.id] ? 'Teslim edildi' : 'Bekliyor']);
+    const books = state.books.slice().sort((a,b)=>trCmp(a.title,b.title));
+    libRows = books.map(b=>libCols.map(c=>{
+      if(c.key==='title') return b.title;
+      if(c.key==='author') return b.author || '—';
+      if(c.key==='pages') return b.pages || '—';
+      if(c.key==='publisher') return b.publisher || '—';
+      if(c.key==='level') return b.level || '—';
+      if(c.key==='owner') return (b.ownerId||b.ownerName) ? dn(ownerName(b)) : '—';
+      return '';
+    }));
+  }
+
+  const stuHeaders = ['Öğrenci Adı','Sınıf/Şube','Seviye'];
+  let stuRows = [];
+  if(includeStudents){
+    if(blank){ stuRows = Array.from({length: rowCount}, ()=>['','','']); }
+    else {
+      const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
+      stuRows = students.map(s=>[dn(fullName(s)), [s.grade,s.section].filter(Boolean).join('/') || '—', s.level || '—']);
     }
   }
 
@@ -1878,66 +1924,49 @@ async function generateListPdf(){
     const pageWpx = Math.round(pageWpt*PT2PX), pageHpx = Math.round(pageHpt*PT2PX);
     const marginPx = Math.round(28*PT2PX);
     const usableWpx = pageWpx - marginPx*2, usableHpx = pageHpx - marginPx*2;
-    const cellFont = Math.round(9*PT2PX)+'px Arial', headFont = 'bold '+Math.round(9*PT2PX)+'px Arial', titleFont = 'bold '+Math.round(15*PT2PX)+'px Arial';
-    const lineH = Math.round(12*PT2PX), cellPad = Math.round(5*PT2PX), titleH = Math.round(26*PT2PX), headerRowH = lineH + cellPad*2;
+    const fonts = {
+      cellFont: Math.round(9*PT2PX)+'px Arial', headFont: 'bold '+Math.round(9*PT2PX)+'px Arial', titleFont: 'bold '+Math.round(15*PT2PX)+'px Arial',
+      lineH: Math.round(12*PT2PX), cellPad: Math.round(5*PT2PX), titleH: Math.round(26*PT2PX), headerRowH: Math.round(12*PT2PX) + Math.round(5*PT2PX)*2
+    };
+    const mcanvas = document.createElement('canvas'); const mctx = mcanvas.getContext('2d'); mctx.font = fonts.cellFont;
 
-    const n = headers.length;
-    const firstW = Math.round(usableWpx * (blank ? 0.30 : 0.26));
-    const otherW = Math.floor((usableWpx - firstW) / (n-1));
-    const colW = [firstW]; for(let i=1;i<n;i++) colW.push(otherW);
-
-    const mcanvas = document.createElement('canvas'); const mctx = mcanvas.getContext('2d');
-    mctx.font = cellFont;
-    const rowsData = rows.map(cells=>{
-      const colLines = cells.map((txt,ci)=>wrapLines(mctx, txt, colW[ci]-cellPad*2));
-      const maxLines = Math.max(1, ...colLines.map(l=>l.length));
-      return { colLines, h: Math.max(maxLines*lineH + cellPad*2, blank ? lineH*2+cellPad*2 : 0) };
-    });
-
-    const pagesRows = [];
-    let cur = [], curH = 0, isFirst = true;
-    const firstBudget = usableHpx - titleH - headerRowH, otherBudget = usableHpx - headerRowH;
-    let budget = firstBudget;
-    rowsData.forEach(r=>{
-      if(cur.length && curH + r.h > budget){ pagesRows.push({ withTitle:isFirst, rows:cur }); cur=[]; curH=0; isFirst=false; budget=otherBudget; }
-      cur.push(r); curH += r.h;
-    });
-    pagesRows.push({ withTitle:isFirst, rows:cur });
+    function prepSection(headers, rows, minRowH){
+      const n = headers.length;
+      const firstW = Math.round(usableWpx * (n>3 ? 0.26 : 0.34));
+      const otherW = Math.floor((usableWpx - firstW) / Math.max(1,n-1));
+      const colW = [firstW]; for(let i=1;i<n;i++) colW.push(otherW);
+      const rowsData = rows.map(cells=>{
+        const colLines = cells.map((txt,ci)=>wrapLines(mctx, txt, colW[ci]-fonts.cellPad*2));
+        const maxLines = Math.max(1, ...colLines.map(l=>l.length));
+        return { colLines, h: Math.max(maxLines*fonts.lineH + fonts.cellPad*2, minRowH) };
+      });
+      return { headers, colW, rowsData };
+    }
+    const minRowH = blank ? fonts.lineH*2 + fonts.cellPad*2 : 0;
+    const sections = [ { title: 'Sınıf Kütüphanesi' + (profName?' — '+profName:''), ...prepSection(libHeaders, libRows, minRowH) } ];
+    if(includeStudents) sections.push({ title: 'Sınıf Listesi' + (profName?' — '+profName:''), ...prepSection(stuHeaders, stuRows, minRowH) });
 
     const pdfPages = [];
-    for(const pg of pagesRows){
-      const canvas = document.createElement('canvas'); canvas.width = pageWpx; canvas.height = pageHpx;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,pageWpx,pageHpx);
-      ctx.textBaseline = 'top'; ctx.strokeStyle = '#999999'; ctx.lineWidth = 1;
-      let y = marginPx;
-      if(pg.withTitle){
-        ctx.fillStyle = '#000000'; ctx.font = titleFont;
-        ctx.fillText(titleTxt + (profName ? ' — ' + profName : ''), marginPx, y);
-        y += titleH;
-      }
-      const headerY = y;
-      ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, usableWpx, headerRowH);
-      ctx.fillStyle = '#000000'; ctx.font = headFont;
-      let hx = marginPx;
-      headers.forEach((htext,ci)=>{ ctx.strokeRect(hx, headerY, colW[ci], headerRowH); ctx.fillText(htext, hx+cellPad, headerY+cellPad); hx += colW[ci]; });
-      y = headerY + headerRowH;
-      pg.rows.forEach(r=>{
-        let cx = marginPx;
-        r.colLines.forEach((lines,ci)=>{
-          ctx.strokeRect(cx, y, colW[ci], r.h);
-          ctx.font = ci===0 ? ('bold '+cellFont) : cellFont; ctx.fillStyle = '#000000';
-          lines.forEach((line,li)=>ctx.fillText(line, cx+cellPad, y+cellPad+li*lineH));
-          cx += colW[ci];
-        });
-        y += r.h;
+    sections.forEach(sec=>{
+      const pagesRows = [];
+      let cur = [], curH = 0, isFirst = true;
+      const firstBudget = usableHpx - fonts.titleH - fonts.headerRowH, otherBudget = usableHpx - fonts.headerRowH;
+      let budget = firstBudget;
+      sec.rowsData.forEach(r=>{
+        if(cur.length && curH + r.h > budget){ pagesRows.push({ withTitle:isFirst, rows:cur }); cur=[]; curH=0; isFirst=false; budget=otherBudget; }
+        cur.push(r); curH += r.h;
       });
-      pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
-    }
+      pagesRows.push({ withTitle:isFirst, rows:cur });
+      pagesRows.forEach(pg=>{
+        const canvas = document.createElement('canvas'); canvas.width = pageWpx; canvas.height = pageHpx;
+        const ctx = canvas.getContext('2d');
+        drawTablePage(ctx, pageWpx, pageHpx, marginPx, sec.title, sec.headers, sec.colW, pg.rows, pg.withTitle, fonts);
+        pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
+      });
+    });
 
     const blob = buildMinimalPdfBlob(pdfPages);
-    const base = listType==='library' ? 'kutuphane-listesi' : listType==='students' ? 'sinif-listesi' : 'kitap-sahipleri';
-    const fname = base + (blank ? '-bos-form' : '') + (profName ? '-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') : '') + '.pdf';
+    const fname = 'liste-raporu' + (blank ? '-bos-form' : '') + (profName ? '-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') : '') + '.pdf';
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = fname;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
