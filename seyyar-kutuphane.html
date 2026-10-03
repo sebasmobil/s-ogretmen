@@ -12,7 +12,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seyyar Kütüphane</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
 <style>
   :root{
     box-sizing:border-box;
@@ -198,7 +198,15 @@
   .retRow .rt{flex:1;min-width:0;overflow-wrap:anywhere;}
   .retRow .rs{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem;}
   .retRow.done{opacity:.55;}
+  #pdfFab{position:fixed;right:.6rem;top:50%;transform:translateY(-50%);z-index:45;
+    background:var(--stamp);color:var(--stamp-ink);border:none;border-radius:12px;
+    padding:1rem .55rem;font-family:var(--font-stamp);font-weight:700;font-size:.82rem;
+    letter-spacing:1px;opacity:.78;box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer;
+    writing-mode:vertical-rl;text-orientation:mixed;}
+  #pdfFab:hover,#pdfFab:focus-visible{opacity:1;}
+
   @media print{
+    #pdfFab{display:none !important;}
     #returnBody{display:block !important;}
     html,html[data-theme]{--ink:#000;--card:#fff;--card-line:#999;--paper:#fff;--muted:#333;--muted2:#333;--danger:#900;}
     .boardToggle,.rosterToggle,#todaySortBar,#shelfSortBar,#lockModeBar,#lockNext,#lockHint{display:none !important;}
@@ -215,8 +223,10 @@
 </head>
 <body>
 
+<button id="pdfFab" type="button">PDF</button>
+
 <div class="topbar">
-  <span>v1.43 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.45 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -318,8 +328,6 @@
     <ul class="rounds" id="roundList" style="margin-top:1rem;"></ul>
     <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
     <button id="generate">Programı Oluştur</button>
-    <button class="secondary" id="openMatrixPdf" type="button">📄 Rapor Oluştur</button>
-    <button class="secondary" id="openListPdf" type="button">📑 Liste Raporları (PDF)</button>
     <button class="secondary" id="resetHistory" type="button">🗑 Geçmişi Sıfırla</button>
     </div>
     <div class="msg" id="msg"></div>
@@ -391,69 +399,73 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="listBackdrop">
-  <div class="modal">
-    <h2>Liste Raporu</h2>
-    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Kütüphaneyi (istersen sınıf listesiyle birlikte) tek bir PDF'te toplar. Okuma programı için "Rapor Oluştur"u kullan.</p>
-    <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
-    <div class="themeToggle" id="listOrientBar" style="margin:.4rem 0 .8rem;">
-      <button data-lorient="p" type="button">Dikey</button>
-      <button data-lorient="l" type="button">Yatay</button>
+<div class="modal-backdrop" id="pdfBackdrop">
+  <div class="modal" style="max-width:600px;">
+    <h2>PDF Raporları</h2>
+    <div class="themeToggle" id="pdfTabBar" style="margin-bottom:1rem;">
+      <button data-pdftab="list" type="button">Liste Raporları</button>
+      <button data-pdftab="matrix" type="button">Okuma Programı</button>
     </div>
-    <label style="font-size:.85rem;font-weight:600;">Kütüphane sütunları</label>
-    <div style="display:grid;gap:.3rem;margin:.4rem 0 .8rem;">
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;opacity:.6;"><input type="checkbox" checked disabled>Kitap Adı (her zaman görünür)</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colAuthor" checked>Yazar</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPages" checked>Sayfa Sayısı</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPublisher" checked>Yayınevi</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colLevel" checked>Seviye</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colOwner" checked>Kitap Sahibi</label>
-    </div>
-    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colIncludeStudents">Sınıf listesini de ekle (ayrı bir tablo olarak, aynı PDF'e)</label>
-    <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;margin-top:.6rem;"><input type="checkbox" id="listBlankForm">Matbu evrak — tamamen boş form (seçili sütun başlıkları olur, veriler boş kalır)</label>
-    <div id="blankRowsWrap" style="display:none;margin:.5rem 0 0;">
-      <label style="font-size:.85rem;font-weight:600;">Kaç satır olsun?</label>
-      <input type="number" id="blankRowCount" min="1" max="300" value="30" style="width:6em;margin-top:.3rem;">
-    </div>
-    <div class="count" id="listMsg" style="margin-top:.6rem;"></div>
-    <div class="modal-actions">
-      <button class="secondary" id="closeListPdf" type="button">İptal</button>
-      <button id="confirmListPdf" type="button">PDF Oluştur ve İndir</button>
-    </div>
-  </div>
-</div>
 
-<div class="modal-backdrop" id="matrixBackdrop">
-  <div class="modal">
-    <h2>Rapor Oluştur</h2>
-    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu.</p>
-    <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
-    <div class="themeToggle" id="matrixOrientBar" style="margin:.4rem 0 .8rem;">
-      <button data-orient="p" type="button">Dikey</button>
-      <button data-orient="l" type="button">Yatay</button>
+    <div id="pdfTabList">
+      <p style="font-size:.82rem;color:var(--muted);margin:-.2rem 0 .8rem;">Kütüphaneyi (istersen sınıf listesiyle birlikte) tek bir PDF'te toplar.</p>
+      <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
+      <div class="themeToggle" id="listOrientBar" style="margin:.4rem 0 .8rem;">
+        <button data-lorient="p" type="button">Dikey</button>
+        <button data-lorient="l" type="button">Yatay</button>
+      </div>
+      <label style="font-size:.85rem;font-weight:600;">Kütüphane sütunları</label>
+      <div style="display:grid;gap:.3rem;margin:.4rem 0 .8rem;">
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;opacity:.6;"><input type="checkbox" checked disabled>Kitap Adı (her zaman görünür)</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colAuthor" checked>Yazar</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPages" checked>Sayfa Sayısı</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colPublisher" checked>Yayınevi</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colLevel" checked>Seviye</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colOwner" checked>Kitap Sahibi</label>
+      </div>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="colIncludeStudents">Sınıf listesini de ekle (ayrı bir tablo olarak, aynı PDF'e)</label>
+      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;margin-top:.6rem;"><input type="checkbox" id="listBlankForm">Matbu evrak — tamamen boş form (seçili sütun başlıkları olur, veriler boş kalır)</label>
+      <div id="blankRowsWrap" style="display:none;margin:.5rem 0 0;">
+        <label style="font-size:.85rem;font-weight:600;">Kaç satır olsun?</label>
+        <input type="number" id="blankRowCount" min="1" max="300" value="30" style="width:6em;margin-top:.3rem;">
+      </div>
+      <div class="count" id="listMsg" style="margin-top:.6rem;"></div>
+      <div class="modal-actions">
+        <button class="secondary" id="closeListPdf" type="button">Kapat</button>
+        <button id="confirmListPdf" type="button">PDF Oluştur ve İndir</button>
+      </div>
     </div>
-    <label style="font-size:.85rem;font-weight:600;">Öğrenci adı</label>
-    <div class="themeToggle" id="matrixNameBar" style="margin:.4rem 0 .8rem;">
-      <button data-mname="full" type="button">Ad Soyad</button>
-      <button data-mname="short" type="button">Ad S.</button>
-    </div>
-    <label style="font-size:.85rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
-      Döngüler
-      <button class="ghost" id="matrixAllRounds" type="button" style="font-size:.78rem;color:var(--ink);">Tümünü seç/kaldır</button>
-    </label>
-    <div id="matrixRoundList" style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;max-height:180px;overflow-y:auto;"></div>
-    <label style="font-size:.85rem;font-weight:600;">Rapor içeriği</label>
-    <div style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;">
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptNext">Döngü sonrası kime geçeceğini göster</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptAuthor">Yazar</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPages">Sayfa sayısı</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPublisher">Yayınevi</label>
-      <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptReturnName">Son döngüde iade edilecek öğrencinin adını göster</label>
-    </div>
-    <div class="count" id="matrixMsg"></div>
-    <div class="modal-actions">
-      <button class="secondary" id="closeMatrixPdf" type="button">İptal</button>
-      <button id="confirmMatrixPdf" type="button">PDF Oluştur ve İndir</button>
+
+    <div id="pdfTabMatrix" style="display:none;">
+      <p style="font-size:.82rem;color:var(--muted);margin:-.2rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu.</p>
+      <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
+      <div class="themeToggle" id="matrixOrientBar" style="margin:.4rem 0 .8rem;">
+        <button data-orient="p" type="button">Dikey</button>
+        <button data-orient="l" type="button">Yatay</button>
+      </div>
+      <label style="font-size:.85rem;font-weight:600;">Öğrenci adı</label>
+      <div class="themeToggle" id="matrixNameBar" style="margin:.4rem 0 .8rem;">
+        <button data-mname="full" type="button">Ad Soyad</button>
+        <button data-mname="short" type="button">Ad S.</button>
+      </div>
+      <label style="font-size:.85rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
+        Döngüler
+        <button class="ghost" id="matrixAllRounds" type="button" style="font-size:.78rem;color:var(--ink);">Tümünü seç/kaldır</button>
+      </label>
+      <div id="matrixRoundList" style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;max-height:180px;overflow-y:auto;"></div>
+      <label style="font-size:.85rem;font-weight:600;">Rapor içeriği</label>
+      <div style="display:grid;gap:.35rem;margin:.4rem 0 .8rem;">
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptNext">Döngü sonrası kime geçeceğini göster</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptAuthor">Yazar</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPages">Sayfa sayısı</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptPublisher">Yayınevi</label>
+        <label style="display:flex;gap:.5rem;align-items:center;font-size:.85rem;font-weight:400;"><input type="checkbox" id="mOptReturnName">Son döngüde iade edilecek öğrencinin adını göster</label>
+      </div>
+      <div class="count" id="matrixMsg"></div>
+      <div class="modal-actions">
+        <button class="secondary" id="closeMatrixPdf" type="button">Kapat</button>
+        <button id="confirmMatrixPdf" type="button">PDF Oluştur ve İndir</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1093,6 +1105,21 @@ $('loadTestData').addEventListener('click', ()=>{
 function trCmp(a,b){ return String(a||'').localeCompare(String(b||''), 'tr', {sensitivity:'base', numeric:true}); }
 function levelCmp(a,b){ if(a===b) return 0; if(a==='') return 1; if(b==='') return -1; return trCmp(a,b); }
 function fullName(s){ return [s && s.firstName, s && s.lastName].filter(Boolean).join(' '); }
+function updatePdfTabUI(){
+  const tab = ui.pdfTab === 'matrix' ? 'matrix' : 'list';
+  document.querySelectorAll('[data-pdftab]').forEach(b=>b.classList.toggle('active', b.dataset.pdftab === tab));
+  $('pdfTabList').style.display = tab === 'list' ? 'block' : 'none';
+  $('pdfTabMatrix').style.display = tab === 'matrix' ? 'block' : 'none';
+}
+document.querySelectorAll('[data-pdftab]').forEach(b=>b.addEventListener('click', ()=>{
+  ui.pdfTab = b.dataset.pdftab; saveUI(); updatePdfTabUI();
+}));
+$('pdfFab').addEventListener('click', ()=>{
+  openListModal();
+  openMatrixModal();
+  updatePdfTabUI();
+  $('pdfBackdrop').classList.add('open');
+});
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function parseISO(s){ const p = s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
@@ -1608,10 +1635,8 @@ function openMatrixModal(){
   $('mOptPublisher').checked = !!ui.matrixOpts.publisher;
   $('mOptReturnName').checked = ui.matrixOpts.returnName !== false;
   $('matrixMsg').textContent = '';
-  $('matrixBackdrop').classList.add('open');
 }
-$('openMatrixPdf').addEventListener('click', openMatrixModal);
-$('closeMatrixPdf').addEventListener('click', ()=>$('matrixBackdrop').classList.remove('open'));
+$('closeMatrixPdf').addEventListener('click', ()=>$('pdfBackdrop').classList.remove('open'));
 ['mOptNext','mOptAuthor','mOptPages','mOptPublisher','mOptReturnName'].forEach(id=>{
   $(id).addEventListener('change', ()=>{
     ui.matrixOpts = { next: $('mOptNext').checked, author: $('mOptAuthor').checked, pages: $('mOptPages').checked, publisher: $('mOptPublisher').checked, returnName: $('mOptReturnName').checked };
@@ -1816,7 +1841,7 @@ async function generateMatrixPdf(){
     const a = document.createElement('a'); a.href = url; a.download = fname;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(()=>URL.revokeObjectURL(url), 4000);
-    $('matrixBackdrop').classList.remove('open');
+    $('pdfBackdrop').classList.remove('open');
   }catch(err){
     msg.textContent = 'PDF oluşturulamadı: ' + (err && err.message ? err.message : err);
   }finally{
@@ -1831,10 +1856,8 @@ function openListModal(){
   document.querySelectorAll('[data-lorient]').forEach(b=>b.classList.toggle('active', b.dataset.lorient === listOrient));
   $('listMsg').textContent = '';
   $('blankRowsWrap').style.display = $('listBlankForm').checked ? 'block' : 'none';
-  $('listBackdrop').classList.add('open');
 }
-$('openListPdf').addEventListener('click', openListModal);
-$('closeListPdf').addEventListener('click', ()=>$('listBackdrop').classList.remove('open'));
+$('closeListPdf').addEventListener('click', ()=>$('pdfBackdrop').classList.remove('open'));
 document.querySelectorAll('[data-lorient]').forEach(b=>b.addEventListener('click', ()=>{
   listOrient = b.dataset.lorient; document.querySelectorAll('[data-lorient]').forEach(x=>x.classList.toggle('active', x===b));
 }));
@@ -1971,7 +1994,7 @@ async function generateListPdf(){
     const a = document.createElement('a'); a.href = url; a.download = fname;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(()=>URL.revokeObjectURL(url), 4000);
-    $('listBackdrop').classList.remove('open');
+    $('pdfBackdrop').classList.remove('open');
   }catch(err){
     msg.textContent = 'PDF oluşturulamadı: ' + (err && err.message ? err.message : err);
   }finally{
