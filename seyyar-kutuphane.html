@@ -241,7 +241,7 @@
 <button id="pdfFab" type="button">PDF</button>
 
 <div class="topbar">
-  <span>v1.46 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.50 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -383,6 +383,46 @@
     <button data-shelfsort="student" type="button">Öğrenciye göre</button>
   </div>
   <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
+
+  <section class="card" id="backupCard">
+    <h2>💾 Yedekle, Geri Yükle ve Sıfırla</h2>
+    <button class="secondary rosterToggle" id="toggleBackup" type="button" style="margin-top:0;"></button>
+    <div id="backupBody" style="display:none;margin-top:.9rem;">
+      <div class="subhead">Yedekleme (bu profil)</div>
+      <div class="miniform">
+        <button id="exportBackup" type="button">⬇ Yedek Al (.json)</button>
+        <label class="filebtn">Yedek Dosyası Seç <input type="file" id="restoreFile" accept=".json,application/json" style="display:none;"></label>
+      </div>
+      <div class="count" id="backupMsg" style="margin:.4rem 0 1.1rem;"></div>
+
+      <div class="subhead">Tam Yedekleme (tüm profiller + tema + arayüz ayarları)</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu, uygulamanın tamamını yedekler: tüm sınıflar/profiller, her birinin kitap-öğrenci-döngü-geçmiş verisi, tema/renk paleti ve arayüz tercihleri. Geri yüklediğinde uygulama tam o yedeklenen haline döner.</p>
+      <div class="miniform">
+        <button id="exportFullBackup" type="button">⬇ Tüm Uygulamayı Yedekle (.json)</button>
+        <label class="filebtn">Tam Yedek Dosyası Seç <input type="file" id="restoreFullFile" accept=".json,application/json" style="display:none;"></label>
+      </div>
+      <div class="count" id="fullBackupMsg" style="margin:.4rem 0 1.1rem;"></div>
+
+      <div class="subhead">Sıfırlama — bu profile özel</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Her buton, yanlışlıkla basmayı önlemek için iki kez tıklama ister.</p>
+      <div style="display:grid;gap:.5rem;">
+        <button class="secondary" id="resetBooksBtn" type="button">📖 Sadece Kitapları Sıfırla</button>
+        <button class="secondary" id="resetStudentsBtn" type="button">🎓 Sadece Öğrencileri Sıfırla</button>
+        <button class="secondary" id="resetProgramBtn" type="button">📅 Sadece Okuma Programını Sıfırla</button>
+        <button class="secondary" id="resetLevelsBtn" type="button">🏷 Sadece Seviyeleri Sıfırla</button>
+        <button class="secondary" id="resetOwnersBtn" type="button">🔗 Kitap Sahibi Eşleştirmelerini Sıfırla</button>
+        <button class="secondary" id="resetReturnedBtn" type="button">📦 Sadece İade İşaretlerini Sıfırla</button>
+        <button id="resetAllBtn" type="button" style="background:var(--danger);color:#2b0b07;">🗑 Bu Profildeki Her Şeyi Sıfırla</button>
+      </div>
+
+      <div class="subhead" style="margin-top:1.3rem;">Sıfırlama — uygulamanın geneli</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu ikisi tek bir profile değil, tüm uygulamaya etki eder.</p>
+      <div style="display:grid;gap:.5rem;">
+        <button class="secondary" id="resetUiBtn" type="button">🎨 Görünüm/Arayüz Tercihlerini Sıfırla</button>
+        <button id="resetEverythingBtn" type="button" style="background:var(--danger);color:#2b0b07;">🧨 Tüm Profilleri Sıfırla</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>Veriler yalnızca bu tarayıcıda saklanır.</footer>
@@ -500,6 +540,30 @@
     <div class="modal-actions">
       <button class="secondary" id="cancelImport" type="button">İptal</button>
       <button id="confirmImport" type="button">İçe Aktar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="restoreBackdrop">
+  <div class="modal">
+    <h2>Yedeği Önizle</h2>
+    <div id="restorePreview" style="font-size:.9rem;line-height:1.7;"></div>
+    <div class="msg" id="restoreWarn" style="margin-top:.8rem;"></div>
+    <div class="modal-actions">
+      <button class="secondary" id="cancelRestore" type="button">İptal</button>
+      <button id="confirmRestore" type="button">Geri Yükle</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="fullRestoreBackdrop">
+  <div class="modal">
+    <h2>Tam Yedeği Önizle</h2>
+    <div id="fullRestorePreview" style="font-size:.9rem;line-height:1.7;"></div>
+    <div class="msg" id="fullRestoreWarn" style="margin-top:.8rem;"></div>
+    <div class="modal-actions">
+      <button class="secondary" id="cancelFullRestore" type="button">İptal</button>
+      <button id="confirmFullRestore" type="button">Geri Yükle</button>
     </div>
   </div>
 </div>
@@ -645,7 +709,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false};
+let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -1448,44 +1512,53 @@ document.querySelectorAll('[data-shelfsort]').forEach(b=>b.addEventListener('cli
 function drawShelf(groups){
   $('shelfSortBar').hidden = false;
   document.querySelectorAll('[data-shelfsort]').forEach(b=>b.classList.toggle('active', b.dataset.shelfsort === (ui.shelfSort||'book')));
-  const displayGroups = ui.shelfSort === 'student' ? toStudentView(groups) : groups;
-  const shelf = $('shelf'); shelf.innerHTML = '';
-  const today = startOfDay(new Date());
-  const showGroupHeaders = displayGroups.length > 1;
-  displayGroups.forEach(group=>{
-    if(showGroupHeaders){
-      const gh = document.createElement('div');
-      gh.style.cssText = 'font-family:var(--font-stamp);color:var(--board-text);font-size:1rem;margin:.4rem 0 -.2rem;';
-      gh.textContent = '🏷 ' + (group.label || 'Seviyesiz');
-      shelf.appendChild(gh);
-    }
-    group.books.forEach(entry=>{
-      const div = document.createElement('div'); div.className='book';
-      const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
-      const metaText = [entry.book.author, entry.book.genre, entry.book.pages ? entry.book.pages+' sayfa':'', entry.book.ageRange ? entry.book.ageRange+' yaş':'', ownerLabel(entry.book)].filter(Boolean).join(' · ');
-      if(metaText){ const meta = document.createElement('div'); meta.className='meta'; meta.textContent = metaText; div.appendChild(meta); }
-      const track = document.createElement('ul'); track.className='track'; div.appendChild(track);
-      entry.stops.forEach((stop, si)=>{
-        const li = document.createElement('li'); li.className='stop';
-        const isNow = today >= stop.from && today <= stop.to;
-        let handoff = null;
-        if(isNow && stop.name){
-          const nextStop = entry.stops[si+1];
-          if(nextStop && nextStop.name) handoff = 'sonra: ' + nextStop.name;
-          else if(entry.book.ownerId || entry.book.ownerName) handoff = 'iade: ' + ownerName(entry.book);
-          else handoff = 'son döngü';
-        } else if(today > stop.to){ li.classList.add('past'); }
-        if(stop.name && isNow) li.classList.add('active');
-        const w1 = document.createElement('span'); w1.className='when'; w1.textContent = (stop.locked?'🔒 ':'') + 'Döngü ' + (stop.roundIndex+1);
-        const who = document.createElement('span'); who.className='who'; who.textContent = stop.name || '— boşta —';
-        const w2 = document.createElement('span'); w2.className='when'; w2.textContent = stop.from ? (fmtDate(stop.from) + ' – ' + fmtDate(stop.to)) : '';
-        li.appendChild(w1); li.appendChild(who); li.appendChild(w2);
-        if(handoff){ const hint = document.createElement('span'); hint.className = 'when handoff'; hint.textContent = '→ ' + handoff; li.appendChild(hint); }
-        track.appendChild(li);
+  const shelf = $('shelf');
+  try{
+    const displayGroups = ui.shelfSort === 'student' ? toStudentView(groups) : groups;
+    shelf.innerHTML = '';
+    const today = startOfDay(new Date());
+    const showGroupHeaders = displayGroups.length > 1;
+    displayGroups.forEach(group=>{
+      if(showGroupHeaders){
+        const gh = document.createElement('div');
+        gh.style.cssText = 'font-family:var(--font-stamp);color:var(--board-text);font-size:1rem;margin:.4rem 0 -.2rem;';
+        gh.textContent = '🏷 ' + (group.label || 'Seviyesiz');
+        shelf.appendChild(gh);
+      }
+      group.books.forEach(entry=>{
+        const div = document.createElement('div'); div.className='book';
+        const h3 = document.createElement('h3'); h3.textContent = entry.book.title; div.appendChild(h3);
+        const metaText = [entry.book.author, entry.book.genre, entry.book.pages ? entry.book.pages+' sayfa':'', entry.book.ageRange ? entry.book.ageRange+' yaş':'', ownerLabel(entry.book)].filter(Boolean).join(' · ');
+        if(metaText){ const meta = document.createElement('div'); meta.className='meta'; meta.textContent = metaText; div.appendChild(meta); }
+        const track = document.createElement('ul'); track.className='track'; div.appendChild(track);
+        entry.stops.forEach((stop, si)=>{
+          const li = document.createElement('li'); li.className='stop';
+          const isNow = today >= stop.from && today <= stop.to;
+          let handoff = null;
+          if(isNow && stop.name){
+            const nextStop = entry.stops[si+1];
+            if(nextStop && nextStop.name) handoff = 'sonra: ' + nextStop.name;
+            else if(entry.book.ownerId || entry.book.ownerName) handoff = 'iade: ' + ownerName(entry.book);
+            else handoff = 'son döngü';
+          } else if(today > stop.to){ li.classList.add('past'); }
+          if(stop.name && isNow) li.classList.add('active');
+          const w1 = document.createElement('span'); w1.className='when'; w1.textContent = (stop.locked?'🔒 ':'') + 'Döngü ' + (stop.roundIndex+1);
+          const who = document.createElement('span'); who.className='who'; who.textContent = stop.name || '— boşta —';
+          const w2 = document.createElement('span'); w2.className='when'; w2.textContent = stop.from ? (fmtDate(stop.from) + ' – ' + fmtDate(stop.to)) : '';
+          li.appendChild(w1); li.appendChild(who); li.appendChild(w2);
+          if(handoff){ const hint = document.createElement('span'); hint.className = 'when handoff'; hint.textContent = '→ ' + handoff; li.appendChild(hint); }
+          track.appendChild(li);
+        });
+        shelf.appendChild(div);
       });
-      shelf.appendChild(div);
     });
-  });
+  }catch(err){
+    shelf.innerHTML = '';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'msg';
+    errDiv.textContent = 'Okuma programı görüntülenirken bir sorun oluştu: ' + (err && err.message ? err.message : err);
+    shelf.appendChild(errDiv);
+  }
   updateShelfToggleLabel();
   applyBoardVisibility();
 }
@@ -2020,20 +2093,24 @@ $('confirmListPdf').addEventListener('click', generateListPdf);
 
 function generate(){
   const msg = $('msg'); msg.textContent = '';
-  if(!state.history.length) state.start = $('start').value;
-  if(state.students.length < 1){ msg.textContent = 'Sınıf listesine en az 1 öğrenci ekleyin.'; return; }
-  if(state.books.length < 1){ msg.textContent = 'Kütüphaneye en az 1 kitap ekleyin.'; return; }
-  if(!state.start && !state.history.length){ msg.textContent = 'Başlangıç tarihi seçin.'; return; }
-  const rounds = buildAll();
-  const { groups, warnings } = buildGroups(rounds);
-  renderRounds();
-  renderHistory();
-  renderReturns(rounds);
-  renderMatchList();
-  if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
-  render(groups);
-  msg.textContent = (lastUnlockNote ? lastUnlockNote + '\n' : '') + warnings.join('\n');
-  saveState();
+  try{
+    if(!state.history.length) state.start = $('start').value;
+    if(state.students.length < 1){ msg.textContent = 'Sınıf listesine en az 1 öğrenci ekleyin.'; return; }
+    if(state.books.length < 1){ msg.textContent = 'Kütüphaneye en az 1 kitap ekleyin.'; return; }
+    if(!state.start && !state.history.length){ msg.textContent = 'Başlangıç tarihi seçin.'; return; }
+    const rounds = buildAll();
+    const { groups, warnings } = buildGroups(rounds);
+    renderRounds();
+    renderHistory();
+    renderReturns(rounds);
+    renderMatchList();
+    if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
+    render(groups);
+    msg.textContent = (lastUnlockNote ? lastUnlockNote + '\n' : '') + warnings.join('\n');
+    saveState();
+  }catch(err){
+    msg.textContent = 'Program oluşturulurken bir hata oluştu: ' + (err && err.message ? err.message : err);
+  }
 }
 $('generate').addEventListener('click', generate);
 
@@ -2050,6 +2127,289 @@ $('resetHistory').addEventListener('click', ()=>{
   state.manualStash = [];
   generate();
 });
+
+// --- Backup / Restore / Modular reset ---
+function updateBackupToggle(){
+  $('toggleBackup').textContent = ui.backup ? '▲ Gizle' : '▼ Göster';
+  $('backupBody').style.display = ui.backup ? 'block' : 'none';
+}
+$('toggleBackup').addEventListener('click', ()=>{ ui.backup = !ui.backup; saveUI(); updateBackupToggle(); });
+
+$('exportBackup').addEventListener('click', ()=>{
+  try{
+    const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || 'profil';
+    const payload = { kind:'seyyar-kutuphane-yedek', version:1, exportedAt:new Date().toISOString(), profileName:profName, state:state };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'seyyar-kutuphane-yedek-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') + '-' + iso(new Date()) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    $('backupMsg').textContent = 'Yedek indirildi: ' + a.download;
+  }catch(err){
+    $('backupMsg').textContent = 'Yedek oluşturulamadı: ' + (err && err.message ? err.message : err);
+  }
+});
+
+function safeImportState(raw){
+  const s = (raw && typeof raw === 'object') ? raw : {};
+  if(!Array.isArray(s.students)) s.students = [];
+  if(!Array.isArray(s.books)) s.books = [];
+  return normalizeState(s);
+}
+
+let pendingRestore = null;
+$('restoreFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    let data;
+    try{ data = JSON.parse(ev.target.result); }
+    catch(err){ $('backupMsg').textContent = 'Dosya okunamadı — geçerli bir yedek (.json) dosyası değil.'; $('restoreFile').value=''; return; }
+    if(!data || typeof data !== 'object' || !data.state || typeof data.state !== 'object'){
+      $('backupMsg').textContent = 'Bu dosya bir Seyyar Kütüphane yedeği gibi görünmüyor.'; $('restoreFile').value=''; return;
+    }
+    try{
+      pendingRestore = data;
+      showRestorePreview(data);
+      $('restoreBackdrop').classList.add('open');
+    }catch(err){
+      $('backupMsg').textContent = 'Yedek önizlenemedi: ' + (err && err.message ? err.message : err);
+      pendingRestore = null;
+    }
+    $('restoreFile').value = '';
+  };
+  reader.onerror = ()=>{ $('backupMsg').textContent = 'Dosya okunamadı.'; $('restoreFile').value=''; };
+  reader.readAsText(f);
+});
+
+function showRestorePreview(data){
+  const s = safeImportState(JSON.parse(JSON.stringify(data.state || {})));
+  const activeName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || '';
+  const rows = [
+    ['Yedekteki profil', data.profileName || '—'],
+    ['Yedekleme tarihi', data.exportedAt ? new Date(data.exportedAt).toLocaleString('tr-TR') : '—'],
+    ['Kitap sayısı', String(s.books.length)],
+    ['Öğrenci sayısı', String(s.students.length)],
+    ['Döngü sayısı', String(s.rounds.length) + (s.history.length ? ' (' + s.history.length + ' kilitli 🔒)' : '')],
+    ['Seviyeler', s.levels.length ? s.levels.join(', ') : '—']
+  ];
+  const box = $('restorePreview'); box.innerHTML = '';
+  rows.forEach(([k,v])=>{
+    const p = document.createElement('div');
+    const b = document.createElement('b'); b.textContent = k + ': ';
+    p.appendChild(b); p.appendChild(document.createTextNode(v));
+    box.appendChild(p);
+  });
+  $('restoreWarn').textContent = 'Bu işlem, şu anki "' + activeName + '" profilindeki tüm kitap, öğrenci, döngü, geçmiş ve ayar verilerinin ÜZERİNE YAZACAK. Bu geri alınamaz.';
+}
+$('cancelRestore').addEventListener('click', ()=>{
+  $('restoreBackdrop').classList.remove('open'); pendingRestore = null;
+});
+attachTwoStep($('confirmRestore'), 'Geri Yükle', '⚠️ Üzerine Yazılacak! Onaylamak için tekrar tıkla', ()=>{
+  if(!pendingRestore) return;
+  try{
+    state = safeImportState(JSON.parse(JSON.stringify(pendingRestore.state)));
+    saveState();
+    loadActiveProfileIntoApp();
+    $('restoreBackdrop').classList.remove('open');
+    pendingRestore = null;
+    $('backupMsg').textContent = 'Yedek bu profile geri yüklendi.';
+  }catch(err){
+    $('restoreWarn').textContent = 'Geri yükleme başarısız: ' + (err && err.message ? err.message : err);
+  }
+});
+
+attachTwoStep($('resetBooksBtn'), '📖 Sadece Kitapları Sıfırla', '⚠️ Tüm kitaplar silinecek! Onayla', ()=>{
+  state.books = [];
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Kütüphanedeki tüm kitaplar silindi.';
+});
+attachTwoStep($('resetStudentsBtn'), '🎓 Sadece Öğrencileri Sıfırla', '⚠️ Tüm öğrenciler silinecek! Onayla', ()=>{
+  state.students = [];
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Sınıf listesindeki tüm öğrenciler silindi.';
+});
+attachTwoStep($('resetProgramBtn'), '📅 Sadece Okuma Programını Sıfırla', '⚠️ Döngüler ve geçmiş silinecek! Onayla', ()=>{
+  state.rounds = [{days:7}];
+  state.start = '';
+  state.history = [];
+  state.manualStash = [];
+  state.returned = {};
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Okuma programı (döngüler, geçmiş ve iade kayıtları) sıfırlandı. Kitaplar ve öğrenciler korundu.';
+});
+attachTwoStep($('resetAllBtn'), '🗑 Bu Profildeki Her Şeyi Sıfırla', '⚠️ TÜM VERİLER SİLİNECEK! Onaylamak için tekrar tıkla', ()=>{
+  state = defaultState();
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Bu profildeki tüm veriler (kitaplar, öğrenciler, döngüler, geçmiş, seviyeler) sıfırlandı.';
+});
+// --- Full app backup/restore: all profiles + theme + ui prefs ---
+$('exportFullBackup').addEventListener('click', ()=>{
+  try{
+    saveState();
+    const profileStates = {};
+    profiles.profiles.forEach(p=>{ profileStates[p.id] = loadStateFor(p.id); });
+    const payload = {
+      kind: 'seyyar-kutuphane-tam-yedek',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      activeProfileId: profiles.activeId,
+      profiles: profiles.profiles.map(p=>({id:p.id, name:p.name})),
+      profileStates: profileStates,
+      ui: ui,
+      theme: themeState
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'seyyar-kutuphane-TAM-yedek-' + iso(new Date()) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    $('fullBackupMsg').textContent = 'Tüm uygulama yedeklendi (tüm profiller + tema + arayüz ayarları): ' + a.download;
+  }catch(err){
+    $('fullBackupMsg').textContent = 'Tam yedek oluşturulamadı: ' + (err && err.message ? err.message : err);
+  }
+});
+
+let pendingFullRestore = null;
+$('restoreFullFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    let data;
+    try{ data = JSON.parse(ev.target.result); }
+    catch(err){ $('fullBackupMsg').textContent = 'Dosya okunamadı — geçerli bir tam yedek (.json) dosyası değil.'; $('restoreFullFile').value=''; return; }
+    if(!data || typeof data !== 'object' || !Array.isArray(data.profiles) || !data.profiles.length || !data.profileStates || typeof data.profileStates !== 'object'){
+      $('fullBackupMsg').textContent = 'Bu dosya bir "Tüm Uygulama" yedeği gibi görünmüyor.'; $('restoreFullFile').value=''; return;
+    }
+    try{
+      pendingFullRestore = data;
+      showFullRestorePreview(data);
+      $('fullRestoreBackdrop').classList.add('open');
+    }catch(err){
+      $('fullBackupMsg').textContent = 'Tam yedek önizlenemedi: ' + (err && err.message ? err.message : err);
+      pendingFullRestore = null;
+    }
+    $('restoreFullFile').value = '';
+  };
+  reader.onerror = ()=>{ $('fullBackupMsg').textContent = 'Dosya okunamadı.'; $('restoreFullFile').value=''; };
+  reader.readAsText(f);
+});
+
+function showFullRestorePreview(data){
+  const box = $('fullRestorePreview'); box.innerHTML = '';
+  const head = document.createElement('div');
+  head.innerHTML = '<b>Yedekleme tarihi: </b>' + (data.exportedAt ? new Date(data.exportedAt).toLocaleString('tr-TR') : '—') +
+    '<br><b>Profil sayısı: </b>' + data.profiles.length +
+    '<br><b>Tema/arayüz ayarları: </b>' + (data.ui || data.theme ? 'dahil' : 'yok');
+  box.appendChild(head);
+  const list = document.createElement('ul'); list.style.cssText = 'margin:.7rem 0 0;padding-left:1.2rem;';
+  data.profiles.forEach(p=>{
+    const s = safeImportState(JSON.parse(JSON.stringify(data.profileStates[p.id] || {})));
+    const li = document.createElement('li');
+    li.textContent = p.name + ' — ' + s.books.length + ' kitap, ' + s.students.length + ' öğrenci, ' + s.rounds.length + ' döngü' + (s.history.length ? ' (' + s.history.length + ' kilitli)' : '');
+    list.appendChild(li);
+  });
+  box.appendChild(list);
+  $('fullRestoreWarn').textContent = 'Bu işlem, cihazdaki TÜM profilleri (' + profiles.profiles.length + ' tane) ve tema/arayüz ayarlarını silip, yedekteki ' + data.profiles.length + ' profille değiştirecek. Bu geri alınamaz.';
+}
+$('cancelFullRestore').addEventListener('click', ()=>{
+  $('fullRestoreBackdrop').classList.remove('open'); pendingFullRestore = null;
+});
+attachTwoStep($('confirmFullRestore'), 'Geri Yükle', '⚠️ TÜM UYGULAMANIN ÜZERİNE YAZILACAK! Onaylamak için tekrar tıkla', ()=>{
+  if(!pendingFullRestore) return;
+  try{
+    const data = pendingFullRestore;
+    // wipe all current profile data
+    profiles.profiles.forEach(p=>{ try{ localStorage.removeItem(profileKey(p.id)); }catch(e){} });
+    // write back the backed-up profiles' data
+    data.profiles.forEach(p=>{
+      const st = safeImportState(JSON.parse(JSON.stringify(data.profileStates[p.id] || {})));
+      try{ localStorage.setItem(profileKey(p.id), JSON.stringify(st)); }catch(e){}
+    });
+    const validActiveId = data.profiles.find(p=>p.id === data.activeProfileId) ? data.activeProfileId : data.profiles[0].id;
+    profiles = { profiles: data.profiles.map(p=>({id:p.id, name:p.name})), activeId: validActiveId };
+    saveProfilesRaw(profiles);
+    // restore theme + ui (merged over defaults so nothing ends up missing)
+    Object.keys(ui).forEach(k=>delete ui[k]);
+    Object.assign(ui, {
+      shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
+      rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
+      matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
+    }, data.ui && typeof data.ui === 'object' ? data.ui : {});
+    saveUI();
+    booksOpen = !!ui.books; studentsOpen = !!ui.students;
+    matrixName = ui.reportNameStyle || 'full';
+    themeState = (data.theme && typeof data.theme === 'object') ? data.theme : {theme:'dark', palette:'green'};
+    saveTheme(themeState);
+    applyTheme(themeState);
+    $('det1').open = !!ui.hist1; $('det2').open = !!ui.hist2;
+    loadActiveProfileIntoApp();
+    updateBackupToggle();
+    $('fullRestoreBackdrop').classList.remove('open');
+    pendingFullRestore = null;
+    $('fullBackupMsg').textContent = 'Tüm uygulama (tüm profiller + tema + arayüz ayarları) geri yüklendi.';
+  }catch(err){
+    $('fullRestoreWarn').textContent = 'Geri yükleme başarısız: ' + (err && err.message ? err.message : err);
+  }
+});
+
+attachTwoStep($('resetLevelsBtn'), '🏷 Sadece Seviyeleri Sıfırla', '⚠️ Tüm seviye etiketleri silinecek! Onayla', ()=>{
+  state.levels = ['Destek','Orta','İleri'];
+  state.books.forEach(b=>{ b.level = ''; });
+  state.students.forEach(s=>{ s.level = ''; });
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Seviyeler listesi varsayılana döndürüldü; kitap ve öğrencilerdeki seviye etiketleri kaldırıldı.';
+});
+attachTwoStep($('resetOwnersBtn'), '🔗 Kitap Sahibi Eşleştirmelerini Sıfırla', '⚠️ Tüm sahiplik eşleşmeleri kaldırılacak! Onayla', ()=>{
+  state.books.forEach(b=>{
+    if(b.ownerId || b.ownerName){ delete state.returned[b.id]; }
+    b.ownerId = ''; b.ownerName = '';
+  });
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Kitapların "getiren öğrenci" eşleşmeleri temizlendi.';
+});
+attachTwoStep($('resetReturnedBtn'), '📦 Sadece İade İşaretlerini Sıfırla', '⚠️ Tüm "teslim edildi" işaretleri kaldırılacak! Onayla', ()=>{
+  state.returned = {};
+  saveState();
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'İade listesindeki tüm "teslim edildi" işaretleri kaldırıldı.';
+});
+attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla', '⚠️ Tema ve görünüm ayarları sıfırlanacak! Onayla', ()=>{
+  Object.keys(ui).forEach(k=>delete ui[k]);
+  Object.assign(ui, {
+    shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
+    rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
+    matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
+  });
+  saveUI();
+  booksOpen = false; studentsOpen = false;
+  matrixOrient = 'p'; matrixName = 'full'; listOrient = 'p';
+  themeState = {theme:'dark', palette:'green'};
+  saveTheme(themeState);
+  applyTheme(themeState);
+  $('det1').open = false; $('det2').open = false;
+  loadActiveProfileIntoApp();
+  updateBackupToggle();
+  $('backupMsg').textContent = 'Görünüm ve arayüz tercihleri varsayılana döndürüldü (bu değişiklik tüm profiller için geçerlidir).';
+});
+attachTwoStep($('resetEverythingBtn'), '🧨 Tüm Profilleri Sıfırla', '⚠️ BÜTÜN SINIFLAR VE VERİLER SİLİNECEK! Onaylamak için tekrar tıkla', ()=>{
+  profiles.profiles.forEach(pr=>{ try{ localStorage.removeItem(profileKey(pr.id)); }catch(e){} });
+  const newId = uid();
+  profiles = { profiles: [{id:newId, name:'6/B'}], activeId: newId };
+  try{ localStorage.setItem(profileKey(newId), JSON.stringify(defaultState())); }catch(e){}
+  saveProfilesRaw(profiles);
+  loadActiveProfileIntoApp();
+  $('backupMsg').textContent = 'Tüm profiller silindi; tek ve boş bir profil ile yeniden başlatıldı.';
+});
+updateBackupToggle();
 
 (function init(){
   renderProfileSelect();
