@@ -121,6 +121,7 @@
   .profileBar select{flex:1;min-width:120px;max-width:260px;}
   @media (max-width:520px){ .profileBar{padding:.8rem 1rem 0;} }
   .themeToggle{display:flex;gap:.5rem;margin-bottom:1rem;}
+  .themeToggle[hidden]{display:none;}
   .themeToggle button{flex:1;background:transparent;border:1px solid var(--ink);color:var(--ink);
     font-family:var(--font-body);font-size:.85rem;padding:.5rem;border-radius:3px;cursor:pointer;}
   .themeToggle button.active{background:var(--stamp);color:var(--stamp-ink);border-color:var(--stamp);}
@@ -201,6 +202,8 @@
     padding:.8rem 1rem;background:var(--card);color:var(--ink);border:none;border-top:6px solid var(--gold);border-radius:2px;
     box-shadow:0 8px 0 -5px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.22);cursor:pointer;}
   .boardToggle[hidden]{display:none;}
+  button.dangerBtn{background:#b3261e;color:#ffffff;}
+  button.dangerBtn:hover{background:#962016;}
 
   .matchRow{display:flex;gap:.6rem;align-items:center;padding:.5rem .6rem;background:var(--paper);
     border:1px solid var(--card-line);border-radius:3px;margin-bottom:.4rem;font-size:.88rem;}
@@ -241,7 +244,7 @@
 <button id="pdfFab" type="button">PDF</button>
 
 <div class="topbar">
-  <span>v1.50 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.53 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -348,6 +351,13 @@
     <div class="msg" id="msg"></div>
   </section>
 
+  <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
+  <div class="themeToggle" id="shelfSortBar" hidden style="margin:.8rem 0 0;">
+    <button data-shelfsort="book" type="button">Kitaba göre</button>
+    <button data-shelfsort="student" type="button">Öğrenciye göre</button>
+  </div>
+  <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
+
   <section class="card" id="today-box">
     <h2>Bugün kim okuyor?</h2>
     <div class="themeToggle" id="todaySortBar" style="margin-bottom:.7rem;">
@@ -377,13 +387,6 @@
     <div id="returnBody" style="display:none;margin-top:.8rem;"></div>
   </section>
 
-  <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
-  <div class="themeToggle" id="shelfSortBar" hidden style="margin:.8rem 0 0;">
-    <button data-shelfsort="book" type="button">Kitaba göre</button>
-    <button data-shelfsort="student" type="button">Öğrenciye göre</button>
-  </div>
-  <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
-
   <section class="card" id="backupCard">
     <h2>💾 Yedekle, Geri Yükle ve Sıfırla</h2>
     <button class="secondary rosterToggle" id="toggleBackup" type="button" style="margin-top:0;"></button>
@@ -412,14 +415,14 @@
         <button class="secondary" id="resetLevelsBtn" type="button">🏷 Sadece Seviyeleri Sıfırla</button>
         <button class="secondary" id="resetOwnersBtn" type="button">🔗 Kitap Sahibi Eşleştirmelerini Sıfırla</button>
         <button class="secondary" id="resetReturnedBtn" type="button">📦 Sadece İade İşaretlerini Sıfırla</button>
-        <button id="resetAllBtn" type="button" style="background:var(--danger);color:#2b0b07;">🗑 Bu Profildeki Her Şeyi Sıfırla</button>
+        <button class="dangerBtn" id="resetAllBtn" type="button">🗑 Bu Profildeki Her Şeyi Sıfırla</button>
       </div>
 
       <div class="subhead" style="margin-top:1.3rem;">Sıfırlama — uygulamanın geneli</div>
       <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu ikisi tek bir profile değil, tüm uygulamaya etki eder.</p>
       <div style="display:grid;gap:.5rem;">
         <button class="secondary" id="resetUiBtn" type="button">🎨 Görünüm/Arayüz Tercihlerini Sıfırla</button>
-        <button id="resetEverythingBtn" type="button" style="background:var(--danger);color:#2b0b07;">🧨 Tüm Profilleri Sıfırla</button>
+        <button class="dangerBtn" id="resetEverythingBtn" type="button">🧨 Tüm Profilleri Sıfırla</button>
       </div>
     </div>
   </section>
