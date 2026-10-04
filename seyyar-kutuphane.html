@@ -243,7 +243,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.62 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.63 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -735,7 +735,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
+let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -2538,7 +2538,7 @@ attachTwoStep($('confirmFullRestore'), 'Geri Yükle', '⚠️ TÜM UYGULAMANIN �
     // restore theme + ui (merged over defaults so nothing ends up missing)
     Object.keys(ui).forEach(k=>delete ui[k]);
     Object.assign(ui, {
-      shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book',
+      shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
       rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
       matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
     }, data.ui && typeof data.ui === 'object' ? data.ui : {});
@@ -2585,7 +2585,7 @@ attachTwoStep($('resetReturnedBtn'), '📦 Sadece İade İşaretlerini Sıfırla
 attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla', '⚠️ Tema ve görünüm ayarları sıfırlanacak! Onayla', ()=>{
   Object.keys(ui).forEach(k=>delete ui[k]);
   Object.assign(ui, {
-    shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book',
+    shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
     rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
     matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
   });
