@@ -164,7 +164,7 @@
   .stop.active{background:var(--stamp);color:var(--stamp-ink);border-color:var(--stamp);}
   .stop.active .when{color:#F1D6CF;}
   .stop.past{opacity:.5;}
-  footer{text-align:center;padding:1rem;color:var(--board-muted);font-size:.8rem;}
+  footer{text-align:center;padding:1rem 1rem 4.5rem;color:var(--board-muted);font-size:.8rem;}
 
   .modal-backdrop{position:fixed;inset:0;background:rgba(20,26,20,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem;}
   .modal-backdrop.open{display:flex;}
@@ -216,11 +216,10 @@
   .retRow .rt{flex:1;min-width:0;overflow-wrap:anywhere;}
   .retRow .rs{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem;}
   .retRow.done{opacity:.55;}
-  #pdfFab{position:fixed;right:.6rem;top:50%;transform:translateY(-50%);z-index:45;
-    background:var(--stamp);color:var(--stamp-ink);border:none;border-radius:12px;
-    padding:1rem .55rem;font-family:var(--font-stamp);font-weight:700;font-size:.82rem;
-    letter-spacing:1px;opacity:.78;box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer;
-    writing-mode:vertical-rl;text-orientation:mixed;}
+  #pdfFab{position:fixed;right:.8rem;bottom:calc(.9rem + env(safe-area-inset-bottom,0px));z-index:45;
+    background:var(--stamp);color:var(--stamp-ink);border:none;border-radius:999px;
+    padding:.7rem 1.1rem;font-family:var(--font-stamp);font-weight:700;font-size:.85rem;
+    letter-spacing:.5px;opacity:.92;box-shadow:0 4px 14px rgba(0,0,0,.4);cursor:pointer;}
   #pdfFab:hover,#pdfFab:focus-visible{opacity:1;}
 
   @media print{
@@ -241,10 +240,10 @@
 </head>
 <body>
 
-<button id="pdfFab" type="button">PDF</button>
+<button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.53 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.61 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -258,7 +257,7 @@
     </div>
     <label>Renk Teması</label>
     <div class="paletteSwatches">
-      <button data-palette-choice="green" style="background:#B23A2E" title="Yeşil"></button>
+      <button data-palette-choice="green" style="background:#B23A2E" title="Kırmızı"></button>
       <button data-palette-choice="blue" style="background:#2B5C82" title="Mavi"></button>
       <button data-palette-choice="purple" style="background:#6B3FA0" title="Mor"></button>
       <button data-palette-choice="brown" style="background:#7A4A2B" title="Kahve"></button>
@@ -305,7 +304,8 @@
         <div class="subhead">📖 Kütüphane (Kitaplar)</div>
         <div class="miniform">
           <button id="openAddBook" type="button">+ Kitap Ekle</button>
-          <label class="filebtn">Excel'den Yükle <input type="file" id="bookFile" accept=".xlsx,.xls,.csv" style="display:none;"></label>
+          <button class="secondary" id="excelBooksBtn" type="button">📊 Excel</button>
+          <input type="file" id="bookFile" accept=".xlsx,.xls,.csv" style="display:none;">
         </div>
         <button class="secondary rosterToggle" id="toggleBooks" type="button"></button>
         <div id="bookRosterWrap" style="display:none;">
@@ -317,7 +317,8 @@
         <div class="subhead">🎓 Sınıf Listesi (Öğrenciler)</div>
         <div class="miniform">
           <button id="openAddStudent" type="button">+ Öğrenci Ekle</button>
-          <label class="filebtn">Excel'den Yükle <input type="file" id="studentFile" accept=".xlsx,.xls,.csv" style="display:none;"></label>
+          <button class="secondary" id="excelStudentsBtn" type="button">📊 Excel</button>
+          <input type="file" id="studentFile" accept=".xlsx,.xls,.csv" style="display:none;">
         </div>
         <button class="secondary rosterToggle" id="toggleStudents" type="button"></button>
         <div id="studentRosterWrap" style="display:none;">
@@ -351,12 +352,16 @@
     <div class="msg" id="msg"></div>
   </section>
 
-  <button class="boardToggle" id="toggleShelf" type="button" hidden></button>
-  <div class="themeToggle" id="shelfSortBar" hidden style="margin:.8rem 0 0;">
-    <button data-shelfsort="book" type="button">Kitaba göre</button>
-    <button data-shelfsort="student" type="button">Öğrenciye göre</button>
-  </div>
-  <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
+  <section class="card" id="shelfCard" style="display:none;">
+    <h2>📚 Okuma Programı</h2>
+    <div class="count" id="capInfo" style="margin:-.4rem 0 .8rem;font-size:.85rem;"></div>
+    <button class="secondary rosterToggle" id="toggleShelf" type="button" style="margin-top:0;"></button>
+    <div class="themeToggle" id="shelfSortBar" hidden style="margin:.8rem 0 0;">
+      <button data-shelfsort="book" type="button">Kitaba göre</button>
+      <button data-shelfsort="student" type="button">Öğrenciye göre</button>
+    </div>
+    <div class="shelf" id="shelf" style="display:none;margin-top:.8rem;"></div>
+  </section>
 
   <section class="card" id="today-box">
     <h2>Bugün kim okuyor?</h2>
@@ -397,6 +402,11 @@
         <label class="filebtn">Yedek Dosyası Seç <input type="file" id="restoreFile" accept=".json,application/json" style="display:none;"></label>
       </div>
       <div class="count" id="backupMsg" style="margin:.4rem 0 1.1rem;"></div>
+
+      <div class="subhead">Excel'e Aktar (bu profil)</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Kitaplar ve öğrenciler tek dosyada iki sayfa olarak iner. Dosya, "Excel'den Yükle" ile geri alınabilir.</p>
+      <div class="miniform"><button id="exportBothXlsx" type="button">⬇ Kitap + Öğrenci (.xlsx)</button></div>
+      <div class="count" id="xlsxMsg" style="margin:.4rem 0 1.1rem;"></div>
 
       <div class="subhead">Tam Yedekleme (tüm profiller + tema + arayüz ayarları)</div>
       <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu, uygulamanın tamamını yedekler: tüm sınıflar/profiller, her birinin kitap-öğrenci-döngü-geçmiş verisi, tema/renk paleti ve arayüz tercihleri. Geri yüklediğinde uygulama tam o yedeklenen haline döner.</p>
@@ -442,6 +452,18 @@
     <div class="modal-actions">
       <button id="closeLevels" type="button">Kapat</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="excelBackdrop">
+  <div class="modal" style="max-width:420px;">
+    <h2 id="excelTitle">Excel İşlemleri</h2>
+    <div style="display:grid;gap:.6rem;">
+      <button id="excelImportBtn" type="button">⬆ Excel'den İçe Aktar</button>
+      <button id="excelExportBtn" type="button">⬇ Excel'e Dışa Aktar</button>
+    </div>
+    <div class="count" id="excelMsg" style="margin-top:.8rem;"></div>
+    <div class="modal-actions"><button class="secondary" id="closeExcel" type="button">Kapat</button></div>
   </div>
 </div>
 
@@ -664,7 +686,7 @@ function loadActiveProfileIntoApp(){
   lastRounds = [];
   renderBooks(); renderStudents(); renderRounds();
   if(state.students.length>=1 && state.books.length>=1 && (state.start || state.history.length)) generate();
-  else { renderHistory(); renderReturns([]); renderMatchList(); }
+  else { clearOutputs(); renderHistory(); renderReturns([]); renderMatchList(); }
   renderProfileSelect();
 }
 function switchProfile(id){
@@ -686,6 +708,7 @@ function renderProfilesList(){
     });
     li.appendChild(inp);
     const del = document.createElement('button'); del.className = 'ghost'; del.title = 'Sil'; del.textContent = '×';
+    if(profiles.profiles.length <= 1){ del.disabled = true; del.title = 'En az bir profil kalmalı'; del.style.opacity = '.35'; }
     attachTwoStep(del, '×', '⚠️', ()=>{
       if(profiles.profiles.length <= 1) return;
       try{ localStorage.removeItem(profileKey(pr.id)); }catch(e){}
@@ -712,7 +735,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
+let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -734,6 +757,7 @@ function groupHeader(ul, level, items){
   ul.appendChild(li);
 }
 function renderBooks(){
+  rebindOwners();
   state.books.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.title,b.title));
   const ul = $('bookRoster'); ul.innerHTML = '';
   const gB = showGroups(state.books); let lastB = null;
@@ -757,6 +781,7 @@ function renderBooks(){
   renderMatchList();
 }
 function renderStudents(){
+  rebindOwners();
   state.students.sort((a,b)=>levelCmp(a.level||'', b.level||'') || trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
   const ul = $('studentRoster'); ul.innerHTML = '';
   const gS = showGroups(state.students); let lastS = null;
@@ -973,7 +998,7 @@ $('confirmAdd').addEventListener('click', ()=>{
 // --- Excel import with sheet + multi-field column mapping ---
 const IMPORT_FIELDS = {
   books: [
-    {key:'title', label:'Ad', required:true, kw:['ad','isim','başlık','baslik','kitap','title']},
+    {key:'title', label:'Ad', required:true, kw:['ad','adı','adi','isim','başlık','baslik','kitap','title']},
     {key:'author', label:'Yazar', kw:['yazar','author']},
     {key:'genre', label:'Tür', kw:['tür','tur','kategori','genre']},
     {key:'pages', label:'Sayfa Sayısı', kw:['sayfa','pages']},
@@ -983,8 +1008,8 @@ const IMPORT_FIELDS = {
     {key:'ownerName', label:'Getiren öğrenci', kw:['getiren','sahib','owner']}
   ],
   students: [
-    {key:'firstName', label:'Ad', required:true, kw:['ad','isim','first','ilk']},
-    {key:'lastName', label:'Soyad', required:true, kw:['soyad','last','surname']},
+    {key:'firstName', label:'Ad', required:true, kw:['ad','adı','adi','isim','first','ilk','öğrenci','ogrenci']},
+    {key:'lastName', label:'Soyad', required:true, kw:['soyad','soyadı','soyadi','last','surname']},
     {key:'grade', label:'Sınıf', kw:['sınıf','sinif','grade']},
     {key:'section', label:'Şube', kw:['şube','sube','section','şb']},
     {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
@@ -996,6 +1021,10 @@ let importWB = null, importTarget = null, importRows = [];
 function colLetter(i){ let n=i+1, s=''; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
 
 function openImportModal(file, target){
+  if(typeof XLSX === 'undefined'){
+    $('msg').textContent = 'Excel kütüphanesi yüklenemedi (internet bağlantısı gerekir). Bağlantıyı kontrol edip sayfayı yenileyin.';
+    $('bookFile').value=''; $('studentFile').value=''; return;
+  }
   importTarget = target;
   $('importTitle').textContent = target==='books' ? 'Kitapları İçe Aktar' : 'Öğrencileri İçe Aktar';
   const reader = new FileReader();
@@ -1003,7 +1032,7 @@ function openImportModal(file, target){
     try{
       importWB = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
       const sheetSel = $('sheetSelect');
-      sheetSel.innerHTML = importWB.SheetNames.map(n=>`<option value="${n}">${n}</option>`).join('');
+      sheetSel.innerHTML = importWB.SheetNames.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
       loadSheetRows(importWB.SheetNames[0]);
       $('importBackdrop').classList.add('open');
     }catch(err){ $('msg').textContent = 'Excel dosyası okunamadı.'; }
@@ -1017,22 +1046,48 @@ function loadSheetRows(sheetName){
   buildFieldMapUI();
 }
 
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function guessColumns(fields, header, maxCols){
+  const cands = [];
+  for(let c=0;c<maxCols;c++){
+    const h = String(header[c]||'').toLocaleLowerCase('tr-TR').trim();
+    if(!h) continue;
+    const tokens = h.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+    fields.forEach(f=>{
+      if((f.key==='firstName' || f.key==='title') && tokens.some(t=>t.startsWith('soyad'))) return;
+      if(f.key==='title' && tokens.some(t=>t.startsWith('yazar'))) return;
+      let best = 0;
+      (f.kw||[]).forEach(k=>{
+        let sc = 0;
+        if(h === k) sc = 6;
+        else if(tokens.includes(k)) sc = k.length >= 4 ? 5 : 4;
+        else if(k.length >= 4 && h.includes(k)) sc = 3;
+        if(sc > best) best = sc;
+      });
+      if(best) cands.push({key:f.key, c, sc:best, req:!!f.required});
+    });
+  }
+  cands.sort((a,b)=>b.sc-a.sc || (b.req-a.req) || a.c-b.c);
+  const guess = {}, used = new Set();
+  cands.forEach(x=>{ if(guess[x.key] === undefined && !used.has(x.c)){ guess[x.key] = x.c; used.add(x.c); } });
+  fields.filter(f=>f.required && guess[f.key] === undefined).forEach(f=>{
+    for(let c=0;c<maxCols;c++){ if(!used.has(c)){ guess[f.key] = c; used.add(c); break; } }
+    if(guess[f.key] === undefined) guess[f.key] = 0;
+  });
+  return guess;
+}
 function buildFieldMapUI(){
   const maxCols = importRows.reduce((m,r)=>Math.max(m, r.length), 0);
   const header = importRows[0] || [];
   const fields = IMPORT_FIELDS[importTarget];
-  const used = new Set();
+  const guesses = guessColumns(fields, header, maxCols);
   const box = $('fieldMap'); box.innerHTML = '';
   fields.forEach(f=>{
     const div = document.createElement('div'); div.className = 'fieldrow';
     const lbl = document.createElement('label'); lbl.textContent = f.label + (f.required ? ' *' : ''); div.appendChild(lbl);
     const sel = document.createElement('select'); sel.dataset.field = f.key;
     if(!f.required){ const o = document.createElement('option'); o.value=''; o.textContent='— Yok —'; sel.appendChild(o); }
-    let guess = f.required ? 0 : -1;
-    for(let c=0;c<maxCols;c++){
-      const headerText = String(header[c]||'').toLowerCase();
-      if(!used.has(c) && f.kw && f.kw.some(k=>headerText.includes(k))) guess = c;
-    }
+    const guess = guesses[f.key] === undefined ? -1 : guesses[f.key];
     for(let c=0;c<maxCols;c++){
       const samples = importRows.slice(0,3).map(r=>String(r[c]||'').trim()).filter(Boolean).join(', ');
       const opt = document.createElement('option');
@@ -1041,7 +1096,6 @@ function buildFieldMapUI(){
       if(c === guess) opt.selected = true;
       sel.appendChild(opt);
     }
-    if(guess >= 0) used.add(guess);
     sel.addEventListener('change', updatePreview);
     div.appendChild(sel);
     box.appendChild(div);
@@ -1077,8 +1131,8 @@ function updatePreview(){
   const records = mappedRecords();
   const fields = IMPORT_FIELDS[importTarget];
   const table = $('importPreview');
-  const headRow = '<tr>' + fields.map(f=>`<th>${f.label}</th>`).join('') + '</tr>';
-  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${rec[f.key]||''}</td>`).join('')+'</tr>').join('');
+  const headRow = '<tr>' + fields.map(f=>`<th>${esc(f.label)}</th>`).join('') + '</tr>';
+  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${esc(rec[f.key])}</td>`).join('')+'</tr>').join('');
   table.innerHTML = headRow + (bodyRows || `<tr><td colspan="${fields.length}">(Veri bulunamadı)</td></tr>`);
   if(records.length > 6){
     const tr = document.createElement('tr');
@@ -1345,6 +1399,8 @@ $('lockNext').addEventListener('click', ()=>{
 });
 
 // --- Assignment engine: nobody gets a book they already read ---
+function curStudentName(a){ const s = state.students.find(x=>x.id === a.studentId); return s ? fullName(s) : a.studentName; }
+function curBookTitle(a){ const b = state.books.find(x=>x.id === a.bookId); return b ? b.title : a.bookTitle; }
 function readMapFrom(hist){
   const m = {};
   hist.forEach(rd=>rd.assignments.forEach(a=>{ if(!m[a.studentId]) m[a.studentId] = new Set(); m[a.studentId].add(a.bookId); }));
@@ -1412,7 +1468,9 @@ function buildAll(){
     }
   }
   const d2 = roundDates();
-  const rounds = state.history.map(h=>Object.assign({}, h, {locked:true, from:parseISO(h.from), to:parseISO(h.to)}));
+  const rounds = state.history.map(h=>Object.assign({}, h, {locked:true, from:parseISO(h.from), to:parseISO(h.to),
+    assignments: h.assignments.map(a=>Object.assign({}, a, {studentName:curStudentName(a), bookTitle:curBookTitle(a)})),
+    unassigned: (h.unassigned||[]).map(u=>Object.assign({}, u, {studentName:curStudentName(u)}))}));
   for(let i = state.history.length; i < state.rounds.length; i++){
     const res = assignRound(i, readMap);
     rounds.push(Object.assign({}, res, {locked:false, from:d2.rows[i].from, to:d2.rows[i].to}));
@@ -1434,11 +1492,19 @@ function buildGroups(rounds){
     })}));
     groups.push({level, label, books});
   });
+  const runs = [];
   rounds.forEach((rd,i)=>{
     if(rd.unassigned && rd.unassigned.length){
-      const names = rd.unassigned.map(u=>u.studentName).sort(trCmp).slice(0,6).join(', ') + (rd.unassigned.length>6 ? ` +${rd.unassigned.length-6}` : '');
-      warnings.push(`Döngü ${i+1}: kitap düşmeyen / okumadığı kitap kalmayan öğrenciler: ${names}`);
+      const key = rd.unassigned.map(u=>u.studentId).sort().join('|');
+      const last = runs[runs.length-1];
+      if(last && last.key === key && last.to === i-1) last.to = i;
+      else runs.push({key, from:i, to:i, list:rd.unassigned});
     }
+  });
+  runs.forEach(r=>{
+    const names = r.list.map(u=>u.studentName).sort(trCmp).slice(0,6).join(', ') + (r.list.length>6 ? ` +${r.list.length-6}` : '');
+    const lbl = r.from === r.to ? `Döngü ${r.from+1}` : `Döngü ${r.from+1}–${r.to+1}`;
+    warnings.push(`${lbl}: kitap düşmeyen / okumadığı kitap kalmayan öğrenciler: ${names}`);
   });
   return {groups, warnings};
 }
@@ -1503,7 +1569,7 @@ let lastGroups = [];
 function updateShelfToggleLabel(){
   const count = $('shelf').querySelectorAll('.book').length;
   const noun = count + (ui.shelfSort === 'student' ? ' öğrenci' : ' kitap');
-  $('toggleShelf').hidden = false;
+  $('shelfCard').style.display = 'block';
   $('toggleShelf').textContent = (ui.shelf ? '▲ Okuma programını gizle' : '▼ Okuma programını göster') + ' (' + noun + ')';
 }
 document.querySelectorAll('[data-shelfsort]').forEach(b=>b.addEventListener('click', ()=>{
@@ -1599,12 +1665,12 @@ function renderHistory(){
     const d = document.createElement('div'); d.className = 'histRound';
     const t = document.createElement('b'); t.textContent = `🔒 Döngü ${i+1} · ${fmtDate(parseISO(h.from))} – ${fmtDate(parseISO(h.to))}`;
     d.appendChild(t);
-    h.assignments.slice().sort((x,y)=>trCmp(x.bookTitle,y.bookTitle)).forEach(a=>{ const p = document.createElement('div'); p.textContent = `${a.bookTitle} → ${a.studentName}`; d.appendChild(p); });
+    h.assignments.slice().sort((x,y)=>trCmp(curBookTitle(x),curBookTitle(y))).forEach(a=>{ const p = document.createElement('div'); p.textContent = `${curBookTitle(a)} → ${curStudentName(a)}`; d.appendChild(p); });
     hr.appendChild(d);
   });
   const hs = $('histStudents'); hs.innerHTML = '';
   const titles = {};
-  state.history.forEach(h=>h.assignments.forEach(a=>{ (titles[a.studentId] = titles[a.studentId] || []).push(a.bookTitle); }));
+  state.history.forEach(h=>h.assignments.forEach(a=>{ (titles[a.studentId] = titles[a.studentId] || []).push(curBookTitle(a)); }));
   state.students.forEach(s=>{
     const d = document.createElement('div'); d.className = 'histRound';
     const t = document.createElement('b'); t.textContent = fullName(s); d.appendChild(t);
@@ -1748,6 +1814,11 @@ $('matrixAllRounds').addEventListener('click', ()=>{
   boxes.forEach(b=>{ b.checked = !allOn; });
 });
 
+function buildAllReadOnly(){
+  const h = JSON.stringify(state.history), m = JSON.stringify(state.manualStash);
+  try{ return buildAll(); }
+  finally{ state.history = JSON.parse(h); state.manualStash = JSON.parse(m); }
+}
 function base64FromDataUrl(u){ return u.split(',')[1]; }
 function base64ToBytes(b64){
   const bin = atob(b64);
@@ -1810,7 +1881,7 @@ async function generateMatrixPdf(){
   const btn = $('confirmMatrixPdf'); const oldTxt = btn.textContent; btn.textContent = 'Hazırlanıyor…'; btn.disabled = true;
 
   try{
-    const rounds = buildAll();
+    const rounds = buildAllReadOnly();
     const perRound = roundIdx.map(ri=>{ const m = {}; const rd = rounds[ri]; if(rd) rd.assignments.forEach(a=>{ m[a.studentId] = a.bookId; }); return m; });
     const dn = name => matrixName === 'short' ? shortName(name) : name;
     const opts = ui.matrixOpts || {};
@@ -2094,21 +2165,60 @@ async function generateListPdf(){
 }
 $('confirmListPdf').addEventListener('click', generateListPdf);
 
+function maxFullRounds(){
+  const rm = readMapFrom(state.history);
+  const base = state.history.length;
+  let n = 0;
+  for(let ri = base; ri < base + 60; ri++){
+    const res = assignRound(ri, rm);
+    if(res.unassigned.length || !res.assignments.length) break;
+    n++;
+  }
+  return base + n;
+}
+function updateCapInfo(){
+  const el = $('capInfo');
+  const cap = maxFullRounds(), planned = state.rounds.length;
+  if(cap === 0){ el.textContent = 'ℹ️ Bu veriyle bazı öğrencilere ilk döngüde bile kitap düşmüyor (öğrenci sayısı kitaptan fazla olabilir).'; return; }
+  el.textContent = 'ℹ️ Bu veriyle herkese kitap düşen en fazla ' + cap + ' döngü yapılabilir (planlanan: ' + planned + ').' +
+    (planned > cap ? ' Fazlası için kitap ekleyin veya döngü sayısını azaltın.' : '');
+}
+function rebindOwners(){
+  state.books.forEach(b=>{
+    if(b.ownerName && !state.students.some(s=>s.id === b.ownerId)){
+      const st = state.students.find(s=>trCmp(fullName(s), b.ownerName) === 0);
+      if(st){ b.ownerId = st.id; b.ownerName = fullName(st); }
+    }
+  });
+}
+function clearOutputs(){
+  lastGroups = []; lastRounds = []; lastTodayItems = [];
+  $('msg').textContent = '';
+  $('capInfo').textContent = '';
+  $('shelf').innerHTML = '';
+  $('shelfCard').style.display = 'none';
+  $('shelfSortBar').hidden = true;
+  $('shelfSortBar').style.display = 'none';
+  $('today-list').innerHTML = '';
+  $('today-box').style.display = 'none';
+}
 function generate(){
   const msg = $('msg'); msg.textContent = '';
+  rebindOwners();
   try{
     if(!state.history.length) state.start = $('start').value;
-    if(state.students.length < 1){ msg.textContent = 'Sınıf listesine en az 1 öğrenci ekleyin.'; return; }
-    if(state.books.length < 1){ msg.textContent = 'Kütüphaneye en az 1 kitap ekleyin.'; return; }
-    if(!state.start && !state.history.length){ msg.textContent = 'Başlangıç tarihi seçin.'; return; }
+    if(state.students.length < 1){ clearOutputs(); renderHistory(); renderReturns([]); renderMatchList(); msg.textContent = 'Sınıf listesine en az 1 öğrenci ekleyin.'; return; }
+    if(state.books.length < 1){ clearOutputs(); renderHistory(); renderReturns([]); renderMatchList(); msg.textContent = 'Kütüphaneye en az 1 kitap ekleyin.'; return; }
+    if(!state.start && !state.history.length){ clearOutputs(); msg.textContent = 'Başlangıç tarihi seçin.'; return; }
     const rounds = buildAll();
     const { groups, warnings } = buildGroups(rounds);
     renderRounds();
     renderHistory();
     renderReturns(rounds);
     renderMatchList();
-    if(!groups.length){ msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
+    if(!groups.length){ clearOutputs(); msg.textContent = 'Eşleşen bir grup bulunamadı — kitap ve öğrenci seviyeleri uyuşmuyor olabilir.'; saveState(); return; }
     render(groups);
+    updateCapInfo();
     msg.textContent = (lastUnlockNote ? lastUnlockNote + '\n' : '') + warnings.join('\n');
     saveState();
   }catch(err){
@@ -2130,6 +2240,76 @@ $('resetHistory').addEventListener('click', ()=>{
   state.manualStash = [];
   generate();
 });
+
+// --- Excel'e aktarma (kitaplar / öğrenciler) ---
+function exportTable(kind){
+  if(kind === 'books'){
+    const headers = ['Kitap Adı','Yazar','Tür','Sayfa Sayısı','Yayınevi','Yaş Aralığı','Seviye','Getiren öğrenci'];
+    const rows = state.books.map(b=>[b.title||'', b.author||'', b.genre||'',
+      (b.pages !== undefined && b.pages !== '' && !isNaN(Number(b.pages))) ? Number(b.pages) : (b.pages||''),
+      b.publisher||'', b.ageRange||'', b.level||'', (b.ownerId||b.ownerName) ? ownerName(b) : '']);
+    return {name:'Kitaplar', headers, rows, widths:[32,22,14,13,22,13,14,22]};
+  }
+  const headers = ['Ad','Soyad','Sınıf','Şube','Seviye'];
+  const rows = state.students.map(s=>[s.firstName||'', s.lastName||'', s.grade||'', s.section||'', s.level||'']);
+  return {name:'Öğrenciler', headers, rows, widths:[18,18,8,8,14]};
+}
+function downloadBlob(blob, fname){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+function csvCell(v){ const s = String(v == null ? '' : v); return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+function exportExcel(kinds, msgEl){
+  const tables = kinds.map(exportTable).filter((t,i)=>{
+    const empty = !t.rows.length; if(empty) t.empty = true; return true;
+  });
+  const nonEmpty = tables.filter(t=>t.rows.length);
+  const say = t => { if(msgEl) msgEl.textContent = t; };
+  if(!nonEmpty.length){ say(kinds.length > 1 ? 'Dışa aktarılacak kitap ya da öğrenci yok.' : (kinds[0]==='books' ? 'Dışa aktarılacak kitap yok.' : 'Dışa aktarılacak öğrenci yok.')); return; }
+  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || 'profil';
+  const safe = profName.replace(/[^\p{L}\p{N}]+/gu,'-');
+  const label = kinds.length > 1 ? 'kitap-ogrenci' : (kinds[0]==='books' ? 'kitaplar' : 'ogrenciler');
+  const base = 'seyyar-kutuphane-' + label + '-' + safe + '-' + iso(new Date());
+  try{
+    if(typeof XLSX === 'undefined'){
+      // çevrimdışı yedek: ilk dolu tablo CSV olarak (Excel'de açılır)
+      const t = nonEmpty[0];
+      const csv = '﻿' + [t.headers].concat(t.rows).map(r=>r.map(csvCell).join(';')).join('\r\n');
+      downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), base + '.csv');
+      say('Excel kütüphanesi yüklenemedi; ' + t.name + ' listesi .csv olarak indirildi (Excel ile açılır).' + (nonEmpty.length > 1 ? ' Diğer liste için internete bağlanıp tekrar deneyin.' : ''));
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+    nonEmpty.forEach(t=>{
+      const ws = XLSX.utils.aoa_to_sheet([t.headers].concat(t.rows));
+      ws['!cols'] = t.widths.map(w=>({wch:w}));
+      XLSX.utils.book_append_sheet(wb, ws, t.name);
+    });
+    const out = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+    downloadBlob(new Blob([out], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), base + '.xlsx');
+    say(nonEmpty.map(t=>t.rows.length + ' ' + (t.name==='Kitaplar' ? 'kitap' : 'öğrenci')).join(', ') + ' dışa aktarıldı: ' + base + '.xlsx');
+  }catch(err){
+    say('Excel dosyası oluşturulamadı: ' + (err && err.message ? err.message : err));
+  }
+}
+let excelTarget = 'books';
+function openExcelModal(kind){
+  excelTarget = kind;
+  $('excelTitle').textContent = kind === 'books' ? '📖 Kitaplar — Excel İşlemleri' : '🎓 Öğrenciler — Excel İşlemleri';
+  $('excelMsg').textContent = '';
+  $('excelBackdrop').classList.add('open');
+}
+$('excelBooksBtn').addEventListener('click', ()=>openExcelModal('books'));
+$('excelStudentsBtn').addEventListener('click', ()=>openExcelModal('students'));
+$('closeExcel').addEventListener('click', ()=>$('excelBackdrop').classList.remove('open'));
+$('excelImportBtn').addEventListener('click', ()=>{
+  $('excelBackdrop').classList.remove('open');
+  $(excelTarget === 'books' ? 'bookFile' : 'studentFile').click();
+});
+$('excelExportBtn').addEventListener('click', ()=>exportExcel([excelTarget], $('excelMsg')));
+$('exportBothXlsx').addEventListener('click', ()=>exportExcel(['books','students'], $('xlsxMsg')));
 
 // --- Backup / Restore / Modular reset ---
 function updateBackupToggle(){
@@ -2341,7 +2521,7 @@ attachTwoStep($('confirmFullRestore'), 'Geri Yükle', '⚠️ TÜM UYGULAMANIN �
     // restore theme + ui (merged over defaults so nothing ends up missing)
     Object.keys(ui).forEach(k=>delete ui[k]);
     Object.assign(ui, {
-      shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
+      shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book',
       rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
       matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
     }, data.ui && typeof data.ui === 'object' ? data.ui : {});
@@ -2388,7 +2568,7 @@ attachTwoStep($('resetReturnedBtn'), '📦 Sadece İade İşaretlerini Sıfırla
 attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla', '⚠️ Tema ve görünüm ayarları sıfırlanacak! Onayla', ()=>{
   Object.keys(ui).forEach(k=>delete ui[k]);
   Object.assign(ui, {
-    shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
+    shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'manual', todaySort:'book',
     rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
     matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
   });
@@ -2413,6 +2593,22 @@ attachTwoStep($('resetEverythingBtn'), '🧨 Tüm Profilleri Sıfırla', '⚠️
   $('backupMsg').textContent = 'Tüm profiller silindi; tek ve boş bir profil ile yeniden başlatıldı.';
 });
 updateBackupToggle();
+
+(function modalA11y(){
+  document.querySelectorAll('.modal').forEach(m=>{ m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); });
+  const closer = {themeBackdrop:'closeTheme', profilesBackdrop:'closeProfiles', levelsBackdrop:'closeLevels', addBackdrop:'closeAddModal',
+    pdfBackdrop:'closeListPdf', excelBackdrop:'closeExcel', importBackdrop:'cancelImport', restoreBackdrop:'cancelRestore', fullRestoreBackdrop:'cancelFullRestore'};
+  document.addEventListener('keydown', e=>{
+    if(e.key !== 'Escape') return;
+    const open = Array.from(document.querySelectorAll('.modal-backdrop.open'));
+    if(!open.length) return;
+    open.sort((a,b)=>(parseInt(getComputedStyle(b).zIndex,10)||0) - (parseInt(getComputedStyle(a).zIndex,10)||0));
+    const btn = $(closer[open[0].id]); if(btn) btn.click();
+  });
+  ['themeBackdrop','profilesBackdrop','pdfBackdrop','excelBackdrop'].forEach(id=>{
+    $(id).addEventListener('click', e=>{ if(e.target === $(id)) $(closer[id]).click(); });
+  });
+})();
 
 (function init(){
   renderProfileSelect();
