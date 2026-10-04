@@ -243,7 +243,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.61 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.62 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -517,7 +517,7 @@
     </div>
 
     <div id="pdfTabMatrix" style="display:none;">
-      <p style="font-size:.82rem;color:var(--muted);margin:-.2rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu.</p>
+      <p style="font-size:.82rem;color:var(--muted);margin:-.2rem 0 .8rem;">İlk sütunda öğrenciler, diğer sütunlarda seçtiğin döngülerde hangi kitabı okuduğu. Döngü sayısı fazlaysa tablo, sayfa yönüne göre otomatik olarak birden çok sayfaya bölünür (yatay sayfaya daha çok döngü sığar).</p>
       <label style="font-size:.85rem;font-weight:600;">Sayfa yönü</label>
       <div class="themeToggle" id="matrixOrientBar" style="margin:.4rem 0 .8rem;">
         <button data-orient="p" type="button">Dikey</button>
@@ -1911,17 +1911,15 @@ async function generateMatrixPdf(){
     const titleH = Math.round(26 * PT2PX);
     const headerRowH = lineH*2 + cellPad*2;
 
-    const firstColW = Math.round(usableWpx * 0.24);
-    const colW = Math.floor((usableWpx - firstColW) / roundIdx.length);
+    // Sütun genişliği alt sınırı: okunabilirlik için. Sayfa yönüne göre bir sayfaya sığan döngü sayısı değişir.
+    const minColW = Math.round(82 * PT2PX);
+    const firstColW = Math.round(Math.min(usableWpx * 0.22, 125 * PT2PX));
+    const perPage = Math.max(1, Math.floor((usableWpx - firstColW) / minColW));
+    const nChunks = Math.ceil(roundIdx.length / perPage);
+    const chunkSize = Math.ceil(roundIdx.length / nChunks);   // sayfalara dengeli dağıt (ör. 11 -> 4+4+3)
+    const colW = Math.floor((usableWpx - firstColW) / chunkSize);
 
     const mcanvas = document.createElement('canvas'); const mctx = mcanvas.getContext('2d');
-
-    mctx.font = headFont;
-    const headerLines = roundIdx.map(ri=>{
-      const rd = rounds[ri];
-      return ['Döngü ' + (ri+1), rd ? (fmtDate(rd.from) + '–' + fmtDate(rd.to)) : ''];
-    });
-
     mctx.font = cellFont;
     function buildCellLines(bookId, ri){
       const w = colW - cellPad*2;
@@ -1935,25 +1933,39 @@ async function generateMatrixPdf(){
       if(opts.next) wrapLines(mctx, nextRecipientLine(bookId, ri, book), w).forEach(t=>out.push({ text:t, style:'muted' }));
       return out;
     }
-    const rowsData = students.map(s=>{
-      const nameLines = wrapLines(mctx, dn(fullName(s)), firstColW - cellPad*2);
-      const cellsLines = roundIdx.map((ri,ci)=>buildCellLines(perRound[ci][s.id], ri));
-      const maxLines = Math.max(nameLines.length, ...cellsLines.map(l=>l.length));
-      return { nameLines, cellsLines, h: maxLines*lineH + cellPad*2 };
-    });
 
-    const pagesRows = [];
-    let cur = [], curH = 0, isFirst = true;
-    const firstBudget = usableHpx - titleH - headerRowH, otherBudget = usableHpx - headerRowH;
-    let budget = firstBudget;
-    rowsData.forEach(r=>{
-      if(cur.length && curH + r.h > budget){ pagesRows.push({ withTitle: isFirst, rows: cur }); cur = []; curH = 0; isFirst = false; budget = otherBudget; }
-      cur.push(r); curH += r.h;
-    });
-    pagesRows.push({ withTitle: isFirst, rows: cur });
+    // 1. aşama: hangi sayfada hangi döngüler ve hangi öğrenciler olacak
+    const pageDescs = [];
+    let firstPageDone = false;
+    for(let st = 0; st < roundIdx.length; st += chunkSize){
+      const cis = [];
+      for(let ci = st; ci < Math.min(st + chunkSize, roundIdx.length); ci++) cis.push(ci);
+      const rowsData = students.map(s=>{
+        const nameLines = wrapLines(mctx, dn(fullName(s)), firstColW - cellPad*2);
+        const cellsLines = cis.map(ci=>buildCellLines(perRound[ci][s.id], roundIdx[ci]));
+        const maxLines = Math.max(nameLines.length, ...cellsLines.map(l=>l.length));
+        return { nameLines, cellsLines, h: maxLines*lineH + cellPad*2 };
+      });
+      const headerLines = cis.map(ci=>{
+        const ri = roundIdx[ci], rd = rounds[ri];
+        return ['Döngü ' + (ri+1), rd ? (fmtDate(rd.from) + '–' + fmtDate(rd.to)) : ''];
+      });
+      const nums = cis.map(ci=>roundIdx[ci] + 1);
+      const contiguous = nums.every((v,i)=>i === 0 || v === nums[i-1] + 1);
+      const label = nums.length === 1 ? 'Döngü ' + nums[0] : (contiguous ? 'Döngü ' + nums[0] + '–' + nums[nums.length-1] : 'Döngü ' + nums.join(', '));
+      let cur = [], curH = 0;
+      const budget = () => usableHpx - headerRowH - (!firstPageDone ? titleH : 0);
+      const flush = () => { pageDescs.push({ withTitle: !firstPageDone, rows: cur, headerLines, label }); firstPageDone = true; cur = []; curH = 0; };
+      rowsData.forEach(r=>{
+        if(cur.length && curH + r.h > budget()) flush();
+        cur.push(r); curH += r.h;
+      });
+      flush();
+    }
 
+    // 2. aşama: çiz
     const pdfPages = [];
-    for(const pg of pagesRows){
+    pageDescs.forEach((pg, pi)=>{
       const canvas = document.createElement('canvas'); canvas.width = pageWpx; canvas.height = pageHpx;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,pageWpx,pageHpx);
@@ -1964,13 +1976,14 @@ async function generateMatrixPdf(){
         ctx.fillText('Okuma Programı — Öğrenci Tablosu' + (profName ? ' — ' + profName : ''), marginPx, y);
         y += titleH;
       }
+      const tableW = firstColW + colW * pg.headerLines.length;
       const headerY = y;
-      ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, usableWpx, headerRowH);
+      ctx.fillStyle = '#eeeeee'; ctx.fillRect(marginPx, headerY, tableW, headerRowH);
       ctx.fillStyle = '#000000'; ctx.font = headFont;
       ctx.strokeRect(marginPx, headerY, firstColW, headerRowH);
       ctx.fillText('Öğrenci', marginPx+cellPad, headerY+cellPad);
       let hx = marginPx + firstColW;
-      headerLines.forEach(([l1,l2])=>{
+      pg.headerLines.forEach(([l1,l2])=>{
         ctx.strokeRect(hx, headerY, colW, headerRowH);
         ctx.font = headFont; ctx.fillText(l1, hx+cellPad, headerY+cellPad);
         ctx.font = subHeadFont; ctx.fillText(l2, hx+cellPad, headerY+cellPad+lineH);
@@ -1994,8 +2007,12 @@ async function generateMatrixPdf(){
         ctx.fillStyle = '#000000';
         y += r.h;
       });
+      if(pageDescs.length > 1){
+        ctx.font = subHeadFont; ctx.fillStyle = '#666666';
+        ctx.fillText('Sayfa ' + (pi+1) + ' / ' + pageDescs.length + ' · ' + pg.label, marginPx, pageHpx - marginPx + Math.round(6*PT2PX));
+      }
       pdfPages.push({ jpegDataUrl: canvas.toDataURL('image/jpeg', 0.9), wPt: pageWpt, hPt: pageHpt, wPx: pageWpx, hPx: pageHpx });
-    }
+    });
 
     const blob = buildMinimalPdfBlob(pdfPages);
     const fname = 'okuma-programi-ogrenci-tablosu' + (profName ? '-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') : '') + '.pdf';
