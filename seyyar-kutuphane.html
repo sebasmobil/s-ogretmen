@@ -243,7 +243,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.63 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.65 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -346,6 +346,10 @@
     </div>
     <ul class="rounds" id="roundList" style="margin-top:1rem;"></ul>
     <div class="count" id="roundsSummary" style="margin-bottom:.8rem;"></div>
+    <div class="checkline" style="display:flex;align-items:center;gap:.5rem;margin:.2rem 0 .9rem;font-size:.85rem;">
+      <input type="checkbox" id="allowOwn" style="width:auto;">
+      <label for="allowOwn" style="margin:0;font-weight:400;">Öğrenci kendi getirdiği kitabı da okuyabilsin <span style="color:var(--muted);">(varsayılan: okumaz)</span></label>
+    </div>
     <button id="generate">Programı Oluştur</button>
     <button class="secondary" id="resetHistory" type="button">🗑 Geçmişi Sıfırla</button>
     </div>
@@ -392,6 +396,41 @@
     <div id="returnBody" style="display:none;margin-top:.8rem;"></div>
   </section>
 
+  <section class="card" id="archiveCard">
+    <h2>🗄 Okuma Arşivi</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Geçmiş yıllarda hangi öğrencinin hangi kitabı okuduğunu kalıcı tutar. Kitap eklerken uyarır; program yapılırken öğrenciye daha önce okuduğu kitabı kesinlikle vermez. Öğrenci numarası varsa numarayla, yoksa ad-soyadla eşleştirilir.</p>
+    <button class="secondary rosterToggle" id="toggleArchive" type="button" style="margin-top:0;"></button>
+    <div id="archiveBody" style="display:none;margin-top:.9rem;">
+      <div class="subhead">Durum</div>
+      <div id="archiveSummary" style="font-size:.85rem;line-height:1.6;white-space:pre-line;"></div>
+      <div class="checkline" style="margin:.6rem 0 1.1rem;"><input type="checkbox" id="archiveScopeAll"><label for="archiveScopeAll" style="margin:0;font-weight:400;">Diğer sınıfların (profillerin) arşivini de kontrol et</label></div>
+
+      <div class="subhead">Yıl sonu</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu yılın okumalarını arşive yazar, sonra kitapları ve döngüleri temizler. Öğrenciler kalır.</p>
+      <div class="miniform"><button id="openYearModal" type="button">🎓 Yeni Eğitim Yılı Başlat</button></div>
+
+      <div class="subhead" style="margin-top:.4rem;">Kütüphane kontrolü</div>
+      <div class="miniform"><button class="secondary" id="archiveCheckBtn" type="button">🔍 Kütüphaneyi Arşivle Karşılaştır</button></div>
+      <div id="archiveCheckBox" style="font-size:.85rem;margin-bottom:1.1rem;max-height:50vh;overflow-y:auto;"></div>
+
+      <div class="subhead">Öğrenci geçmişi</div>
+      <select id="archStudentSel"></select>
+      <div id="archStudentList" style="font-size:.85rem;line-height:1.6;margin:.5rem 0 1.1rem;"></div>
+
+      <div class="subhead">Eski yıllar ve dışa aktarma</div>
+      <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Uygulamadan önceki yılları Excel'den ekleyebilirsin (Eğitim Yılı, Öğrenci No, Ad, Soyad, Kitap Adı, Yazar sütunları). Dışa aktarılan dosya aynı biçimdedir.</p>
+      <div class="miniform">
+        <button class="secondary" id="archiveImportBtn" type="button">⬆ Excel'den Arşive Ekle</button>
+        <button class="secondary" id="archiveExportBtn" type="button">⬇ Arşivi Excel'e Aktar</button>
+        <input type="file" id="archiveFile" accept=".xlsx,.xls,.csv" style="display:none;">
+      </div>
+      <div class="count" id="archiveMsg" style="margin:.4rem 0 1.1rem;"></div>
+
+      <div class="subhead">Tehlikeli bölge</div>
+      <button class="dangerBtn" id="archiveClearBtn" type="button">🗑 Bu Profilin Arşivini Sil</button>
+    </div>
+  </section>
+
   <section class="card" id="backupCard">
     <h2>💾 Yedekle, Geri Yükle ve Sıfırla</h2>
     <button class="secondary rosterToggle" id="toggleBackup" type="button" style="margin-top:0;"></button>
@@ -425,14 +464,14 @@
         <button class="secondary" id="resetLevelsBtn" type="button">🏷 Sadece Seviyeleri Sıfırla</button>
         <button class="secondary" id="resetOwnersBtn" type="button">🔗 Kitap Sahibi Eşleştirmelerini Sıfırla</button>
         <button class="secondary" id="resetReturnedBtn" type="button">📦 Sadece İade İşaretlerini Sıfırla</button>
-        <button class="dangerBtn" id="resetAllBtn" type="button">🗑 Bu Profildeki Her Şeyi Sıfırla</button>
+        <button class="dangerBtn" id="resetAllBtn" type="button">🗑 Bu Profildeki Her Şeyi Sıfırla (arşiv hariç)</button>
       </div>
 
       <div class="subhead" style="margin-top:1.3rem;">Sıfırlama — uygulamanın geneli</div>
       <p style="font-size:.78rem;color:var(--muted);margin:-.3rem 0 .7rem;">Bu ikisi tek bir profile değil, tüm uygulamaya etki eder.</p>
       <div style="display:grid;gap:.5rem;">
         <button class="secondary" id="resetUiBtn" type="button">🎨 Görünüm/Arayüz Tercihlerini Sıfırla</button>
-        <button class="dangerBtn" id="resetEverythingBtn" type="button">🧨 Tüm Profilleri Sıfırla</button>
+        <button class="dangerBtn" id="resetEverythingBtn" type="button">🧨 Tüm Profilleri Sıfırla (arşiv dahil)</button>
       </div>
     </div>
   </section>
@@ -464,6 +503,25 @@
     </div>
     <div class="count" id="excelMsg" style="margin-top:.8rem;"></div>
     <div class="modal-actions"><button class="secondary" id="closeExcel" type="button">Kapat</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="yearBackdrop">
+  <div class="modal">
+    <h2>🎓 Yeni Eğitim Yılı Başlat</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .8rem;">Bu yılın okumaları arşive yazılır; sonra kitaplar, döngüler ve geçmiş temizlenir. Öğrenciler ve tüm arşiv korunur.</p>
+    <div class="fieldrow"><label for="yearLabel">Biten eğitim yılı</label><input type="text" id="yearLabel" placeholder="2025-2026"></div>
+    <div class="fieldrow"><label for="yearProfileName">Profil (sınıf) adı</label><input type="text" id="yearProfileName" placeholder="7/B"></div>
+    <div class="checkline"><input type="checkbox" id="yearAdvance" checked><label for="yearAdvance" style="margin:0;font-weight:400;">Öğrencilerin sınıfını bir üst sınıfa taşı (6 → 7)</label></div>
+    <div class="checkline"><input type="checkbox" id="yearClearBooks" checked><label for="yearClearBooks" style="margin:0;font-weight:400;">Kütüphanedeki kitapları sil (yeni yıl için yeni kitaplar eklenecek)</label></div>
+    <div class="checkline"><input type="checkbox" id="yearDrafts"><label for="yearDrafts" style="margin:0;font-weight:400;">Kilitli olmayan (taslak) döngüleri de okunmuş say</label></div>
+    <div class="checkline"><input type="checkbox" id="yearBackup" checked><label for="yearBackup" style="margin:0;font-weight:400;">Önce yedek dosyası indir</label></div>
+    <div id="yearSummary" style="font-size:.88rem;line-height:1.6;margin-top:.9rem;white-space:pre-line;"></div>
+    <div class="msg" id="yearWarn"></div>
+    <div class="modal-actions">
+      <button class="secondary" id="cancelYear" type="button">İptal</button>
+      <button id="confirmYear" type="button">Yılı Kapat ve Yeni Yılı Başlat</button>
+    </div>
   </div>
 </div>
 
@@ -556,10 +614,16 @@
     <label for="sheetSelect">Sayfa</label>
     <select id="sheetSelect"></select>
     <div id="fieldMap"></div>
+    <div id="importYearRow" style="display:none;margin-top:.6rem;">
+      <label for="importYear">Eğitim yılı (dosyada yıl sütunu yoksa)</label>
+      <input type="text" id="importYear" placeholder="2024-2025">
+    </div>
     <div class="checkline">
       <input type="checkbox" id="hasHeader" checked>
       <label for="hasHeader" style="margin:0;font-weight:400;">İlk satır başlık (içe aktarılmasın)</label>
     </div>
+    <div class="msg" id="importWarn" style="display:none;"></div>
+    <div class="checkline" id="importSkipRow" style="display:none;"><input type="checkbox" id="importSkip" checked><label for="importSkip" id="importSkipLbl" style="margin:0;font-weight:400;"></label></div>
     <label>Önizleme</label>
     <div class="prevwrap"><table class="prev" id="importPreview"></table></div>
     <div class="modal-actions">
@@ -598,13 +662,15 @@ const $ = id => document.getElementById(id);
 const STORE_KEY = 'kb-dongusu-6b-v3';
 const PROFILES_KEY = 'kb-profiles-v1';
 
-function defaultState(){ return { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [], manualStash: [], returned: {} }; }
+function defaultState(){ return { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [], manualStash: [], returned: {}, archive: [], allowOwn: false }; }
 function normalizeState(s){
   if(!s) return defaultState();
   if(!Array.isArray(s.levels)) s.levels = ['Destek','Orta','İleri'];
   if(!Array.isArray(s.history)) s.history = [];
   if(!Array.isArray(s.manualStash)) s.manualStash = [];
   if(!s.returned || typeof s.returned !== 'object') s.returned = {};
+  s.allowOwn = s.allowOwn === true;
+  s.archive = Array.isArray(s.archive) ? s.archive.filter(r=>r && typeof r === 'object' && r.bt).map(r=>({y:String(r.y||''), no:String(r.no==null?'':r.no), sn:String(r.sn||''), bt:String(r.bt||''), ba:String(r.ba||''), cls:String(r.cls||''), lv:String(r.lv||'')})) : [];
   if(!Array.isArray(s.rounds) || !s.rounds.length) s.rounds = [{days:7}];
   s.students.forEach(x=>{
     if(!x.firstName && !x.lastName && x.name){
@@ -614,7 +680,7 @@ function normalizeState(s){
     }
   });
   s.books.forEach(b=>{ if(!b.id) b.id = uid(); });
-  s.students.forEach(x=>{ if(!x.id) x.id = uid(); });
+  s.students.forEach(x=>{ if(!x.id) x.id = uid(); x.no = x.no == null ? '' : String(x.no).trim(); });
   while(s.rounds.length < s.history.length) s.rounds.push({days:7});
   return s;
 }
@@ -667,7 +733,7 @@ document.querySelectorAll('[data-palette-choice]').forEach(b=>b.addEventListener
   themeState = {...themeState, palette:b.dataset.paletteChoice}; applyTheme(themeState); saveTheme(themeState);
 }));
 
-let state = { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [] };
+let state = { students: [], books: [], rounds: [{days:7}], start: '', levels: ['Destek','Orta','İleri'], history: [], archive: [] };
 
 function saveState(){ try{ localStorage.setItem(profileKey(profiles.activeId), JSON.stringify(state)); }catch(e){} }
 
@@ -684,10 +750,13 @@ function loadActiveProfileIntoApp(){
   if(!state.start) state.start = new Date().toISOString().slice(0,10);
   $('start').value = state.start;
   lastRounds = [];
+  invalidateArchiveCache();
+  $('allowOwn').checked = state.allowOwn === true;
   renderBooks(); renderStudents(); renderRounds();
   if(state.students.length>=1 && state.books.length>=1 && (state.start || state.history.length)) generate();
   else { clearOutputs(); renderHistory(); renderReturns([]); renderMatchList(); }
   renderProfileSelect();
+  renderArchive();
 }
 function switchProfile(id){
   saveState();
@@ -735,7 +804,7 @@ $('newProfileInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.pre
 
 // --- Books & Students roster rendering ---
 const UI_KEY = 'kb-ui-v1';
-let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false};
+let ui = {shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book', rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:false, archive:false, archiveScope:'all'};
 try{ const r = localStorage.getItem(UI_KEY); if(r) ui = Object.assign(ui, JSON.parse(r)); }catch(e){}
 function saveUI(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} }
 let booksOpen = ui.books, studentsOpen = ui.students;
@@ -764,7 +833,7 @@ function renderBooks(){
   state.books.forEach((b,i)=>{
     if(gB && (b.level||'') !== lastB){ lastB = b.level||''; groupHeader(ul, lastB, state.books); }
     const li = document.createElement('li');
-    const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : '', ownerLabel(b)].filter(Boolean).join(' · ');
+    const secondary = [b.author, b.genre, b.pages ? b.pages+' sayfa' : '', b.publisher, b.ageRange ? b.ageRange+' yaş' : '', b.level ? '🏷 '+b.level : '', ownerLabel(b), archiveMark(b)].filter(Boolean).join(' · ');
     li.innerHTML = `<span class="tag">K-${String(i+1).padStart(2,'0')}</span>
       <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
       <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
@@ -788,7 +857,7 @@ function renderStudents(){
   state.students.forEach((s,i)=>{
     if(gS && (s.level||'') !== lastS){ lastS = s.level||''; groupHeader(ul, lastS, state.students); }
     const li = document.createElement('li');
-    const secondary = [s.grade && s.section ? s.grade+'/'+s.section : (s.grade||s.section||''), s.level ? '🏷 '+s.level : ''].filter(Boolean).join(' · ');
+    const secondary = [s.no ? 'No: '+s.no : '', s.grade && s.section ? s.grade+'/'+s.section : (s.grade||s.section||''), s.level ? '🏷 '+s.level : ''].filter(Boolean).join(' · ');
     li.innerHTML = `<span class="tag">${i+1}</span>
       <span class="info"><span class="primary"></span>${secondary ? '<span class="secondary"></span>' : ''}</span>
       <span class="cardActions"><button class="ghost" title="Düzenle">✎</button><button class="ghost" title="Sil">×</button></span>`;
@@ -804,6 +873,7 @@ function renderStudents(){
   updateRoundDatesUI();
   renderReturns();
   renderMatchList();
+  if(typeof renderArchive === 'function') renderArchive();
 }
 
 // --- Confirm-before-delete helper (two-step click) ---
@@ -840,6 +910,7 @@ const ADD_FIELDS = {
   students: [
     {key:'firstName', label:'Ad', required:true, placeholder:'Ahmet'},
     {key:'lastName', label:'Soyad', required:true, placeholder:'Yılmaz'},
+    {key:'no', label:'Öğrenci No', placeholder:'123', inputmode:'numeric'},
     {key:'grade', label:'Sınıf', placeholder:'6'},
     {key:'section', label:'Şube', placeholder:'B'},
     {key:'level', label:'Seviye / Grup', placeholder:'Destek / Orta / İleri (boş bırakılabilir)'}
@@ -873,6 +944,7 @@ function buildAddFields(){
       const inp = document.createElement('input');
       inp.type = f.type || 'text'; inp.placeholder = f.placeholder || ''; inp.dataset.field = f.key;
       if(f.type==='number') inp.min = 1;
+      if(f.inputmode) inp.inputMode = f.inputmode;
       inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('confirmAdd').click(); }});
       wrap.appendChild(inp);
     }
@@ -933,9 +1005,10 @@ $('newLevelInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preve
 
 let addMode = 'add';
 let editIndex = null;
+let dupeAckSig = null;
 
 function openAddModal(target){
-  addTarget = target; addMode = 'add'; editIndex = null;
+  addTarget = target; addMode = 'add'; editIndex = null; dupeAckSig = null;
   $('addTitle').textContent = target==='books' ? 'Kitap Ekle' : 'Öğrenci Ekle';
   $('confirmAdd').textContent = 'Ekle';
   buildAddFields();
@@ -944,7 +1017,7 @@ function openAddModal(target){
   const first = $('addFieldsBox').querySelector('input,select'); if(first) first.focus();
 }
 function openEditModal(target, index){
-  addTarget = target; addMode = 'edit'; editIndex = index;
+  addTarget = target; addMode = 'edit'; editIndex = index; dupeAckSig = null;
   $('addTitle').textContent = target==='books' ? 'Kitabı Düzenle' : 'Öğrenciyi Düzenle';
   $('confirmAdd').textContent = 'Kaydet';
   buildAddFields();
@@ -953,20 +1026,22 @@ function openEditModal(target, index){
     const el = $('addFieldsBox').querySelector(`[data-field="${f.key}"]`);
     if(el && record[f.key] !== undefined) el.value = record[f.key];
   });
-  $('addSessionCount').textContent = '';
+  $('addSessionCount').textContent = ''; $('addSessionCount').style.color = ''; $('addSessionCount').style.whiteSpace = '';
   $('addBackdrop').classList.add('open');
   const first = $('addFieldsBox').querySelector('input,select'); if(first) first.focus();
 }
 function updateAddSessionCount(){
   const n = addTarget==='books' ? state.books.length : state.students.length;
-  $('addSessionCount').textContent = `Şu an listede ${n} kayıt var.`;
+  const c = $('addSessionCount'); c.style.color = ''; c.style.whiteSpace = '';
+  c.textContent = `Şu an listede ${n} kayıt var.`;
+  $('confirmAdd').textContent = addMode === 'edit' ? 'Kaydet' : 'Ekle';
 }
 
 $('openAddBook').addEventListener('click', ()=>openAddModal('books'));
 $('openAddStudent').addEventListener('click', ()=>openAddModal('students'));
 $('closeAddModal').addEventListener('click', ()=>{
   $('addBackdrop').classList.remove('open');
-  addMode = 'add'; editIndex = null; $('confirmAdd').textContent = 'Ekle';
+  addMode = 'add'; editIndex = null; dupeAckSig = null; $('confirmAdd').textContent = 'Ekle';
 });
 
 $('confirmAdd').addEventListener('click', ()=>{
@@ -980,6 +1055,17 @@ $('confirmAdd').addEventListener('click', ()=>{
     rec[f.key] = v;
   });
   if(!ok){ $('addFieldsBox').querySelector('input,select').focus(); return; }
+  const selfRec = (addMode === 'edit' && editIndex !== null) ? (addTarget === 'books' ? state.books : state.students)[editIndex] : null;
+  const warn = addWarning(addTarget, rec, selfRec ? selfRec.id : null);
+  const sig = addTarget + '|' + JSON.stringify(rec);
+  if(warn && dupeAckSig !== sig){
+    dupeAckSig = sig;
+    const c = $('addSessionCount'); c.style.whiteSpace = 'pre-line'; c.style.color = 'var(--danger)';
+    c.textContent = warn + '\nYine de devam etmek için tekrar bas.';
+    $('confirmAdd').textContent = 'Yine de ' + (addMode === 'edit' ? 'Kaydet' : 'Ekle');
+    return;
+  }
+  dupeAckSig = null;
   if(addTarget === 'books'){ const st = state.students.find(s=>s.id === rec.ownerId); rec.ownerName = st ? fullName(st) : ''; }
   const arr = addTarget==='books' ? state.books : state.students;
   if(addMode==='edit' && editIndex!==null){ rec.id = arr[editIndex].id || uid(); arr[editIndex] = rec; } else { rec.id = uid(); arr.push(rec); }
@@ -1010,9 +1096,19 @@ const IMPORT_FIELDS = {
   students: [
     {key:'firstName', label:'Ad', required:true, kw:['ad','adı','adi','isim','first','ilk','öğrenci','ogrenci']},
     {key:'lastName', label:'Soyad', required:true, kw:['soyad','soyadı','soyadi','last','surname']},
+    {key:'no', label:'Öğrenci No', kw:['numara','no','okulno','öğrenci no','ogrenci no','okul no']},
     {key:'grade', label:'Sınıf', kw:['sınıf','sinif','grade']},
     {key:'section', label:'Şube', kw:['şube','sube','section','şb']},
     {key:'level', label:'Seviye / Grup', kw:['seviye','grup','level','group']}
+  ],
+  archive: [
+    {key:'year', label:'Eğitim yılı', kw:['yıl','yil','eğitim','egitim','dönem','donem','year']},
+    {key:'no', label:'Öğrenci No', kw:['numara','no','okulno','öğrenci no','ogrenci no','okul no']},
+    {key:'firstName', label:'Ad', required:true, kw:['ad','adı','adi','isim','first','ilk','öğrenci','ogrenci']},
+    {key:'lastName', label:'Soyad', kw:['soyad','soyadı','soyadi','last','surname']},
+    {key:'title', label:'Kitap adı', required:true, kw:['kitap adı','kitap adi','kitap','başlık','baslik','title']},
+    {key:'author', label:'Yazar', kw:['yazar','author']},
+    {key:'cls', label:'Sınıf/Şube', kw:['sınıf','sinif','şube','sube','class']}
   ]
 };
 
@@ -1023,10 +1119,11 @@ function colLetter(i){ let n=i+1, s=''; while(n>0){ const m=(n-1)%26; s=String.f
 function openImportModal(file, target){
   if(typeof XLSX === 'undefined'){
     $('msg').textContent = 'Excel kütüphanesi yüklenemedi (internet bağlantısı gerekir). Bağlantıyı kontrol edip sayfayı yenileyin.';
-    $('bookFile').value=''; $('studentFile').value=''; return;
+    clearImportInputs(); return;
   }
   importTarget = target;
-  $('importTitle').textContent = target==='books' ? 'Kitapları İçe Aktar' : 'Öğrencileri İçe Aktar';
+  $('importTitle').textContent = target==='books' ? 'Kitapları İçe Aktar' : (target==='archive' ? 'Okuma Arşivine Ekle' : 'Öğrencileri İçe Aktar');
+  $('importYear').value = ''; $('importSkip').checked = true;
   const reader = new FileReader();
   reader.onload = e => {
     try{
@@ -1055,6 +1152,9 @@ function guessColumns(fields, header, maxCols){
     const tokens = h.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
     fields.forEach(f=>{
       if((f.key==='firstName' || f.key==='title') && tokens.some(t=>t.startsWith('soyad'))) return;
+      if(f.key!=='no' && tokens.some(t=>t==='no' || t==='numara' || t.startsWith('numaras'))) return;
+      if(f.key==='no' && tokens.some(t=>t==='sıra' || t==='sira' || t==='sirasi')) return;
+      if(f.key==='firstName' && tokens.some(t=>t.startsWith('kitap') || t.startsWith('yazar'))) return;
       if(f.key==='title' && tokens.some(t=>t.startsWith('yazar'))) return;
       let best = 0;
       (f.kw||[]).forEach(k=>{
@@ -1139,7 +1239,32 @@ function updatePreview(){
     tr.innerHTML = `<td colspan="${fields.length}" style="font-style:italic;color:var(--muted);">+${records.length-6} kayıt daha</td>`;
     table.appendChild(tr);
   }
+  updateImportWarn(records);
   return records;
+}
+function updateImportWarn(records){
+  const w = $('importWarn'), row = $('importSkipRow');
+  $('importYearRow').style.display = importTarget === 'archive' ? 'block' : 'none';
+  const lines = []; let skipN = 0, skipLbl = '';
+  w.style.color = '';
+  if(importTarget === 'books'){
+    const ex = [], sim = [];
+    records.forEach(r=>{ const h = bookArchiveHits(r.title, r.author); if(h.exact.length) ex.push(r.title); else if(h.similar.length) sim.push(r.title); });
+    if(ex.length) lines.push('📚 ' + ex.length + ' kitap arşivde daha önce okunmuş görünüyor: ' + ex.slice(0,6).join(', ') + (ex.length > 6 ? ' …' : ''));
+    if(sim.length) lines.push('❓ ' + sim.length + ' kitap arşivdekilere benziyor: ' + sim.slice(0,4).join(', ') + (sim.length > 4 ? ' …' : ''));
+    skipN = ex.length; skipLbl = 'Arşivde okunmuş kitapları atla (' + ex.length + ')';
+  } else if(importTarget === 'students'){
+    const seen = [], dup = [];
+    records.forEach(r=>{ if(isDupStudentRec(r, seen)) dup.push(((r.firstName || '') + ' ' + (r.lastName || '')).trim()); else seen.push(r); });
+    if(dup.length) lines.push('⚠️ ' + dup.length + ' öğrenci listede zaten var ya da dosyada tekrar ediyor: ' + dup.slice(0,6).join(', ') + (dup.length > 6 ? ' …' : ''));
+    skipN = dup.length; skipLbl = 'Zaten listede olan / tekrar eden öğrencileri atla (' + dup.length + ')';
+  } else if(importTarget === 'archive'){
+    const ok = records.filter(r=>r.title && (r.firstName || r.lastName || r.no)).length;
+    lines.push(ok + ' okuma kaydı arşive eklenecek (aynı yıl + öğrenci + kitap zaten varsa atlanır).');
+    w.style.color = 'var(--muted)';
+  }
+  w.style.display = lines.length ? 'block' : 'none'; w.textContent = lines.join('\n');
+  row.style.display = skipN ? 'flex' : 'none'; $('importSkipLbl').textContent = skipLbl;
 }
 
 $('sheetSelect').addEventListener('change', e=>loadSheetRows(e.target.value));
@@ -1147,22 +1272,48 @@ $('hasHeader').addEventListener('change', updatePreview);
 
 $('cancelImport').addEventListener('click', ()=>{
   $('importBackdrop').classList.remove('open');
-  $('bookFile').value=''; $('studentFile').value='';
+  clearImportInputs();
 });
 
+function clearImportInputs(){ ['bookFile','studentFile','archiveFile'].forEach(id=>{ try{ $(id).value = ''; }catch(e){} }); }
 $('confirmImport').addEventListener('click', ()=>{
-  const records = mappedRecords();
-  const arr = importTarget==='books' ? state.books : state.students;
+  let records = mappedRecords();
+  const skip = $('importSkip').checked;
+  let note = '';
+  if(importTarget === 'archive'){
+    const fb = $('importYear').value.trim() || 'Eski kayıt';
+    const recs = records.filter(r=>r.title && (r.firstName || r.lastName || r.no)).map(r=>({
+      y: String(r.year || '').trim() || fb, no: r.no || '', sn: [r.firstName, r.lastName].filter(Boolean).join(' '),
+      bt: r.title, ba: r.author || '', cls: r.cls || '', lv: ''
+    }));
+    const n = addToArchive(recs);
+    saveState(); invalidateArchiveCache(); renderBooks(); generate(); renderArchive();
+    $('archiveMsg').textContent = n + ' okuma kaydı arşive eklendi' + (recs.length > n ? ' (' + (recs.length - n) + ' tanesi zaten vardı)' : '') + '.';
+    $('importBackdrop').classList.remove('open'); clearImportInputs();
+    return;
+  }
+  if(importTarget === 'books' && skip){
+    const before = records.length;
+    records = records.filter(r=>!bookArchiveHits(r.title, r.author).exact.length);
+    if(before > records.length) note = (before - records.length) + ' kitap arşivde okunmuş olduğu için atlandı.';
+  }
+  if(importTarget === 'students' && skip){
+    const before = records.length, seen = [];
+    records = records.filter(r=>{ if(isDupStudentRec(r, seen)) return false; seen.push(r); return true; });
+    if(before > records.length) note = (before - records.length) + ' öğrenci zaten listede olduğu için atlandı.';
+  }
+  const arr = importTarget === 'books' ? state.books : state.students;
   records.forEach(rec=>{
     rec.id = uid();
-    if(importTarget==='books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(fullName(s), rec.ownerName)===0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = fullName(st); }
+    if(importTarget === 'books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(fullName(s), rec.ownerName) === 0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = fullName(st); }
     arr.push(rec);
     if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
   });
-  if(importTarget==='books') renderBooks(); else renderStudents();
+  if(importTarget === 'books') renderBooks(); else renderStudents();
   saveState();
   $('importBackdrop').classList.remove('open');
-  $('bookFile').value=''; $('studentFile').value='';
+  clearImportInputs();
+  if(note) $('msg').textContent = note;
 });
 
 $('bookFile').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) openImportModal(f, 'books'); });
@@ -1398,7 +1549,202 @@ $('lockNext').addEventListener('click', ()=>{
   generate();
 });
 
-// --- Assignment engine: nobody gets a book they already read ---
+// =====================================================================
+// OKUMA ARŞİVİ — geçmiş yıllarda okunanları kalıcı tutar
+// kayıt: {y: eğitim yılı, no: öğrenci no, sn: ad soyad, bt: kitap adı, ba: yazar, cls: sınıf/şube, lv: seviye}
+// =====================================================================
+const archPrep = new WeakMap();
+function normTxt(s){
+  return String(s == null ? '' : s).toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/ı/g,'i').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+}
+function normName(s){ return normTxt(s).split(' ').filter(Boolean).sort().join(' '); }
+function normNo(s){ return String(s == null ? '' : s).toLowerCase().replace(/[^\p{L}\p{N}]/gu,'').replace(/^0+(?=.)/,''); }
+function prepRec(r){
+  let p = archPrep.get(r);
+  if(!p){ p = {no:normNo(r.no), nm:normName(r.sn), t:normTxt(r.bt), a:normName(r.ba)}; archPrep.set(r, p); }
+  return p;
+}
+// öğrenci: ikisinde de numara varsa numara belirler; yoksa ad-soyad (sıra fark etmez)
+function sameStudentP(sp, rp){
+  if(sp.no && rp.no) return sp.no === rp.no;
+  return !!sp.nm && sp.nm === rp.nm;
+}
+function authorsCompat(a, b){ return !a || !b || a === b; }
+function bookExact(bp, rp){ return !!bp.t && bp.t === rp.t && authorsCompat(bp.a, rp.a); }
+function lev(a, b){
+  if(a === b) return 0;
+  let prev = Array.from({length:b.length+1}, (_,i)=>i);
+  for(let i=1;i<=a.length;i++){
+    const cur = [i];
+    for(let j=1;j<=b.length;j++) cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function bookSimilar(bp, rp){
+  if(!bp.t || !rp.t || bp.t === rp.t) return false;
+  if(!authorsCompat(bp.a, rp.a)) return false;
+  const s = bp.t.length <= rp.t.length ? bp.t : rp.t, l = s === bp.t ? rp.t : bp.t;
+  if(s.length >= 6 && l.includes(s)) return true;
+  const m = Math.max(bp.t.length, rp.t.length);
+  if(m < 7 || Math.abs(bp.t.length - rp.t.length) > 2) return false;
+  return lev(bp.t, rp.t) <= (m >= 14 ? 2 : 1);
+}
+
+let otherArchCache = null;
+function invalidateArchiveCache(){ otherArchCache = null; }
+function otherProfilesArchive(){
+  if(otherArchCache) return otherArchCache;
+  const out = [];
+  profiles.profiles.forEach(p=>{
+    if(p.id === profiles.activeId) return;
+    try{
+      const raw = localStorage.getItem(profileKey(p.id)); if(!raw) return;
+      const st = JSON.parse(raw);
+      if(st && Array.isArray(st.archive)) st.archive.forEach(r=>{ if(r && typeof r === 'object') out.push(Object.assign({}, r, {_prof:p.name})); });
+    }catch(e){}
+  });
+  otherArchCache = out;
+  return out;
+}
+function archiveScopeAll(){ return ui.archiveScope !== 'own'; }
+function archiveRecords(){
+  const own = Array.isArray(state.archive) ? state.archive : [];
+  return archiveScopeAll() ? own.concat(otherProfilesArchive()) : own;
+}
+
+// Atama motoru için: öğrenci id -> arşivde okuduğu (şu an kütüphanede bulunan) kitap id'leri
+let blockedMap = {}, blockedPairs = 0;
+function refreshBlocked(){
+  blockedMap = {}; blockedPairs = 0;
+  const recs = archiveRecords(); if(!recs.length) return;
+  const byTitle = {};
+  state.books.forEach(b=>{ const t = normTxt(b.title); if(t) (byTitle[t] = byTitle[t] || []).push({id:b.id, a:normName(b.author)}); });
+  const sps = state.students.map(s=>({id:s.id, p:{no:normNo(s.no), nm:normName(fullName(s))}}));
+  recs.forEach(r=>{
+    const rp = prepRec(r);
+    const cand = byTitle[rp.t]; if(!cand) return;
+    const books = cand.filter(x=>authorsCompat(x.a, rp.a)); if(!books.length) return;
+    sps.forEach(sp=>{
+      if(!sameStudentP(sp.p, rp)) return;
+      books.forEach(bk=>{
+        const set = blockedMap[sp.id] || (blockedMap[sp.id] = new Set());
+        if(!set.has(bk.id)){ set.add(bk.id); blockedPairs++; }
+      });
+    });
+  });
+}
+
+// Kitap girişinde uyarı için
+function bookArchiveHits(title, author){
+  const res = {exact:[], similar:[]};
+  const bp = {t:normTxt(title), a:normName(author)};
+  if(!bp.t) return res;
+  archiveRecords().forEach(r=>{
+    const rp = prepRec(r);
+    if(bookExact(bp, rp)) res.exact.push(r); else if(bookSimilar(bp, rp)) res.similar.push(r);
+  });
+  return res;
+}
+function hitSummary(recs){
+  const g = {};
+  recs.forEach(r=>{
+    const k = (r.y || '?') + (r.cls ? ' · ' + r.cls : '') + (r._prof ? ' · ' + r._prof + ' profili' : '');
+    (g[k] = g[k] || new Set()).add(r.sn || r.no || '?');
+  });
+  return Object.keys(g).sort(trCmp).map(k=>k + ' (' + g[k].size + ' öğrenci)').join('; ');
+}
+function archiveWarnText(title, author){
+  const h = bookArchiveHits(title, author);
+  if(h.exact.length) return {level:'exact', text:'📚 Bu kitap daha önce okunmuş: ' + hitSummary(h.exact) + '.'};
+  if(h.similar.length){
+    const names = Array.from(new Set(h.similar.map(r=>'“' + r.bt + '” (' + (r.y || '?') + ')'))).slice(0, 3).join(', ');
+    return {level:'similar', text:'❓ Arşivde benzer bir kitap var: ' + names + '. Aynı kitap olabilir.'};
+  }
+  return null;
+}
+function archiveMark(b){
+  const w = archiveWarnText(b.title, b.author);
+  return !w ? '' : (w.level === 'exact' ? '⚠️ arşivde okunmuş' : '❓ benzeri arşivde');
+}
+
+// Öğrenci tekrarı
+function isDupStudentRec(rec, extra){
+  const sp = {no:normNo(rec.no), nm:normName((rec.firstName || '') + ' ' + (rec.lastName || ''))};
+  return state.students.concat(extra || []).some(s=>sameStudentP(sp, {no:normNo(s.no), nm:normName(fullName(s))}));
+}
+function addWarning(target, rec, selfId){
+  if(target === 'students'){
+    const n = normNo(rec.no);
+    if(n){
+      const o = state.students.find(s=>s.id !== selfId && normNo(s.no) === n);
+      if(o) return '⚠️ "' + rec.no + '" numarası listede zaten var: ' + fullName(o) + '.';
+    }
+    const nm = normName((rec.firstName || '') + ' ' + (rec.lastName || ''));
+    const o2 = state.students.find(s=>s.id !== selfId && !(n && normNo(s.no)) && normName(fullName(s)) === nm);
+    return o2 ? '⚠️ Aynı adda bir öğrenci listede zaten var: ' + fullName(o2) + '.' : '';
+  }
+  const w = archiveWarnText(rec.title, rec.author);
+  const dup = state.books.find(b=>b.id !== selfId && normTxt(b.title) === normTxt(rec.title) && authorsCompat(normName(b.author), normName(rec.author)));
+  return [w ? w.text : '', dup ? '⚠️ Bu kitap kütüphanede zaten var.' : ''].filter(Boolean).join('\n');
+}
+
+// Arşive ekleme (yinelenenleri atlar)
+function archKey(r){ const p = prepRec(r); return [normTxt(r.y), p.no || p.nm, p.t].join('|'); }
+function addToArchive(recs){
+  if(!Array.isArray(state.archive)) state.archive = [];
+  const have = new Set(state.archive.map(archKey));
+  let n = 0;
+  recs.forEach(r=>{ const k = archKey(r); if(have.has(k)) return; have.add(k); state.archive.push(r); n++; });
+  return n;
+}
+function mergeArchives(a, b){
+  const out = [], have = new Set();
+  (a || []).concat(b || []).forEach(r=>{ if(!r || typeof r !== 'object') return; const k = archKey(r); if(have.has(k)) return; have.add(k); out.push(r); });
+  return out;
+}
+
+// Yeni eğitim yılı
+function defaultYearLabel(){ const d = new Date(), y = d.getFullYear(); return d.getMonth() + 1 >= 9 ? y + '-' + (y + 1) : (y - 1) + '-' + y; }
+function nextProfileName(n){ const m = /^(\d+)(.*)$/.exec(String(n || '').trim()); return m ? (parseInt(m[1], 10) + 1) + m[2] : String(n || ''); }
+function activeProfileName(){ return (profiles.profiles.find(pr=>pr.id === profiles.activeId) || {}).name || ''; }
+function collectYearRecords(label, includeDrafts){
+  const lists = includeDrafts ? buildAllReadOnly().map(r=>r.assignments) : state.history.map(h=>h.assignments);
+  const prof = activeProfileName();
+  const recs = [];
+  lists.forEach(asg=>asg.forEach(a=>{
+    const s = state.students.find(x=>x.id === a.studentId), b = state.books.find(x=>x.id === a.bookId);
+    recs.push({
+      y: label, no: s && s.no ? String(s.no) : '', sn: s ? fullName(s) : (a.studentName || ''),
+      bt: b ? b.title : (a.bookTitle || ''), ba: b && b.author ? b.author : '',
+      cls: (s && [s.grade, s.section].filter(Boolean).join('/')) || prof, lv: a.level || ''
+    });
+  }));
+  return recs.filter(r=>r.bt && (r.sn || r.no));
+}
+function performNewYear(o){
+  const recs = collectYearRecords(o.label, !!o.drafts);
+  const added = addToArchive(recs);
+  state.history = []; state.manualStash = []; state.returned = {}; state.rounds = [{days:7}]; state.start = '';
+  if(o.clearBooks) state.books = [];
+  if(o.advance) state.students.forEach(s=>{ if(/^\d+$/.test(String(s.grade || '').trim())) s.grade = String(parseInt(s.grade, 10) + 1); });
+  if(o.newName){ const p = profiles.profiles.find(pr=>pr.id === profiles.activeId); if(p){ p.name = o.newName; saveProfilesRaw(profiles); } }
+  saveState();
+  return {total: recs.length, added};
+}
+
+// Öğrencinin arşiv geçmişi
+function studentArchiveRecords(s){
+  const sp = {no:normNo(s.no), nm:normName(fullName(s))};
+  return archiveRecords().filter(r=>sameStudentP(sp, prepRec(r)));
+}
+function libraryArchiveHits(){
+  return state.books.map(b=>({b, w:archiveWarnText(b.title, b.author)})).filter(x=>x.w);
+}
+
+
+// --- Assignment engine: nobody gets a book they already read (bu yıl + arşivdeki geçmiş yıllar) ---
 function curStudentName(a){ const s = state.students.find(x=>x.id === a.studentId); return s ? fullName(s) : a.studentName; }
 function curBookTitle(a){ const b = state.books.find(x=>x.id === a.bookId); return b ? b.title : a.bookTitle; }
 function readMapFrom(hist){
@@ -1421,7 +1767,8 @@ function assignRound(ri, readMap){
       for(let t=0; t<K; t++){
         const b = gB[(pos + ri + t) % K];
         if(read && read.has(b.id)) continue;
-        if(b.ownerId && b.ownerId === s.id) continue;
+        if(blockedMap[s.id] && blockedMap[s.id].has(b.id)) continue;
+        if(!state.allowOwn && b.ownerId && b.ownerId === s.id) continue;
         if(seen[b.id]) continue;
         seen[b.id] = true;
         if(!owner[b.id] || tryS(owner[b.id].s, owner[b.id].pos, seen)){ owner[b.id] = {s, pos}; return true; }
@@ -1449,6 +1796,7 @@ let lastUnlockNote = '';
 function buildAll(){
   const today = startOfDay(new Date());
   lastUnlockNote = '';
+  refreshBlocked();
   // auto mode = "locked exactly when the start date has arrived": release rounds locked too early (e.g. in manual mode)
   if(ui.lockMode !== 'manual'){
     const k = state.history.findIndex(x=>parseISO(x.from) > today);
@@ -2108,13 +2456,13 @@ async function generateListPdf(){
     }));
   }
 
-  const stuHeaders = ['Öğrenci Adı','Sınıf/Şube','Seviye'];
+  const stuHeaders = ['Öğrenci Adı','No','Sınıf/Şube','Seviye'];
   let stuRows = [];
   if(includeStudents){
-    if(blank){ stuRows = Array.from({length: rowCount}, ()=>['','','']); }
+    if(blank){ stuRows = Array.from({length: rowCount}, ()=>['','','','']); }
     else {
       const students = state.students.slice().sort((a,b)=>trCmp(a.firstName,b.firstName) || trCmp(a.lastName,b.lastName));
-      stuRows = students.map(s=>[dn(fullName(s)), [s.grade,s.section].filter(Boolean).join('/') || '—', s.level || '—']);
+      stuRows = students.map(s=>[dn(fullName(s)), s.no || '—', [s.grade,s.section].filter(Boolean).join('/') || '—', s.level || '—']);
     }
   }
 
@@ -2183,6 +2531,7 @@ async function generateListPdf(){
 $('confirmListPdf').addEventListener('click', generateListPdf);
 
 function maxFullRounds(){
+  refreshBlocked();
   const rm = readMapFrom(state.history);
   const base = state.history.length;
   let n = 0;
@@ -2196,9 +2545,10 @@ function maxFullRounds(){
 function updateCapInfo(){
   const el = $('capInfo');
   const cap = maxFullRounds(), planned = state.rounds.length;
-  if(cap === 0){ el.textContent = 'ℹ️ Bu veriyle bazı öğrencilere ilk döngüde bile kitap düşmüyor (öğrenci sayısı kitaptan fazla olabilir).'; return; }
+  const arch = blockedPairs ? ' 🗄 Geçmiş yıl arşivinden ' + blockedPairs + ' öğrenci-kitap eşleşmesi engellendi.' : '';
+  if(cap === 0){ el.textContent = 'ℹ️ Bu veriyle bazı öğrencilere ilk döngüde bile kitap düşmüyor (öğrenci sayısı kitaptan fazla olabilir ya da kitaplar geçmiş yıllarda okunmuş).' + arch; return; }
   el.textContent = 'ℹ️ Bu veriyle herkese kitap düşen en fazla ' + cap + ' döngü yapılabilir (planlanan: ' + planned + ').' +
-    (planned > cap ? ' Fazlası için kitap ekleyin veya döngü sayısını azaltın.' : '');
+    (planned > cap ? ' Fazlası için kitap ekleyin veya döngü sayısını azaltın.' : '') + arch;
 }
 function rebindOwners(){
   state.books.forEach(b=>{
@@ -2243,12 +2593,13 @@ function generate(){
   }
 }
 $('generate').addEventListener('click', generate);
+$('allowOwn').addEventListener('change', e=>{ state.allowOwn = !!e.target.checked; saveState(); generate(); });
 
 let resetArmed = false;
 $('resetHistory').addEventListener('click', ()=>{
   const btn = $('resetHistory');
   if(!resetArmed){
-    resetArmed = true; btn.textContent = '⚠️ Tüm geçmiş silinecek! Tekrar tıklayın';
+    resetArmed = true; btn.textContent = '⚠️ Geçmiş silinecek (arşive yazılmaz)! Tekrar tıklayın';
     setTimeout(()=>{ resetArmed = false; btn.textContent = '🗑 Geçmişi Sıfırla'; }, 4000);
     return;
   }
@@ -2259,17 +2610,25 @@ $('resetHistory').addEventListener('click', ()=>{
 });
 
 // --- Excel'e aktarma (kitaplar / öğrenciler) ---
+function splitName(full){ const p = String(full || '').trim().split(/\s+/).filter(Boolean); const last = p.length > 1 ? p.pop() : ''; return [p.join(' '), last]; }
 function exportTable(kind){
   if(kind === 'books'){
     const headers = ['Kitap Adı','Yazar','Tür','Sayfa Sayısı','Yayınevi','Yaş Aralığı','Seviye','Getiren öğrenci'];
     const rows = state.books.map(b=>[b.title||'', b.author||'', b.genre||'',
       (b.pages !== undefined && b.pages !== '' && !isNaN(Number(b.pages))) ? Number(b.pages) : (b.pages||''),
       b.publisher||'', b.ageRange||'', b.level||'', (b.ownerId||b.ownerName) ? ownerName(b) : '']);
-    return {name:'Kitaplar', headers, rows, widths:[32,22,14,13,22,13,14,22]};
+    return {name:'Kitaplar', noun:'kitap', headers, rows, widths:[32,22,14,13,22,13,14,22]};
   }
-  const headers = ['Ad','Soyad','Sınıf','Şube','Seviye'];
-  const rows = state.students.map(s=>[s.firstName||'', s.lastName||'', s.grade||'', s.section||'', s.level||'']);
-  return {name:'Öğrenciler', headers, rows, widths:[18,18,8,8,14]};
+  if(kind === 'archive'){
+    const headers = ['Eğitim Yılı','Öğrenci No','Ad','Soyad','Kitap Adı','Yazar','Sınıf/Şube'];
+    const rows = (state.archive || []).slice().sort((a,b)=>trCmp(a.y,b.y) || trCmp(a.sn,b.sn) || trCmp(a.bt,b.bt)).map(r=>{
+      const nm = splitName(r.sn); return [r.y||'', r.no||'', nm[0], nm[1], r.bt||'', r.ba||'', r.cls||''];
+    });
+    return {name:'Arşiv', noun:'arşiv kaydı', headers, rows, widths:[14,12,16,16,32,22,12]};
+  }
+  const headers = ['Ad','Soyad','Öğrenci No','Sınıf','Şube','Seviye'];
+  const rows = state.students.map(s=>[s.firstName||'', s.lastName||'', s.no||'', s.grade||'', s.section||'', s.level||'']);
+  return {name:'Öğrenciler', noun:'öğrenci', headers, rows, widths:[18,18,12,8,8,14]};
 }
 function downloadBlob(blob, fname){
   const url = URL.createObjectURL(blob);
@@ -2278,22 +2637,19 @@ function downloadBlob(blob, fname){
   setTimeout(()=>URL.revokeObjectURL(url), 4000);
 }
 function csvCell(v){ const s = String(v == null ? '' : v); return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+const KIND_EMPTY = {books:'Dışa aktarılacak kitap yok.', students:'Dışa aktarılacak öğrenci yok.', archive:'Arşivde dışa aktarılacak kayıt yok.'};
+const KIND_FILE = {books:'kitaplar', students:'ogrenciler', archive:'arsiv'};
 function exportExcel(kinds, msgEl){
-  const tables = kinds.map(exportTable).filter((t,i)=>{
-    const empty = !t.rows.length; if(empty) t.empty = true; return true;
-  });
-  const nonEmpty = tables.filter(t=>t.rows.length);
+  const nonEmpty = kinds.map(exportTable).filter(t=>t.rows.length);
   const say = t => { if(msgEl) msgEl.textContent = t; };
-  if(!nonEmpty.length){ say(kinds.length > 1 ? 'Dışa aktarılacak kitap ya da öğrenci yok.' : (kinds[0]==='books' ? 'Dışa aktarılacak kitap yok.' : 'Dışa aktarılacak öğrenci yok.')); return; }
-  const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || 'profil';
-  const safe = profName.replace(/[^\p{L}\p{N}]+/gu,'-');
-  const label = kinds.length > 1 ? 'kitap-ogrenci' : (kinds[0]==='books' ? 'kitaplar' : 'ogrenciler');
+  if(!nonEmpty.length){ say(kinds.length > 1 ? 'Dışa aktarılacak kitap ya da öğrenci yok.' : KIND_EMPTY[kinds[0]]); return; }
+  const safe = activeProfileName().replace(/[^\p{L}\p{N}]+/gu,'-') || 'profil';
+  const label = kinds.length > 1 ? 'kitap-ogrenci' : KIND_FILE[kinds[0]];
   const base = 'seyyar-kutuphane-' + label + '-' + safe + '-' + iso(new Date());
   try{
     if(typeof XLSX === 'undefined'){
-      // çevrimdışı yedek: ilk dolu tablo CSV olarak (Excel'de açılır)
       const t = nonEmpty[0];
-      const csv = '﻿' + [t.headers].concat(t.rows).map(r=>r.map(csvCell).join(';')).join('\r\n');
+      const csv = '\ufeff' + [t.headers].concat(t.rows).map(r=>r.map(csvCell).join(';')).join('\r\n');
       downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), base + '.csv');
       say('Excel kütüphanesi yüklenemedi; ' + t.name + ' listesi .csv olarak indirildi (Excel ile açılır).' + (nonEmpty.length > 1 ? ' Diğer liste için internete bağlanıp tekrar deneyin.' : ''));
       return;
@@ -2306,26 +2662,11 @@ function exportExcel(kinds, msgEl){
     });
     const out = XLSX.write(wb, {bookType:'xlsx', type:'array'});
     downloadBlob(new Blob([out], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), base + '.xlsx');
-    say(nonEmpty.map(t=>t.rows.length + ' ' + (t.name==='Kitaplar' ? 'kitap' : 'öğrenci')).join(', ') + ' dışa aktarıldı: ' + base + '.xlsx');
+    say(nonEmpty.map(t=>t.rows.length + ' ' + t.noun).join(', ') + ' dışa aktarıldı: ' + base + '.xlsx');
   }catch(err){
     say('Excel dosyası oluşturulamadı: ' + (err && err.message ? err.message : err));
   }
 }
-let excelTarget = 'books';
-function openExcelModal(kind){
-  excelTarget = kind;
-  $('excelTitle').textContent = kind === 'books' ? '📖 Kitaplar — Excel İşlemleri' : '🎓 Öğrenciler — Excel İşlemleri';
-  $('excelMsg').textContent = '';
-  $('excelBackdrop').classList.add('open');
-}
-$('excelBooksBtn').addEventListener('click', ()=>openExcelModal('books'));
-$('excelStudentsBtn').addEventListener('click', ()=>openExcelModal('students'));
-$('closeExcel').addEventListener('click', ()=>$('excelBackdrop').classList.remove('open'));
-$('excelImportBtn').addEventListener('click', ()=>{
-  $('excelBackdrop').classList.remove('open');
-  $(excelTarget === 'books' ? 'bookFile' : 'studentFile').click();
-});
-$('excelExportBtn').addEventListener('click', ()=>exportExcel([excelTarget], $('excelMsg')));
 $('exportBothXlsx').addEventListener('click', ()=>exportExcel(['books','students'], $('xlsxMsg')));
 
 // --- Backup / Restore / Modular reset ---
@@ -2335,20 +2676,20 @@ function updateBackupToggle(){
 }
 $('toggleBackup').addEventListener('click', ()=>{ ui.backup = !ui.backup; saveUI(); updateBackupToggle(); });
 
+function downloadProfileBackup(){
+  const profName = activeProfileName() || 'profil';
+  const payload = { kind:'seyyar-kutuphane-yedek', version:1, exportedAt:new Date().toISOString(), profileName:profName, state:state };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'seyyar-kutuphane-yedek-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') + '-' + iso(new Date()) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  return a.download;
+}
 $('exportBackup').addEventListener('click', ()=>{
-  try{
-    const profName = (profiles.profiles.find(pr=>pr.id===profiles.activeId) || {}).name || 'profil';
-    const payload = { kind:'seyyar-kutuphane-yedek', version:1, exportedAt:new Date().toISOString(), profileName:profName, state:state };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'seyyar-kutuphane-yedek-' + profName.replace(/[^\p{L}\p{N}]+/gu,'-') + '-' + iso(new Date()) + '.json';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url), 4000);
-    $('backupMsg').textContent = 'Yedek indirildi: ' + a.download;
-  }catch(err){
-    $('backupMsg').textContent = 'Yedek oluşturulamadı: ' + (err && err.message ? err.message : err);
-  }
+  try{ $('backupMsg').textContent = 'Yedek indirildi: ' + downloadProfileBackup(); }
+  catch(err){ $('backupMsg').textContent = 'Yedek oluşturulamadı: ' + (err && err.message ? err.message : err); }
 });
 
 function safeImportState(raw){
@@ -2392,6 +2733,7 @@ function showRestorePreview(data){
     ['Kitap sayısı', String(s.books.length)],
     ['Öğrenci sayısı', String(s.students.length)],
     ['Döngü sayısı', String(s.rounds.length) + (s.history.length ? ' (' + s.history.length + ' kilitli 🔒)' : '')],
+    ['Arşiv kaydı', String(s.archive.length)],
     ['Seviyeler', s.levels.length ? s.levels.join(', ') : '—']
   ];
   const box = $('restorePreview'); box.innerHTML = '';
@@ -2401,7 +2743,7 @@ function showRestorePreview(data){
     p.appendChild(b); p.appendChild(document.createTextNode(v));
     box.appendChild(p);
   });
-  $('restoreWarn').textContent = 'Bu işlem, şu anki "' + activeName + '" profilindeki tüm kitap, öğrenci, döngü, geçmiş ve ayar verilerinin ÜZERİNE YAZACAK. Bu geri alınamaz.';
+  $('restoreWarn').textContent = 'Bu işlem, şu anki "' + activeName + '" profilindeki tüm kitap, öğrenci, döngü, geçmiş ve ayar verilerinin ÜZERİNE YAZACAK (şu anki okuma arşivi silinmez, yedektekiyle birleştirilir). Bu geri alınamaz.';
 }
 $('cancelRestore').addEventListener('click', ()=>{
   $('restoreBackdrop').classList.remove('open'); pendingRestore = null;
@@ -2409,7 +2751,9 @@ $('cancelRestore').addEventListener('click', ()=>{
 attachTwoStep($('confirmRestore'), 'Geri Yükle', '⚠️ Üzerine Yazılacak! Onaylamak için tekrar tıkla', ()=>{
   if(!pendingRestore) return;
   try{
+    const keepArchive = Array.isArray(state.archive) ? state.archive : [];
     state = safeImportState(JSON.parse(JSON.stringify(pendingRestore.state)));
+    state.archive = mergeArchives(keepArchive, state.archive);
     saveState();
     loadActiveProfileIntoApp();
     $('restoreBackdrop').classList.remove('open');
@@ -2432,7 +2776,7 @@ attachTwoStep($('resetStudentsBtn'), '🎓 Sadece Öğrencileri Sıfırla', '⚠
   loadActiveProfileIntoApp();
   $('backupMsg').textContent = 'Sınıf listesindeki tüm öğrenciler silindi.';
 });
-attachTwoStep($('resetProgramBtn'), '📅 Sadece Okuma Programını Sıfırla', '⚠️ Döngüler ve geçmiş silinecek! Onayla', ()=>{
+attachTwoStep($('resetProgramBtn'), '📅 Sadece Okuma Programını Sıfırla', '⚠️ Döngüler ve geçmiş silinecek (arşive yazılmaz)! Onayla', ()=>{
   state.rounds = [{days:7}];
   state.start = '';
   state.history = [];
@@ -2442,11 +2786,13 @@ attachTwoStep($('resetProgramBtn'), '📅 Sadece Okuma Programını Sıfırla', 
   loadActiveProfileIntoApp();
   $('backupMsg').textContent = 'Okuma programı (döngüler, geçmiş ve iade kayıtları) sıfırlandı. Kitaplar ve öğrenciler korundu.';
 });
-attachTwoStep($('resetAllBtn'), '🗑 Bu Profildeki Her Şeyi Sıfırla', '⚠️ TÜM VERİLER SİLİNECEK! Onaylamak için tekrar tıkla', ()=>{
+attachTwoStep($('resetAllBtn'), '🗑 Bu Profildeki Her Şeyi Sıfırla (arşiv hariç)', '⚠️ TÜM VERİLER SİLİNECEK (arşiv korunur)! Onaylamak için tekrar tıkla', ()=>{
+  const keepArchive = state.archive;
   state = defaultState();
+  state.archive = keepArchive || [];
   saveState();
   loadActiveProfileIntoApp();
-  $('backupMsg').textContent = 'Bu profildeki tüm veriler (kitaplar, öğrenciler, döngüler, geçmiş, seviyeler) sıfırlandı.';
+  $('backupMsg').textContent = 'Bu profildeki tüm veriler (kitaplar, öğrenciler, döngüler, geçmiş, seviyeler) sıfırlandı. Okuma arşivi korundu.';
 });
 // --- Full app backup/restore: all profiles + theme + ui prefs ---
 $('exportFullBackup').addEventListener('click', ()=>{
@@ -2512,7 +2858,7 @@ function showFullRestorePreview(data){
   data.profiles.forEach(p=>{
     const s = safeImportState(JSON.parse(JSON.stringify(data.profileStates[p.id] || {})));
     const li = document.createElement('li');
-    li.textContent = p.name + ' — ' + s.books.length + ' kitap, ' + s.students.length + ' öğrenci, ' + s.rounds.length + ' döngü' + (s.history.length ? ' (' + s.history.length + ' kilitli)' : '');
+    li.textContent = p.name + ' — ' + s.books.length + ' kitap, ' + s.students.length + ' öğrenci, ' + s.rounds.length + ' döngü' + (s.history.length ? ' (' + s.history.length + ' kilitli)' : '') + (s.archive.length ? ', ' + s.archive.length + ' arşiv kaydı' : '');
     list.appendChild(li);
   });
   box.appendChild(list);
@@ -2539,7 +2885,7 @@ attachTwoStep($('confirmFullRestore'), 'Geri Yükle', '⚠️ TÜM UYGULAMANIN �
     Object.keys(ui).forEach(k=>delete ui[k]);
     Object.assign(ui, {
       shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
-      rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
+      rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true, archive:false, archiveScope:'all',
       matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
     }, data.ui && typeof data.ui === 'object' ? data.ui : {});
     saveUI();
@@ -2586,7 +2932,7 @@ attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla',
   Object.keys(ui).forEach(k=>delete ui[k]);
   Object.assign(ui, {
     shelfSort:'book', match:false, reportNameStyle:'full', returns:false, lockMode:'auto', todaySort:'book',
-    rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true,
+    rounds:false, books:false, students:false, today:false, shelf:false, hist1:false, hist2:false, backup:true, archive:false, archiveScope:'all',
     matrixOpts:{ next:false, author:false, pages:false, publisher:false, returnName:true }, pdfTab:'list'
   });
   saveUI();
@@ -2600,7 +2946,7 @@ attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla',
   updateBackupToggle();
   $('backupMsg').textContent = 'Görünüm ve arayüz tercihleri varsayılana döndürüldü (bu değişiklik tüm profiller için geçerlidir).';
 });
-attachTwoStep($('resetEverythingBtn'), '🧨 Tüm Profilleri Sıfırla', '⚠️ BÜTÜN SINIFLAR VE VERİLER SİLİNECEK! Onaylamak için tekrar tıkla', ()=>{
+attachTwoStep($('resetEverythingBtn'), '🧨 Tüm Profilleri Sıfırla (arşiv dahil)', '⚠️ ARŞİV DAHİL BÜTÜN SINIFLAR VE VERİLER SİLİNECEK! Onaylamak için tekrar tıkla', ()=>{
   profiles.profiles.forEach(pr=>{ try{ localStorage.removeItem(profileKey(pr.id)); }catch(e){} });
   const newId = uid();
   profiles = { profiles: [{id:newId, name:'6/B'}], activeId: newId };
@@ -2609,12 +2955,148 @@ attachTwoStep($('resetEverythingBtn'), '🧨 Tüm Profilleri Sıfırla', '⚠️
   loadActiveProfileIntoApp();
   $('backupMsg').textContent = 'Tüm profiller silindi; tek ve boş bir profil ile yeniden başlatıldı.';
 });
+// --- Okuma arşivi: arayüz ---
+function renderArchive(){
+  const recs = Array.isArray(state.archive) ? state.archive : [];
+  const years = {};
+  recs.forEach(r=>{ const y = r.y || '?'; const o = years[y] || (years[y] = {n:0, st:new Set()}); o.n++; o.st.add(r.no || r.sn || '?'); });
+  const ys = Object.keys(years).sort(trCmp);
+  $('toggleArchive').textContent = (ui.archive ? '▲ Arşivi gizle' : '▼ Arşivi göster') + ' (' + recs.length + ' kayıt' + (ys.length ? ', ' + ys.length + ' yıl' : '') + ')';
+  $('archiveBody').style.display = ui.archive ? 'block' : 'none';
+  const sum = $('archiveSummary');
+  if(!recs.length){
+    sum.textContent = 'Bu profilin arşivi boş. Yıl sonunda "Yeni Eğitim Yılı Başlat"ı kullan ya da eski yılları Excel\'den ekle.';
+  } else {
+    sum.textContent = ys.map(y=>y + ': ' + years[y].n + ' okuma kaydı, ' + years[y].st.size + ' öğrenci').join('\n');
+  }
+  if(archiveScopeAll()){
+    const o = otherProfilesArchive().length;
+    if(o) sum.textContent += '\n+ diğer profillerde ' + o + ' kayıt (kontrole dahil)';
+  }
+  $('archiveScopeAll').checked = archiveScopeAll();
+  // öğrenci geçmişi seçici
+  const sel = $('archStudentSel'); const prev = sel.value;
+  sel.innerHTML = '';
+  const none = document.createElement('option'); none.value = ''; none.textContent = '— Öğrenci seç —'; sel.appendChild(none);
+  state.students.slice().sort((a,b)=>trCmp(a.firstName, b.firstName) || trCmp(a.lastName, b.lastName)).forEach(s=>{
+    const o = document.createElement('option'); o.value = s.id;
+    o.textContent = fullName(s) + (s.no ? ' (' + s.no + ')' : '') + ' — ' + studentArchiveRecords(s).length + ' kayıt';
+    sel.appendChild(o);
+  });
+  if(prev && state.students.some(s=>s.id === prev)) sel.value = prev;
+  renderArchiveStudent();
+}
+function renderArchiveStudent(){
+  const box = $('archStudentList'); box.innerHTML = '';
+  const s = state.students.find(x=>x.id === $('archStudentSel').value);
+  if(!s) return;
+  const recs = studentArchiveRecords(s).sort((a,b)=>trCmp(a.y, b.y) || trCmp(a.bt, b.bt));
+  if(!recs.length){ box.textContent = 'Bu öğrenci için arşivde kayıt yok.'; return; }
+  recs.forEach(r=>{
+    const d = document.createElement('div');
+    d.textContent = (r.y || '?') + (r.cls ? ' · ' + r.cls : '') + (r._prof ? ' · ' + r._prof + ' profili' : '') + ' — ' + r.bt + (r.ba ? ' (' + r.ba + ')' : '');
+    box.appendChild(d);
+  });
+}
+$('toggleArchive').addEventListener('click', ()=>{ ui.archive = !ui.archive; saveUI(); renderArchive(); });
+$('archStudentSel').addEventListener('change', renderArchiveStudent);
+$('archiveScopeAll').addEventListener('change', e=>{
+  ui.archiveScope = e.target.checked ? 'all' : 'own'; saveUI();
+  renderBooks(); generate(); renderArchive();
+});
+
+// Kütüphaneyi arşivle karşılaştır
+$('archiveCheckBtn').addEventListener('click', ()=>{
+  const box = $('archiveCheckBox'); box.innerHTML = '';
+  const hits = libraryArchiveHits();
+  if(!hits.length){ box.textContent = '✅ Kütüphanedeki kitapların hiçbiri arşivde görünmüyor.'; return; }
+  const exact = hits.filter(x=>x.w.level === 'exact');
+  const head = document.createElement('div'); head.style.cssText = 'margin:.4rem 0;color:var(--danger);';
+  head.textContent = hits.length + ' kitap arşivle çakışıyor (' + exact.length + ' aynı, ' + (hits.length - exact.length) + ' benzer):';
+  box.appendChild(head);
+  hits.forEach(x=>{
+    const d = document.createElement('div'); d.style.cssText = 'margin:.35rem 0;font-size:.85rem;';
+    const b = document.createElement('b'); b.textContent = x.b.title + (x.b.author ? ' — ' + x.b.author : ''); d.appendChild(b);
+    d.appendChild(document.createElement('br'));
+    d.appendChild(document.createTextNode(x.w.text));
+    box.appendChild(d);
+  });
+  if(exact.length){
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'secondary'; btn.style.marginTop = '.5rem';
+    const idle = '🗑 Okunmuş ' + exact.length + ' kitabı kütüphaneden kaldır';
+    btn.textContent = idle;
+    attachTwoStep(btn, idle, '⚠️ Emin misin? Tekrar tıkla', ()=>{
+      const ids = new Set(exact.map(x=>x.b.id));
+      state.books = state.books.filter(b=>!ids.has(b.id));
+      ids.forEach(id=>{ delete state.returned[id]; });
+      saveState(); loadActiveProfileIntoApp();
+      $('archiveMsg').textContent = ids.size + ' kitap kütüphaneden kaldırıldı (benzer olanlar yerinde bırakıldı).';
+      $('archiveCheckBox').innerHTML = '';
+    });
+    box.appendChild(btn);
+  }
+});
+
+// Yeni eğitim yılı
+function updateYearSummary(){
+  const label = $('yearLabel').value.trim() || '…';
+  const drafts = $('yearDrafts').checked;
+  const recs = collectYearRecords(label, drafts);
+  const st = new Set(recs.map(r=>r.no || r.sn)), bk = new Set(recs.map(r=>normTxt(r.bt)));
+  const draftRounds = Math.max(0, state.rounds.length - state.history.length);
+  let t = '✔ Arşive yazılacak: ' + recs.length + ' okuma kaydı (' + st.size + ' öğrenci, ' + bk.size + ' kitap).\n';
+  t += 'Kilitli döngü: ' + state.history.length + ' · taslak döngü: ' + draftRounds + (draftRounds && !drafts ? ' (arşive yazılmayacak)' : '') + '\n';
+  t += 'Silinecek: döngüler, geçmiş, iade işaretleri' + ($('yearClearBooks').checked ? ', ' + state.books.length + ' kitap' : '') + '. Korunacak: ' + state.students.length + ' öğrenci ve tüm arşiv.';
+  $('yearSummary').textContent = t;
+  $('yearWarn').textContent = recs.length ? '' : '⚠️ Arşive yazılacak okuma kaydı yok (kilitli döngü yok). Bu haliyle yıl kapatılırsa bu yılın okumaları arşivde olmaz. "Taslak döngüleri de okunmuş say" kutusunu işaretleyebilirsin.';
+}
+$('openYearModal').addEventListener('click', ()=>{
+  $('yearLabel').value = defaultYearLabel();
+  const pn = activeProfileName();
+  $('yearProfileName').value = nextProfileName(pn);
+  const hasNum = state.students.some(s=>/^\d+$/.test(String(s.grade || '').trim()));
+  $('yearAdvance').checked = hasNum; $('yearAdvance').disabled = !hasNum;
+  $('yearClearBooks').checked = true; $('yearDrafts').checked = false; $('yearBackup').checked = true;
+  updateYearSummary();
+  $('yearBackdrop').classList.add('open');
+});
+['yearLabel'].forEach(id=>$(id).addEventListener('input', updateYearSummary));
+['yearDrafts','yearClearBooks'].forEach(id=>$(id).addEventListener('change', updateYearSummary));
+$('cancelYear').addEventListener('click', ()=>{ $('yearBackdrop').classList.remove('open'); });
+attachTwoStep($('confirmYear'), 'Yılı Kapat ve Yeni Yılı Başlat', '⚠️ Emin misin? Tekrar tıkla', ()=>{
+  const label = $('yearLabel').value.trim();
+  if(!label){ $('yearWarn').textContent = 'Eğitim yılı etiketini yaz (ör. 2025-2026).'; return; }
+  try{
+    if($('yearBackup').checked){ try{ downloadProfileBackup(); }catch(e){} }
+    const res = performNewYear({label, newName:$('yearProfileName').value.trim(), advance:$('yearAdvance').checked && !$('yearAdvance').disabled,
+      clearBooks:$('yearClearBooks').checked, drafts:$('yearDrafts').checked});
+    ui.archive = true; saveUI();
+    $('yearBackdrop').classList.remove('open');
+    loadActiveProfileIntoApp();
+    $('archiveMsg').textContent = label + ' yılı arşivlendi: ' + res.added + ' yeni okuma kaydı eklendi' + (res.total > res.added ? ' (' + (res.total - res.added) + ' tanesi zaten arşivdeydi)' : '') + '. Yeni yıl için kitapları ekleyebilirsin.';
+    $('msg').textContent = '';
+  }catch(err){
+    $('yearWarn').textContent = 'Yeni yıl başlatılamadı: ' + (err && err.message ? err.message : err);
+  }
+});
+
+// Arşiv: Excel ile ekle / dışa aktar / sil
+$('archiveImportBtn').addEventListener('click', ()=>$('archiveFile').click());
+$('archiveFile').addEventListener('change', e=>{ const f = e.target.files[0]; if(f) openImportModal(f, 'archive'); });
+$('archiveExportBtn').addEventListener('click', ()=>exportExcel(['archive'], $('archiveMsg')));
+attachTwoStep($('archiveClearBtn'), '🗑 Bu Profilin Arşivini Sil', '⚠️ Tüm okuma arşivi silinecek! Onayla', ()=>{
+  const n = (state.archive || []).length;
+  state.archive = [];
+  saveState(); loadActiveProfileIntoApp();
+  $('archiveMsg').textContent = n + ' arşiv kaydı silindi.';
+});
+
 updateBackupToggle();
 
 (function modalA11y(){
   document.querySelectorAll('.modal').forEach(m=>{ m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); });
   const closer = {themeBackdrop:'closeTheme', profilesBackdrop:'closeProfiles', levelsBackdrop:'closeLevels', addBackdrop:'closeAddModal',
-    pdfBackdrop:'closeListPdf', excelBackdrop:'closeExcel', importBackdrop:'cancelImport', restoreBackdrop:'cancelRestore', fullRestoreBackdrop:'cancelFullRestore'};
+    pdfBackdrop:'closeListPdf', excelBackdrop:'closeExcel', yearBackdrop:'cancelYear', importBackdrop:'cancelImport', restoreBackdrop:'cancelRestore', fullRestoreBackdrop:'cancelFullRestore'};
   document.addEventListener('keydown', e=>{
     if(e.key !== 'Escape') return;
     const open = Array.from(document.querySelectorAll('.modal-backdrop.open'));
@@ -2628,6 +3110,7 @@ updateBackupToggle();
 })();
 
 (function init(){
+  try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); }catch(e){}
   renderProfileSelect();
   loadActiveProfileIntoApp();
 })();
