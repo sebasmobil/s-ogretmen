@@ -70,6 +70,12 @@ textarea{width:100%;min-height:80px;resize:vertical}
 .mp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}.mp label{display:grid;gap:3px}.mp select{width:100%}
 .pv{overflow-x:auto;font-size:12px;margin-bottom:8px}.pv table{border-collapse:collapse}.pv td,.pv th{border:1px solid var(--bd);padding:3px 8px;white-space:nowrap}.pv th{background:var(--desk)}
 [hidden]{display:none!important}
+#pdfb{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ac);color:#fff;border:0;border-radius:999px;padding:11px 18px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.wrap{padding-bottom:64px}
+.pb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:640px;width:100%;max-height:92vh;overflow:auto}.pb h3{margin:0 0 10px;font-size:16px}
+#pv2{width:100%;height:auto;border:1px solid var(--bd);border-radius:6px;background:#fff;display:block}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}.pg label{display:grid;gap:3px;font-size:13px;color:var(--mu)}.pg select,.pg input[type=text]{width:100%}.pg input[type=color]{width:100%;height:36px;padding:2px}
+.pg .pk{display:flex;gap:8px;align-items:center;color:var(--tx)}
 details.card>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;user-select:none;-webkit-user-select:none}
 details.card>summary::-webkit-details-marker{display:none}
 details.card>summary::before{content:'▸';color:var(--mu);transition:transform .15s;font-size:16px}
@@ -95,7 +101,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 1.4 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 1.5 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -182,6 +188,9 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 <div class="card room" id="room"></div>
 </div>
 
+<button id="pdfb" aria-label="PDF oluştur">📄 PDF</button>
+<div class="md" id="pm" hidden><div class="pb"><h3>📄 PDF oluştur</h3><canvas id="pv2"></canvas><div class="pg" id="pf"></div>
+ <div class="act"><span id="pst" class="ct" style="margin-right:auto"></span><button id="pcl">Kapat</button><button class="p" id="pdl">⬇ PDF indir</button></div></div></div>
 <div class="md" id="md" hidden><div class="mb" id="mb"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -364,6 +373,75 @@ all();after();
  if(t)R.dataset.theme=t;
  show(t||sys());
  $('tg').onclick=()=>{const c=R.dataset.theme||sys(),n=c=='dark'?'light':'dark';R.dataset.theme=n;show(n);try{localStorage.setItem('sod_theme',n)}catch(e){}}})();
+/* PDF */
+const PO0={ori:'l',pap:'A4',title:'Sınıf Oturma Düzeni',sub:'',tcol:'#FFD27A',dfill:'#FFFFFF',dstr:'#444444',lw:'0.3',fm:'1',fmt:'full',bw:'0',cl:1,div:1,he:0,lt:1,lb:1,ld:1,lp:1,date:1,foot:1};
+let PO=Object.assign({},PO0);try{Object.assign(PO,JSON.parse(localStorage.getItem('sod_pdf')||'{}'))}catch(e){}
+const POPT=[['ori','Sayfa yönü','s',[['l','Yatay'],['p','Dikey']]],['pap','Kâğıt','s',[['A4','A4'],['A3','A3']]],['title','Başlık','t'],['sub','Alt başlık (örn. 9-A)','t'],
+['tcol','Öğretmen masası rengi','c'],['dfill','Öğrenci masası dolgusu','c'],['dstr','Masa çerçeve rengi','c'],['lw','Çerçeve kalınlığı','s',[['0.15','İnce'],['0.3','Orta'],['0.6','Kalın']]],
+['fm','Yazı boyutu','s',[['0.85','Küçük'],['1','Normal'],['1.2','Büyük']]],['fmt','İsim biçimi','s',[['full','Ad Soyad'],['short','Ad S.'],['no','No Ad Soyad']]],['bw','Renk modu','s',[['0','Renkli'],['1','Siyah-beyaz (yazıcı dostu)']]],
+['cl','Sıra numaralarını yaz','k'],['div','Çok kişilik masada araya çizgi','k'],['he','Tamamen boş masaları gizle','k'],['lt','“Öğretmen masası” yazısı','k'],['lb','“TAHTA” yazısı','k'],['ld','“KAPI” yazısı','k'],['lp','“PENCERE” yazısı','k'],['date','Tarih','k'],['foot','Alt bilgi (©sebasmobil)','k']];
+$('pf').innerHTML=POPT.map(([k,l,t,op])=>t=='k'?`<label class="pk"><input type="checkbox" data-o="${k}"> ${l}</label>`:`<label>${l}${t=='s'?`<select data-o="${k}">${op.map(a=>`<option value="${a[0]}">${a[1]}</option>`).join('')}</select>`:`<input type="${t=='c'?'color':'text'}" data-o="${k}">`}</label>`).join('');
+const pfs=()=>[...document.querySelectorAll('#pm [data-o]')];
+const pread=()=>{pfs().forEach(e=>PO[e.dataset.o]=e.type=='checkbox'?(e.checked?1:0):e.value);try{localStorage.setItem('sod_pdf',JSON.stringify(PO))}catch(e){}};
+const pwrite=()=>pfs().forEach(e=>{const v=PO[e.dataset.o];if(e.type=='checkbox')e.checked=!!+v;else e.value=v});
+const pnm=n=>{if(!n)return'';const i=n.lastIndexOf(' ');if(PO.fmt=='short'&&i>0)return n.slice(0,i)+' '+n[i+1]+'.';
+ if(PO.fmt=='no'){const x=STU.find(x=>nm(x)===n);return x&&x.no?x.no+' '+n:n}return n};
+function pdraw(c,W,H){
+ const g=c.getContext('2d'),o=PO,bw=+o.bw,K=Math.min(W,H)/100,M=4*K,F='system-ui,-apple-system,Segoe UI,sans-serif',col=(a,b)=>bw?b:a;
+ c.width=W;c.height=H;g.fillStyle='#fff';g.fillRect(0,0,W,H);g.textBaseline='middle';
+ const T=(t,x,y,s,w,al,cl)=>{g.font=`${w||400} ${s}px ${F}`;g.textAlign=al||'center';g.fillStyle=cl||'#000';g.fillText(t,x,y)};
+ const rr=(x,y,w,h,r)=>{g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h)};
+ const box=(x,y,w,h,f,s,lw)=>{g.fillStyle=f;g.strokeStyle=s;g.lineWidth=lw||.15*K;rr(x,y,w,h,.6*K);g.fill();g.stroke()};
+ const lab=(t,cx,cy,v,s,cl)=>{if(!t)return;g.save();g.translate(cx,cy);if(v)g.rotate(-Math.PI/2);T(t,0,0,s,700,'center',cl||'#fff');g.restore()};
+ let y=M;T(o.title,M,y+1.7*K,3.4*K,700,'left');if(+o.date)T(new Date().toLocaleDateString('tr-TR'),W-M,y+1.7*K,2*K,400,'right','#555');
+ y+=4.4*K;if(o.sub){T(o.sub,M,y+.4*K,2.2*K,400,'left','#555');y+=2.8*K}
+ const fh=+o.foot?3*K:0;if(fh)T('©sebasmobil 2026',W/2,H-M*.55,1.6*K,400,'center','#777');
+ const bx={x:M,y:y+K,w:W-2*M,h:H-M-fh-y-K},gap=.9*K,wl={f:[],b:[],l:[],r:[]},add=(w,e)=>wl[w]&&wl[w].push(e);
+ if(S.wn>0)add(S.ww,{k:'win',t:+o.lp?2.4*K:1.3*K});add(S.bw,{k:'board',p:S.bp,t:2.4*K});if(S.dw!='n')add(S.dw,{k:'door',p:S.dp,t:2.4*K});
+ const sm=a=>a.reduce((s,e)=>s+e.t+gap,0),tH=sm(wl.f),bH=sm(wl.b),lW=sm(wl.l),rW=sm(wl.r);
+ const I={x:bx.x+lW,y:bx.y+tH,w:bx.w-lW-rW,h:bx.h-tH-bH};
+ const dE=(e,x,y,w,h,v)=>{const L=v?h:w,t=v?w:h;
+  if(e.k=='win'){const n=S.wn,iw=Math.min(L/n*.8,(+o.lp?14:10)*K);for(let i=0;i<n;i++){const a=(i+.5)*L/n-iw/2,rx=v?x:x+a,ry=v?y+a:y,rw=v?t:iw,rh=v?iw:t;box(rx,ry,rw,rh,col('#9ED0F5','#E8E8E8'),col('#5AA7E0','#888'));if(+o.lp)lab('PENCERE',rx+rw/2,ry+rh/2,v,t*.42,'#234')}return}
+  const bl=Math.min(L*.3,40*K),of=e.p=='l'?0:e.p=='m'?(L-bl)/2:L-bl,rx=v?x:x+of,ry=v?y+of:y,rw=v?t:bl,rh=v?bl:t,b=e.k=='board';
+  box(rx,ry,rw,rh,b?col('#1F5E4A','#444'):col('#B9814D','#888'),'#000',.1*K);if(+(b?o.lb:o.ld))lab(b?'TAHTA':'KAPI',rx+rw/2,ry+rh/2,v,t*.5)};
+ let yy=bx.y;wl.f.forEach(e=>{dE(e,I.x,yy,I.w,e.t,0);yy+=e.t+gap});
+ yy=bx.y+bx.h-bH+gap;wl.b.forEach(e=>{dE(e,I.x,yy,I.w,e.t,0);yy+=e.t+gap});
+ let xx=bx.x;wl.l.forEach(e=>{dE(e,xx,I.y,e.t,I.h,1);xx+=e.t+gap});
+ xx=bx.x+bx.w-rW;wl.r.forEach(e=>{dE(e,xx,I.y,e.t,I.h,1);xx+=e.t+gap});
+ const trH=4.6*K,tw=Math.max(16*K,I.w*.16),thh=3.4*K,tx=I.x+(S.tp=='l'?0:S.tp=='m'?(I.w-tw)/2:I.w-tw),ty=S.tf=='f'?I.y:I.y+I.h-thh;
+ box(tx,ty,tw,thh,col(o.tcol,'#CCCCCC'),o.dstr,+o.lw*K*.5);if(+o.lt)lab('Öğretmen masası',tx+tw/2,ty+thh/2,0,1.5*K,'#000');
+ const D={x:I.x,y:I.y+(S.tf=='f'?trH:0),w:I.w,h:I.h-trH},n=S.cols.length,st=S.cols.reduce((a,c)=>a+c.s,0),mD=Math.max(...S.cols.map(c=>c.d)),lH=+o.cl?2.6*K:0,gc=3*K,gd=1.1*K;
+ let dh=(D.h-lH-(mD-1)*gd)/mD,ws=Math.min((D.w-(n-1)*gc)/st,dh*3.2);dh=Math.min(dh,ws*1.05);
+ let cx=D.x+(D.w-(st*ws+(n-1)*gc))/2;const fs0=Math.min(dh*.3,ws*.17)*+o.fm,LW=+o.lw*K;
+ const fit=(t,f)=>{g.font=`600 ${f}px ${F}`;return g.measureText(t).width<=ws*.92};
+ let FG=fs0;S.cols.forEach((c,i)=>{for(let d=0;d<c.d;d++)for(let q=0;q<c.s;q++){const t=pnm(S.names[`${i}-${d}-${q}`]||'');if(!t)continue;let f=fs0;while(!fit(t,f)&&f>fs0*.72)f*=.94;if(fit(t,f))FG=Math.min(FG,f)}});
+ S.cols.forEach((c,i)=>{if(lH)T(`${i+1}. sıra`,cx+c.s*ws/2,D.y+lH*.4,1.7*K,600,'center','#555');
+  for(let d=0;d<c.d;d++){const dy=D.y+lH+d*(dh+gd),nm_=Array.from({length:c.s},(_,s)=>pnm(S.names[`${i}-${d}-${s}`]||''));if(+o.he&&!nm_.some(Boolean))continue;
+   box(cx,dy,c.s*ws,dh,o.dfill,o.dstr,LW);
+   if(+o.div)for(let s=1;s<c.s;s++){g.beginPath();g.moveTo(cx+s*ws,dy);g.lineTo(cx+s*ws,dy+dh);g.lineWidth=LW*.6;g.strokeStyle=o.dstr;g.stroke()}
+   nm_.forEach((t,s)=>{if(!t)return;const mx=cx+(s+.5)*ws,my=dy+dh/2;let f=FG;
+    if(fit(t,f))T(t,mx,my,f,600);else{const j=t.lastIndexOf(' '),ln=j>0?[t.slice(0,j),t.slice(j+1)]:[t,''];f=FG;while(!(fit(ln[0],f)&&fit(ln[1],f))&&f>K)f*=.94;T(ln[0],mx,my-f*.6,f,600);T(ln[1],mx,my+f*.6,f,600)}})}
+  cx+=c.s*ws+gc})}
+function mkPdf(jpg,pw,ph,Wp,Hp){const en=new TextEncoder(),P=[],of=[];let L=0;const pu=b=>{const u=typeof b=='string'?en.encode(b):b;P.push(u);L+=u.length},ob=(n,b)=>{of[n]=L;pu(`${n} 0 obj\n`);pu(b);pu('\nendobj\n')};
+ pu('%PDF-1.4\n');ob(1,'<</Type/Catalog/Pages 2 0 R>>');ob(2,'<</Type/Pages/Kids[3 0 R]/Count 1>>');
+ ob(3,`<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${Wp} ${Hp}]/Resources<</XObject<</Im0 5 0 R>>>>/Contents 4 0 R>>`);
+ const cs=`q ${Wp} 0 0 ${Hp} 0 0 cm /Im0 Do Q`;ob(4,`<</Length ${cs.length}>>\nstream\n${cs}\nendstream`);
+ of[5]=L;pu(`5 0 obj\n<</Type/XObject/Subtype/Image/Width ${pw}/Height ${ph}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${jpg.length}>>\nstream\n`);pu(jpg);pu('\nendstream\nendobj\n');
+ const x=L;pu('xref\n0 6\n0000000000 65535 f \n'+[1,2,3,4,5].map(n=>String(of[n]).padStart(10,'0')+' 00000 n \n').join(''));pu(`trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n${x}\n%%EOF`);return new Blob(P,{type:'application/pdf'})}
+const pdim=()=>{const a=PO.pap=='A3'?[842,1191]:[595,842];return PO.ori=='l'?[a[1],a[0]]:a};
+let pq=0;const pprev=()=>{cancelAnimationFrame(pq);pq=requestAnimationFrame(()=>{const[w,h]=pdim();pdraw($('pv2'),760,Math.round(760*h/w))})};
+$('pdfb').onclick=()=>{pwrite();$('pm').hidden=false;$('pst').textContent='';pprev()};
+$('pm').addEventListener('input',()=>{pread();pprev()});$('pm').addEventListener('change',()=>{pread();pprev()});
+$('pcl').onclick=()=>{$('pm').hidden=true};
+$('pdl').onclick=async()=>{pread();const[w,h]=pdim(),pw=Math.round(w*2.4),ph=Math.round(h*2.4),cv=document.createElement('canvas');
+ $('pst').textContent='PDF hazırlanıyor…';await new Promise(r=>setTimeout(r,30));
+ try{pdraw(cv,pw,ph);const b=atob(cv.toDataURL('image/jpeg',.92).split(',')[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+  const blob=mkPdf(u,pw,ph,w,h),fn='Oturma-Duzeni-'+(PO.sub||PO.title).replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.pdf';
+  let d=null;try{d=window.claude&&await window.claude.use('downloads')}catch(e){}
+  if(d){try{await d.save({filename:fn,data:blob});$('pst').textContent='PDF kaydedildi.'}catch(e){$('pst').textContent=e&&e.code=='declined'?'Kaydetme iptal edildi.':'PDF kaydedilemedi.'}}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();$('pst').textContent='PDF indirildi.'}
+ }catch(e){$('pst').textContent='PDF oluşturulamadı.'}};
+document.addEventListener('keydown',e=>{if(e.key=='Escape')$('pm').hidden=true});
 /* PWA manifest */
 (()=>{try{const I='data:image/png;base64,';
  const m={name:'Sınıf Oturma Düzeni',short_name:'Sınıf Düzeni',description:'sebasmobil',display:'standalone',orientation:'any',background_color:'#1F5E4A',theme_color:'#1F5E4A',lang:'tr',start_url:location.href.split('#')[0],
