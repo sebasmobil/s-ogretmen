@@ -55,6 +55,7 @@ textarea{width:100%;min-height:80px;resize:vertical}
 .room{overflow-x:auto}
 .bd{background:var(--bo);color:#fff;text-align:center;border-radius:8px;padding:6px 40px;font-size:13px;letter-spacing:2px;width:max-content}.bd.v{writing-mode:vertical-rl;padding:40px 6px}
 .dr{background:#B9814D;color:#fff;text-align:center;border-radius:6px;padding:5px 22px;font-size:12px;letter-spacing:1px;width:max-content}.dr.v{writing-mode:vertical-rl;padding:22px 6px}
+.wh{display:flex;justify-content:space-evenly;margin-bottom:10px}.wh i{width:46px;height:8px}.sw .wv{display:flex;flex-direction:column;justify-content:space-evenly}.wv i{width:8px;height:46px}.wh i,.wv i{display:block;background:#9ED0F5;border:2px solid #5AA7E0;border-radius:3px}
 .bf{display:flex;margin-bottom:10px}.bf.l{justify-content:flex-start}.bf.m{justify-content:center}.bf.r{justify-content:flex-end}
 .sw{display:flex;gap:14px;align-items:stretch;min-width:max-content}.sw .mid{flex:1}.sw .bc{display:flex;flex-direction:column}
 .tr{display:flex;margin-bottom:10px}
@@ -94,7 +95,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 1.2 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 1.4 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -125,11 +126,16 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
    <select id="bp"><option value="l">Sol / Üst</option><option value="m">Orta</option><option value="r">Sağ / Alt</option></select>
   </div>
  </details>
- <details class="card noprint" data-k="kapi"><summary><h2>4) Sınıf kapısı</h2></summary>
-  <div class="row"><label>Duvar</label>
+ <details class="card noprint" data-k="kapi"><summary><h2>4) Sınıf kapısı ve pencereler</h2></summary>
+  <div class="row"><b>🚪 Kapı</b><label>Duvar</label>
    <select id="dw"><option value="f">Önde</option><option value="b">Arkada</option><option value="l">Sol duvar</option><option value="r">Sağ duvar</option><option value="n">Gösterme</option></select>
    <label>Konum</label>
    <select id="dp"><option value="l">Sol / Üst</option><option value="m">Orta</option><option value="r">Sağ / Alt</option></select>
+  </div>
+  <div class="row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)"><b>🪟 Pencereler</b><label>Duvar</label>
+   <select id="ww"><option value="l">Sol duvar</option><option value="r">Sağ duvar</option><option value="f">Önde</option><option value="b">Arkada</option></select>
+   <label>Pencere sayısı</label>
+   <div class="stp"><button id="wm" aria-label="Azalt">−</button><b id="wc"></b><button id="wp" aria-label="Artır">+</button></div>
   </div>
  </details>
 </div>
@@ -181,7 +187,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 <script>
 const $=id=>document.getElementById(id);
 const SEATN=['','Tekli','İkili','Üçlü','Dörtlü'];
-let S={cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',list:''};
+let S={cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',ww:'l',wn:3,list:''};
 try{const x=localStorage.getItem('sod');if(x){const o=JSON.parse(x);if(Array.isArray(o.cols)&&o.cols.length&&o.cols.every(c=>c&&c.d>0&&c.s>0))S=Object.assign(S,o)}}catch(e){}
 const save=()=>{try{localStorage.setItem('sod',JSON.stringify(S))}catch(e){}};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v|0));
@@ -191,7 +197,7 @@ function cfg(){
  $('cfg').innerHTML=S.cols.map((c,i)=>`<div class="cc"><b>${i+1}. sıra</b>
  <label>Masa sayısı</label><input type="number" min="1" max="15" value="${c.d}" data-i="${i}" data-k="d">
  <label>Oturma</label><select data-i="${i}" data-k="s">${[1,2,3,4].map(n=>`<option value="${n}" ${c.s==n?'selected':''}>${SEATN[n]}</option>`).join('')}</select></div>`).join('');
- $('dw').value=S.dw;$('dp').value=S.dp;$('bw').value=S.bw;$('bp').value=S.bp;$('tp').value=S.tp;$('tf').value=S.tf;
+ $('ww').value=S.ww;$('wc').textContent=S.wn;$('dw').value=S.dw;$('dp').value=S.dp;$('bw').value=S.bw;$('bp').value=S.bp;$('tp').value=S.tp;$('tf').value=S.tf;
 }
 function seat(k){
  const cur=S.names[k]||'',tot={},used={};
@@ -210,15 +216,16 @@ function room(){
  const mid=S.tf=='f'?t+body:body+t;
  const items=[['bd',S.bw,S.bp,'TAHTA'],['dr',S.dw,S.dp,'🚪 KAPI']];
  const at=w=>items.filter(i=>i[1]==w);
- const H=w=>at(w).map(i=>`<div class="bf ${i[2]}"><div class="${i[0]}">${i[3]}</div></div>`).join('');
- const V=w=>at(w).map(i=>`<div class="bc" style="justify-content:${{l:'flex-start',m:'center',r:'flex-end'}[i[2]]}"><div class="${i[0]} v">${i[3]}</div></div>`).join('');
+ const wi=(w,v)=>S.ww==w&&S.wn>0?`<div class="${v?'wv':'wh'}">${'<i></i>'.repeat(S.wn)}</div>`:'';
+ const H=w=>wi(w,0)+at(w).map(i=>`<div class="bf ${i[2]}"><div class="${i[0]}">${i[3]}</div></div>`).join('');
+ const V=w=>wi(w,1)+at(w).map(i=>`<div class="bc" style="justify-content:${{l:'flex-start',m:'center',r:'flex-end'}[i[2]]}"><div class="${i[0]} v">${i[3]}</div></div>`).join('');
  const inner=H('f')+mid+H('b'),L=V('l'),Rg=V('r');
  $('room').innerHTML=(L||Rg)?`<div class="sw">${L}<div class="mid">${inner}</div>${Rg}</div>`:inner;
  const total=S.cols.reduce((a,c)=>a+c.d*c.s,0),f=Object.values(S.names).filter(Boolean).length;
  $('st').textContent=`Toplam ${total} yer · ${f} dolu`;
 }
 function all(){cfg();room();save()}
-const keys=()=>S.cols.flatMap((c,i)=>Array.from({length:c.d*c.s},(_,n)=>`${i}-${Math.floor(n/c.s)}-${n%c.s}`));
+const keys=()=>{const m=Math.max(...S.cols.map(c=>c.d)),o=[];for(let d=0;d<m;d++)S.cols.forEach((c,i)=>{if(d<c.d)for(let s=0;s<c.s;s++)o.push(`${i}-${d}-${s}`)});return o};
 const list=()=>shown().map(nm);
 function fill(arr){S.names={};const k=keys();arr.slice(0,k.length).forEach((n,i)=>S.names[k[i]]=n);
  room();save();if(arr.length>k.length)$('st').textContent+=` · ${arr.length-k.length} öğrenci sığmadı, masa ekleyin`}
@@ -233,6 +240,9 @@ $('room').addEventListener('change',e=>{const k=e.target.dataset.k;if(k===undefi
   const ok=()=>{const t=$('mn').value.trim();if(t)S.names[k]=t;else delete S.names[k];closeDlg();room();save()};
   $('dc').onclick=()=>{closeDlg();room()};$('dy').onclick=ok;$('mb').onkeydown=ev=>{if(ev.key=='Enter')ok()};setTimeout(()=>$('mn').focus(),30);return}
  if(v)S.names[k]=v;else delete S.names[k];room();save()});
+$('ww').onchange=e=>{S.ww=e.target.value;room();save()};
+$('wm').onclick=()=>{S.wn=clamp(S.wn-1,0,8);$('wc').textContent=S.wn;room();save()};
+$('wp').onclick=()=>{S.wn=clamp(S.wn+1,0,8);$('wc').textContent=S.wn;room();save()};
 $('dw').onchange=e=>{S.dw=e.target.value;room();save()};
 $('dp').onchange=e=>{S.dp=e.target.value;room();save()};
 $('bw').onchange=e=>{S.bw=e.target.value;room();save()};
