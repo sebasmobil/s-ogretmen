@@ -72,7 +72,9 @@ textarea{width:100%;min-height:80px;resize:vertical}
 [hidden]{display:none!important}
 #pdfb{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ac);color:#fff;border:0;border-radius:999px;padding:11px 18px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.28)}
 .wrap{padding-bottom:64px}
-.pb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:640px;width:100%;max-height:92vh;overflow:auto}.pb h3{margin:0 0 10px;font-size:16px}
+.pb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:640px;width:100%;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+.md{overscroll-behavior:contain;touch-action:none}.mb{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+html.lock,html.lock body{overflow:hidden}.pb h3{margin:0 0 10px;font-size:16px}
 #pv2{width:100%;height:auto;border:1px solid var(--bd);border-radius:6px;background:#fff;display:block}
 .pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}.pg label{display:grid;gap:3px;font-size:13px;color:var(--mu)}.pg select,.pg input[type=text]{width:100%}.pg input[type=color]{width:100%;height:36px;padding:2px}
 .pg .pk{display:flex;gap:8px;align-items:center;color:var(--tx)}
@@ -101,7 +103,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 1.6 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 1.7 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -329,8 +331,8 @@ $('o_add').onclick=()=>{
  if(/^\d+$/.test(x.no))$('o_no').value=+x.no+1;
  $('o_ad').focus();$('st').textContent='Eklendi: '+(x.ad+' '+x.soyad).trim()};
 $('pone').addEventListener('keydown',e=>{if(e.key=='Enter')$('o_add').click()});
-const dlg=h=>{$('mb').innerHTML=h;$('md').hidden=false};
-const closeDlg=()=>{$('md').hidden=true};
+const dlg=h=>{$('mb').innerHTML=h;$('md').hidden=false;document.documentElement.classList.add('lock')};
+const closeDlg=()=>{$('md').hidden=true;document.documentElement.classList.toggle('lock',!$('pm').hidden)};
 $('md').onclick=e=>{if(e.target===$('md'))closeDlg()};
 document.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg()});
 function confirmDlg(title,msg,yes,fn){
@@ -434,9 +436,10 @@ function mkPdf(jpg,pw,ph,Wp,Hp){const en=new TextEncoder(),P=[],of=[];let L=0;co
  const x=L;pu('xref\n0 6\n0000000000 65535 f \n'+[1,2,3,4,5].map(n=>String(of[n]).padStart(10,'0')+' 00000 n \n').join(''));pu(`trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n${x}\n%%EOF`);return new Blob(P,{type:'application/pdf'})}
 const pdim=()=>{const a=PO.pap=='A3'?[842,1191]:[595,842];return PO.ori=='l'?[a[1],a[0]]:a};
 let pq=0;const pprev=()=>{cancelAnimationFrame(pq);pq=requestAnimationFrame(()=>{const[w,h]=pdim();pdraw($('pv2'),760,Math.round(760*h/w))})};
-$('pdfb').onclick=()=>{pwrite();$('pm').hidden=false;$('pst').textContent='';pprev()};
+const plock=h=>{$('pm').hidden=h;document.documentElement.classList.toggle('lock',!h)};
+$('pdfb').onclick=()=>{pwrite();plock(false);$('pst').textContent='';pprev()};
 $('pm').addEventListener('input',()=>{pread();pprev()});$('pm').addEventListener('change',()=>{pread();pprev()});
-$('pcl').onclick=()=>{$('pm').hidden=true};
+$('pcl').onclick=()=>plock(true);
 $('pdl').onclick=async()=>{pread();const[w,h]=pdim(),pw=Math.round(w*2.4),ph=Math.round(h*2.4),cv=document.createElement('canvas');
  $('pst').textContent='PDF hazırlanıyor…';await new Promise(r=>setTimeout(r,30));
  try{pdraw(cv,pw,ph);const b=atob(cv.toDataURL('image/jpeg',.92).split(',')[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
@@ -445,7 +448,7 @@ $('pdl').onclick=async()=>{pread();const[w,h]=pdim(),pw=Math.round(w*2.4),ph=Mat
   if(d){try{await d.save({filename:fn,data:blob});$('pst').textContent='PDF kaydedildi.'}catch(e){$('pst').textContent=e&&e.code=='declined'?'Kaydetme iptal edildi.':'PDF kaydedilemedi.'}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();$('pst').textContent='PDF indirildi.'}
  }catch(e){$('pst').textContent='PDF oluşturulamadı.'}};
-document.addEventListener('keydown',e=>{if(e.key=='Escape')$('pm').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')plock(true)});
 /* PWA manifest */
 (()=>{try{const I='data:image/png;base64,';
  const m={name:'Sınıf Oturma Düzeni',short_name:'Sınıf Düzeni',description:'sebasmobil',display:'standalone',orientation:'any',background_color:'#1F5E4A',theme_color:'#1F5E4A',lang:'tr',start_url:location.href.split('#')[0],
