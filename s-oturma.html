@@ -101,7 +101,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 1.5 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 1.6 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -137,6 +137,8 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
    <select id="dw"><option value="f">Önde</option><option value="b">Arkada</option><option value="l">Sol duvar</option><option value="r">Sağ duvar</option><option value="n">Gösterme</option></select>
    <label>Konum</label>
    <select id="dp"><option value="l">Sol / Üst</option><option value="m">Orta</option><option value="r">Sağ / Alt</option></select>
+   <label>Yön</label>
+   <select id="dd"><option value="a">Duvara göre</option><option value="h">Yatay</option><option value="v">Dikey</option></select>
   </div>
   <div class="row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)"><b>🪟 Pencereler</b><label>Duvar</label>
    <select id="ww"><option value="l">Sol duvar</option><option value="r">Sağ duvar</option><option value="f">Önde</option><option value="b">Arkada</option></select>
@@ -196,7 +198,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 <script>
 const $=id=>document.getElementById(id);
 const SEATN=['','Tekli','İkili','Üçlü','Dörtlü'];
-let S={cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',ww:'l',wn:3,list:''};
+let S={cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',dd:'a',ww:'l',wn:3,list:''};
 try{const x=localStorage.getItem('sod');if(x){const o=JSON.parse(x);if(Array.isArray(o.cols)&&o.cols.length&&o.cols.every(c=>c&&c.d>0&&c.s>0))S=Object.assign(S,o)}}catch(e){}
 const save=()=>{try{localStorage.setItem('sod',JSON.stringify(S))}catch(e){}};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v|0));
@@ -206,7 +208,7 @@ function cfg(){
  $('cfg').innerHTML=S.cols.map((c,i)=>`<div class="cc"><b>${i+1}. sıra</b>
  <label>Masa sayısı</label><input type="number" min="1" max="15" value="${c.d}" data-i="${i}" data-k="d">
  <label>Oturma</label><select data-i="${i}" data-k="s">${[1,2,3,4].map(n=>`<option value="${n}" ${c.s==n?'selected':''}>${SEATN[n]}</option>`).join('')}</select></div>`).join('');
- $('ww').value=S.ww;$('wc').textContent=S.wn;$('dw').value=S.dw;$('dp').value=S.dp;$('bw').value=S.bw;$('bp').value=S.bp;$('tp').value=S.tp;$('tf').value=S.tf;
+ $('ww').value=S.ww;$('wc').textContent=S.wn;$('dd').value=S.dd;$('dw').value=S.dw;$('dp').value=S.dp;$('bw').value=S.bw;$('bp').value=S.bp;$('tp').value=S.tp;$('tf').value=S.tf;
 }
 function seat(k){
  const cur=S.names[k]||'',tot={},used={};
@@ -223,11 +225,12 @@ function room(){
    const k=`${i}-${d}-${s}`;return seat(k)}).join('')+`</div>`).join('')+`</div>`).join('');
  const body=`<div class="cols">${cols}</div>`;
  const mid=S.tf=='f'?t+body:body+t;
+ const dv=S.dd=='v'||(S.dd=='a'&&(S.dw=='l'||S.dw=='r'));
  const items=[['bd',S.bw,S.bp,'TAHTA'],['dr',S.dw,S.dp,'🚪 KAPI']];
  const at=w=>items.filter(i=>i[1]==w);
  const wi=(w,v)=>S.ww==w&&S.wn>0?`<div class="${v?'wv':'wh'}">${'<i></i>'.repeat(S.wn)}</div>`:'';
- const H=w=>wi(w,0)+at(w).map(i=>`<div class="bf ${i[2]}"><div class="${i[0]}">${i[3]}</div></div>`).join('');
- const V=w=>wi(w,1)+at(w).map(i=>`<div class="bc" style="justify-content:${{l:'flex-start',m:'center',r:'flex-end'}[i[2]]}"><div class="${i[0]} v">${i[3]}</div></div>`).join('');
+ const H=w=>wi(w,0)+at(w).map(i=>`<div class="bf ${i[2]}"><div class="${i[0]+(i[0]=='dr'&&dv?' v':'')}">${i[3]}</div></div>`).join('');
+ const V=w=>wi(w,1)+at(w).map(i=>`<div class="bc" style="justify-content:${{l:'flex-start',m:'center',r:'flex-end'}[i[2]]}"><div class="${i[0]+((i[0]=='bd'||dv)?' v':'')}">${i[3]}</div></div>`).join('');
  const inner=H('f')+mid+H('b'),L=V('l'),Rg=V('r');
  $('room').innerHTML=(L||Rg)?`<div class="sw">${L}<div class="mid">${inner}</div>${Rg}</div>`:inner;
  const total=S.cols.reduce((a,c)=>a+c.d*c.s,0),f=Object.values(S.names).filter(Boolean).length;
@@ -252,6 +255,7 @@ $('room').addEventListener('change',e=>{const k=e.target.dataset.k;if(k===undefi
 $('ww').onchange=e=>{S.ww=e.target.value;room();save()};
 $('wm').onclick=()=>{S.wn=clamp(S.wn-1,0,8);$('wc').textContent=S.wn;room();save()};
 $('wp').onclick=()=>{S.wn=clamp(S.wn+1,0,8);$('wc').textContent=S.wn;room();save()};
+$('dd').onchange=e=>{S.dd=e.target.value;room();save()};
 $('dw').onchange=e=>{S.dw=e.target.value;room();save()};
 $('dp').onchange=e=>{S.dp=e.target.value;room();save()};
 $('bw').onchange=e=>{S.bw=e.target.value;room();save()};
@@ -397,13 +401,13 @@ function pdraw(c,W,H){
  y+=4.4*K;if(o.sub){T(o.sub,M,y+.4*K,2.2*K,400,'left','#555');y+=2.8*K}
  const fh=+o.foot?3*K:0;if(fh)T('©sebasmobil 2026',W/2,H-M*.55,1.6*K,400,'center','#777');
  const bx={x:M,y:y+K,w:W-2*M,h:H-M-fh-y-K},gap=.9*K,wl={f:[],b:[],l:[],r:[]},add=(w,e)=>wl[w]&&wl[w].push(e);
- if(S.wn>0)add(S.ww,{k:'win',t:+o.lp?2.4*K:1.3*K});add(S.bw,{k:'board',p:S.bp,t:2.4*K});if(S.dw!='n')add(S.dw,{k:'door',p:S.dp,t:2.4*K});
+ if(S.wn>0)add(S.ww,{k:'win',t:+o.lp?2.4*K:1.3*K});add(S.bw,{k:'board',p:S.bp,t:2.4*K});if(S.dw!='n'){const hz=S.dw=='f'||S.dw=='b',dv=S.dd=='v'||(S.dd=='a'&&!hz),pp=hz?dv:!dv;add(S.dw,{k:'door',p:S.dp,perp:pp,t:pp?12*K:2.4*K})}
  const sm=a=>a.reduce((s,e)=>s+e.t+gap,0),tH=sm(wl.f),bH=sm(wl.b),lW=sm(wl.l),rW=sm(wl.r);
  const I={x:bx.x+lW,y:bx.y+tH,w:bx.w-lW-rW,h:bx.h-tH-bH};
  const dE=(e,x,y,w,h,v)=>{const L=v?h:w,t=v?w:h;
   if(e.k=='win'){const n=S.wn,iw=Math.min(L/n*.8,(+o.lp?14:10)*K);for(let i=0;i<n;i++){const a=(i+.5)*L/n-iw/2,rx=v?x:x+a,ry=v?y+a:y,rw=v?t:iw,rh=v?iw:t;box(rx,ry,rw,rh,col('#9ED0F5','#E8E8E8'),col('#5AA7E0','#888'));if(+o.lp)lab('PENCERE',rx+rw/2,ry+rh/2,v,t*.42,'#234')}return}
-  const bl=Math.min(L*.3,40*K),of=e.p=='l'?0:e.p=='m'?(L-bl)/2:L-bl,rx=v?x:x+of,ry=v?y+of:y,rw=v?t:bl,rh=v?bl:t,b=e.k=='board';
-  box(rx,ry,rw,rh,b?col('#1F5E4A','#444'):col('#B9814D','#888'),'#000',.1*K);if(+(b?o.lb:o.ld))lab(b?'TAHTA':'KAPI',rx+rw/2,ry+rh/2,v,t*.5)};
+  const b=e.k=='board',bl=e.perp?2.4*K:Math.min(L*.3,40*K),of=e.p=='l'?0:e.p=='m'?(L-bl)/2:L-bl,rx=v?x:x+of,ry=v?y+of:y,rw=v?t:bl,rh=v?bl:t;
+  box(rx,ry,rw,rh,b?col('#1F5E4A','#444'):col('#B9814D','#888'),'#000',.1*K);if(+(b?o.lb:o.ld))lab(b?'TAHTA':'KAPI',rx+rw/2,ry+rh/2,e.perp?!v:v,e.perp?1.2*K:t*.5)};
  let yy=bx.y;wl.f.forEach(e=>{dE(e,I.x,yy,I.w,e.t,0);yy+=e.t+gap});
  yy=bx.y+bx.h-bH+gap;wl.b.forEach(e=>{dE(e,I.x,yy,I.w,e.t,0);yy+=e.t+gap});
  let xx=bx.x;wl.l.forEach(e=>{dE(e,xx,I.y,e.t,I.h,1);xx+=e.t+gap});
