@@ -70,8 +70,12 @@ textarea{width:100%;min-height:80px;resize:vertical}
 .mp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}.mp label{display:grid;gap:3px}.mp select{width:100%}
 .pv{overflow-x:auto;font-size:12px;margin-bottom:8px}.pv table{border-collapse:collapse}.pv td,.pv th{border:1px solid var(--bd);padding:3px 8px;white-space:nowrap}.pv th{background:var(--desk)}
 [hidden]{display:none!important}
-#pdfb{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ac);color:#fff;border:0;border-radius:999px;padding:11px 18px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+#pdfb{background:var(--ac);color:#fff;border:0;border-radius:999px;padding:11px 18px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.28)}
 .wrap{padding-bottom:64px}
+.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:10px;align-items:center}
+#gearb{width:46px;height:46px;border-radius:50%;padding:0;font-size:21px;line-height:1;background:var(--card);border:1px solid var(--bd);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tb{flex:1}.tb.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.gx{display:grid;gap:10px;margin:8px 0}.gx p{margin:0;font-size:13px;color:var(--mu)}.gx button{justify-self:start}.gx hr{border:0;border-top:1px solid var(--bd);width:100%;margin:4px 0}
 .pb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:640px;width:100%;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
 .md{overscroll-behavior:contain;touch-action:none}.mb{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
 html.lock,html.lock body{overflow:hidden}.pb h3{margin:0 0 10px;font-size:16px}
@@ -103,10 +107,11 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 1.7 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 2.0 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
+<div class="card noprint"><div class="row"><b>👤 Profil</b><select id="prs"></select><button id="pra">＋ Yeni</button><button id="pre">✏️ Adı</button><button id="prd">🗑 Sil</button></div></div>
 <details class="card noprint" data-k="sira"><summary><h2>1) Sıralar</h2></summary>
  <div class="row" style="margin-bottom:10px">
   <label>Hazır şablon</label>
@@ -181,28 +186,52 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
  </div>
  <div class="lst" id="lst"></div>
  <div class="row">
+  <button id="dall">Öğrencileri sil</button>
+  <span id="sts" class="ct"></span>
+ </div>
+</details>
+<details class="card noprint" data-k="yerlestir"><summary><h2>6) Yerleştirme</h2></summary>
+ <div class="row">
   <button class="p" id="rnd">🎲 Rastgele dağıt</button>
   <button id="seq">Sırayla doldur</button>
   <button id="clr">Yerleşimi temizle</button>
-  <button id="dall">Listeyi boşalt</button>
-  <span id="st" class="ct"></span>
  </div>
+ <div class="row" style="margin-top:8px"><span id="st" class="ct"></span></div>
 </details>
 
 <div class="card room" id="room"></div>
 </div>
 
-<button id="pdfb" aria-label="PDF oluştur">📄 PDF</button>
+<div class="fab"><button id="gearb" aria-label="Yedekleme ve sıfırlama" title="Yedekleme / Sıfırlama">⚙️</button><button id="pdfb" aria-label="PDF oluştur">📄 PDF</button></div>
 <div class="md" id="pm" hidden><div class="pb"><h3>📄 PDF oluştur</h3><canvas id="pv2"></canvas><div class="pg" id="pf"></div>
  <div class="act"><span id="pst" class="ct" style="margin-right:auto"></span><button id="pcl">Kapat</button><button class="p" id="pdl">⬇ PDF indir</button></div></div></div>
+<div class="md" id="gm" hidden><div class="pb"><h3>⚙️ Yedekleme ve sıfırlama</h3>
+ <div class="tabs"><button class="tb on" data-t="y">💾 Yedekleme</button><button class="tb" data-t="s">♻️ Sıfırlama</button></div>
+ <div class="gx" id="gy"><p>Tüm profillerin (öğrenciler, düzenler, yerleşimler, PDF ve görünüm ayarları) tek bir yedek dosyasına kaydedilir.</p>
+  <button class="p" id="gb">⬇ Yedeği indir</button><hr>
+  <p>Daha önce aldığın bir yedeği geri yükle. Şu anki veriler yedekle değiştirilir.</p>
+  <input type="file" id="gf" accept=".json,application/json" hidden><button id="gr">⬆ Yedekten geri yükle…</button></div>
+ <div class="gx" id="gs" hidden><p>Sıfırlamadan önce yedek almanı öneririm.</p>
+  <button id="rs1">Bu profili sıfırla</button><p>Seçili profildeki öğrenciler, düzen, yerleşim ve PDF ayarları silinir. Diğer profillere dokunulmaz.</p><hr>
+  <button id="rs2">Görünüm ayarlarını sıfırla</button><p>Tema ve kartların açık/kapalı durumu varsayılana döner.</p><hr>
+  <button class="dg" id="rs3">Tüm verileri sil</button><p>Tüm profiller ve ayarlar kalıcı olarak silinir, uygulama ilk haline döner.</p></div>
+ <div class="act"><span id="gst" class="ct" style="margin-right:auto"></span><button id="gcl">Kapat</button></div></div></div>
 <div class="md" id="md" hidden><div class="mb" id="mb"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const SEATN=['','Tekli','İkili','Üçlü','Dörtlü'];
-let S={cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',dd:'a',ww:'l',wn:3,list:''};
-try{const x=localStorage.getItem('sod');if(x){const o=JSON.parse(x);if(Array.isArray(o.cols)&&o.cols.length&&o.cols.every(c=>c&&c.d>0&&c.s>0))S=Object.assign(S,o)}}catch(e){}
-const save=()=>{try{localStorage.setItem('sod',JSON.stringify(S))}catch(e){}};
+const PK='sod_profiles',rd=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+let PR=rd(PK)||{list:[],cur:''};
+if(!Array.isArray(PR.list)||!PR.list.length){const id='p'+Date.now().toString(36);PR={list:[{id,name:'Profil 1'}],cur:id};
+ try{localStorage.setItem('sod_p_'+id,JSON.stringify({S:rd('sod'),STU:rd('sod_stu'),PO:rd('sod_pdf')}));localStorage.setItem(PK,JSON.stringify(PR))}catch(e){}}
+if(!PR.list.some(p=>p.id==PR.cur))PR.cur=PR.list[0].id;
+let PD=rd('sod_p_'+PR.cur)||{};
+const defS=()=>({cols:[{d:5,s:2},{d:5,s:2},{d:5,s:2}],names:{},tp:'l',tf:'f',bw:'f',bp:'m',dw:'b',dp:'r',dd:'a',ww:'l',wn:3,list:''});
+let S=defS();
+try{const o=PD.S;if(o&&Array.isArray(o.cols)&&o.cols.length&&o.cols.every(c=>c&&c.d>0&&c.s>0))S=Object.assign(S,o)}catch(e){}
+function persist(){try{localStorage.setItem('sod_p_'+PR.cur,JSON.stringify({S:S,STU:STU,PO:PO}))}catch(e){}}
+const save=()=>persist();
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v|0));
 
 function cfg(){
@@ -252,7 +281,7 @@ $('cfg').addEventListener('change',e=>{const t=e.target,c=S.cols[t.dataset.i];if
 $('room').addEventListener('change',e=>{const k=e.target.dataset.k;if(k===undefined)return;const v=e.target.value;
  if(v==='__manual'){dlg(`<h3>İsim yaz</h3><div class="one"><label style="flex:1 1 100%">Öğrenci adı<input id="mn" value="${esc(S.names[k]||'').replace(/"/g,'&quot;')}"></label></div><div class="act"><button id="dc">Vazgeç</button><button class="p" id="dy">Tamam</button></div>`);
   const ok=()=>{const t=$('mn').value.trim();if(t)S.names[k]=t;else delete S.names[k];closeDlg();room();save()};
-  $('dc').onclick=()=>{closeDlg();room()};$('dy').onclick=ok;$('mb').onkeydown=ev=>{if(ev.key=='Enter')ok()};setTimeout(()=>$('mn').focus(),30);return}
+  $('dc').onclick=()=>{closeDlg();room()};$('dy').onclick=ok;$('mb').onkeydown=ev=>{if(ev.key=='Enter')ok()};setTimeout(()=>{const e=$('mn');if(e)e.focus()},30);return}
  if(v)S.names[k]=v;else delete S.names[k];room();save()});
 $('ww').onchange=e=>{S.ww=e.target.value;room();save()};
 $('wm').onclick=()=>{S.wn=clamp(S.wn-1,0,8);$('wc').textContent=S.wn;room();save()};
@@ -272,9 +301,9 @@ $('clr').onclick=()=>{if(hasPlan())confirmDlg('Yerleşimi temizle','Tüm masalar
 
 /* ---- Öğrenci listesi ---- */
 let ROWS=[],STU=[];
-try{const x=JSON.parse(localStorage.getItem('sod_stu')||'[]');if(Array.isArray(x))STU=x}catch(e){}
+try{if(Array.isArray(PD.STU))STU=PD.STU}catch(e){}
 const sortS=()=>STU.sort((a,b)=>((a.ad+' '+a.soyad).trim()).localeCompare((b.ad+' '+b.soyad).trim(),'tr',{sensitivity:'base'}));
-const saveS=()=>{try{localStorage.setItem('sod_stu',JSON.stringify(STU))}catch(e){}};
+const saveS=()=>persist();
 const esc=t=>String(t??'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const FLD=[['no','Numara'],['sinif','Sınıf'],['sube','Şube'],['ad','Ad'],['soyad','Soyad']];
 const norm=t=>String(t).toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9 ]/g,' ').trim();
@@ -311,28 +340,28 @@ $('m1').onclick=()=>{panel('');$('xf').click()};
 $('m2').onclick=()=>{panel('o');$('o_ad').focus()};
 $('hd').onchange=buildMap;
 $('xf').onchange=e=>{const f=e.target.files[0];if(!f)return;
- if(!window.XLSX){$('st').textContent='Excel kütüphanesi yüklenemedi (internet bağlantısı gerekir).';return}
+ if(!window.XLSX){$('sts').textContent='Excel kütüphanesi yüklenemedi (internet bağlantısı gerekir).';return}
  const r=new FileReader();
  r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'array'});
   ROWS=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false}).filter(x=>x.some(c=>String(c).trim()));
-  buildMap()}catch(err){$('st').textContent='Dosya okunamadı.'}};
+  buildMap()}catch(err){$('sts').textContent='Dosya okunamadı.'}};
  r.readAsArrayBuffer(f)};
 $('ap').onclick=()=>{
  const m={};document.querySelectorAll('#mp select').forEach(x=>m[x.dataset.f]=x.value===''?null:+x.value);
- if(m.ad===null){$('st').textContent='En az "Ad" sütununu eşleştirin.';return}
+ if(m.ad===null){$('sts').textContent='En az "Ad" sütununu eşleştirin.';return}
  const comb=m.soyad===m.ad,v=(r,k)=>m[k]===null?'':String(r[m[k]]??'').trim();
  const add=($('hd').checked?ROWS.slice(1):ROWS).map(r=>({no:v(r,'no'),sinif:v(r,'sinif'),sube:v(r,'sube'),ad:v(r,'ad'),soyad:comb?'':v(r,'soyad')})).filter(x=>x.ad||x.soyad);
  STU=STU.concat(add);after();panel('');$('mpw').hidden=true;$('xf').value='';
- $('st').textContent=add.length+' öğrenci eklendi'};
+ $('sts').textContent=add.length+' öğrenci eklendi'};
 $('o_add').onclick=()=>{
  const g=k=>$('o_'+k).value.trim(),x={no:g('no'),sinif:g('sinif'),sube:g('sube'),ad:g('ad'),soyad:g('soyad')};
  if(!x.ad&&!x.soyad){$('o_ad').focus();return}
  STU.push(x);after();['no','ad','soyad'].forEach(k=>$('o_'+k).value='');
  if(/^\d+$/.test(x.no))$('o_no').value=+x.no+1;
- $('o_ad').focus();$('st').textContent='Eklendi: '+(x.ad+' '+x.soyad).trim()};
+ $('o_ad').focus();$('sts').textContent='Eklendi: '+(x.ad+' '+x.soyad).trim()};
 $('pone').addEventListener('keydown',e=>{if(e.key=='Enter')$('o_add').click()});
 const dlg=h=>{$('mb').innerHTML=h;$('md').hidden=false;document.documentElement.classList.add('lock')};
-const closeDlg=()=>{$('md').hidden=true;document.documentElement.classList.toggle('lock',!$('pm').hidden)};
+const closeDlg=()=>{$('md').hidden=true;document.documentElement.classList.toggle('lock',!$('pm').hidden||!$('gm').hidden)};
 $('md').onclick=e=>{if(e.target===$('md'))closeDlg()};
 document.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg()});
 function confirmDlg(title,msg,yes,fn){
@@ -352,7 +381,7 @@ function editDlg(i){
   const o=nm(x),nn=nm(n);
   if(o!==nn)Object.keys(S.names).forEach(k=>{if(S.names[k]===o)S.names[k]=nn});
   STU[i]=n;closeDlg();after();room();save_()};
- const save_=()=>{try{localStorage.setItem('sod',JSON.stringify(S))}catch(e){}};
+ const save_=()=>persist();
  $('dc').onclick=closeDlg;$('dy').onclick=save;
  $('mb').onkeydown=e=>{if(e.key=='Enter')save()};
  $('e_ad').focus()}
@@ -362,7 +391,7 @@ $('lst').addEventListener('click',e=>{
  else if(t.dataset.del!==undefined){const i=+t.dataset.del,x=STU[i];
   confirmDlg('Öğrenciyi sil',`<b>${esc(nm(x))}</b> listeden silinecek. Emin misin?`,'Sil',()=>{STU.splice(i,1);after()})}});
 $('dall').onclick=()=>{if(!STU.length)return;
- confirmDlg('Listeyi boşalt',`Listedeki <b>${STU.length}</b> öğrencinin tamamı silinecek. Emin misin?`,'Hepsini sil',()=>{STU=[];after()})};
+ confirmDlg('Öğrencileri sil',`Listedeki <b>${STU.length}</b> öğrencinin tamamı silinecek. Emin misin?`,'Hepsini sil',()=>{STU=[];after()})};
 all();after();
 /* kart açık/kapalı durumu */
 (()=>{let o={};try{o=JSON.parse(localStorage.getItem('sod_open')||'{}')||{}}catch(e){}
@@ -381,14 +410,14 @@ all();after();
  $('tg').onclick=()=>{const c=R.dataset.theme||sys(),n=c=='dark'?'light':'dark';R.dataset.theme=n;show(n);try{localStorage.setItem('sod_theme',n)}catch(e){}}})();
 /* PDF */
 const PO0={ori:'l',pap:'A4',title:'Sınıf Oturma Düzeni',sub:'',tcol:'#FFD27A',dfill:'#FFFFFF',dstr:'#444444',lw:'0.3',fm:'1',fmt:'full',bw:'0',cl:1,div:1,he:0,lt:1,lb:1,ld:1,lp:1,date:1,foot:1};
-let PO=Object.assign({},PO0);try{Object.assign(PO,JSON.parse(localStorage.getItem('sod_pdf')||'{}'))}catch(e){}
+let PO=Object.assign({},PO0);try{Object.assign(PO,PD.PO||{})}catch(e){}
 const POPT=[['ori','Sayfa yönü','s',[['l','Yatay'],['p','Dikey']]],['pap','Kâğıt','s',[['A4','A4'],['A3','A3']]],['title','Başlık','t'],['sub','Alt başlık (örn. 9-A)','t'],
 ['tcol','Öğretmen masası rengi','c'],['dfill','Öğrenci masası dolgusu','c'],['dstr','Masa çerçeve rengi','c'],['lw','Çerçeve kalınlığı','s',[['0.15','İnce'],['0.3','Orta'],['0.6','Kalın']]],
 ['fm','Yazı boyutu','s',[['0.85','Küçük'],['1','Normal'],['1.2','Büyük']]],['fmt','İsim biçimi','s',[['full','Ad Soyad'],['short','Ad S.'],['no','No Ad Soyad']]],['bw','Renk modu','s',[['0','Renkli'],['1','Siyah-beyaz (yazıcı dostu)']]],
 ['cl','Sıra numaralarını yaz','k'],['div','Çok kişilik masada araya çizgi','k'],['he','Tamamen boş masaları gizle','k'],['lt','“Öğretmen masası” yazısı','k'],['lb','“TAHTA” yazısı','k'],['ld','“KAPI” yazısı','k'],['lp','“PENCERE” yazısı','k'],['date','Tarih','k'],['foot','Alt bilgi (©sebasmobil)','k']];
 $('pf').innerHTML=POPT.map(([k,l,t,op])=>t=='k'?`<label class="pk"><input type="checkbox" data-o="${k}"> ${l}</label>`:`<label>${l}${t=='s'?`<select data-o="${k}">${op.map(a=>`<option value="${a[0]}">${a[1]}</option>`).join('')}</select>`:`<input type="${t=='c'?'color':'text'}" data-o="${k}">`}</label>`).join('');
 const pfs=()=>[...document.querySelectorAll('#pm [data-o]')];
-const pread=()=>{pfs().forEach(e=>PO[e.dataset.o]=e.type=='checkbox'?(e.checked?1:0):e.value);try{localStorage.setItem('sod_pdf',JSON.stringify(PO))}catch(e){}};
+const pread=()=>{pfs().forEach(e=>PO[e.dataset.o]=e.type=='checkbox'?(e.checked?1:0):e.value);persist()};
 const pwrite=()=>pfs().forEach(e=>{const v=PO[e.dataset.o];if(e.type=='checkbox')e.checked=!!+v;else e.value=v});
 const pnm=n=>{if(!n)return'';const i=n.lastIndexOf(' ');if(PO.fmt=='short'&&i>0)return n.slice(0,i)+' '+n[i+1]+'.';
  if(PO.fmt=='no'){const x=STU.find(x=>nm(x)===n);return x&&x.no?x.no+' '+n:n}return n};
@@ -448,7 +477,60 @@ $('pdl').onclick=async()=>{pread();const[w,h]=pdim(),pw=Math.round(w*2.4),ph=Mat
   if(d){try{await d.save({filename:fn,data:blob});$('pst').textContent='PDF kaydedildi.'}catch(e){$('pst').textContent=e&&e.code=='declined'?'Kaydetme iptal edildi.':'PDF kaydedilemedi.'}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();$('pst').textContent='PDF indirildi.'}
  }catch(e){$('pst').textContent='PDF oluşturulamadı.'}};
-document.addEventListener('keydown',e=>{if(e.key=='Escape')plock(true)});
+document.addEventListener('keydown',e=>{if(e.key=='Escape'){plock(true);glock(true)}});
+/* profiller */
+const savePR=()=>{try{localStorage.setItem(PK,JSON.stringify(PR))}catch(e){}};
+const curP=()=>PR.list.find(x=>x.id==PR.cur);
+function renderPR(){$('prs').innerHTML=PR.list.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');$('prs').value=PR.cur;$('prd').disabled=PR.list.length<2}
+function loadProfile(id,skip){if(!skip)persist();PR.cur=id;savePR();PD=rd('sod_p_'+id)||{};S=defS();
+ try{const o=PD.S;if(o&&Array.isArray(o.cols)&&o.cols.length)Object.assign(S,o)}catch(e){}
+ STU=Array.isArray(PD.STU)?PD.STU:[];PO=Object.assign({},PO0,PD.PO||{});all();after();pwrite();renderPR()}
+$('prs').onchange=e=>loadProfile(e.target.value);
+const q_=t=>esc(t).replace(/"/g,'&quot;');
+$('pra').onclick=()=>{dlg(`<h3>Yeni profil</h3><div class="one"><label style="flex:1 1 100%">Profil adı (örn. 6-A)<input id="pn"></label></div><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="pc" checked> Mevcut düzen ayarlarını kopyala (öğrenciler kopyalanmaz)</label><div class="act"><button id="dc">Vazgeç</button><button class="p" id="dy">Oluştur</button></div>`);
+ const ok=()=>{const n=$('pn').value.trim();if(!n){$('pn').focus();return}const cp=$('pc').checked;persist();
+  const id='p'+Date.now().toString(36),b=cp?JSON.parse(JSON.stringify(S)):defS();b.names={};const po=Object.assign({},PO0,cp?PO:{});po.sub=n;
+  PR.list.push({id,name:n});try{localStorage.setItem('sod_p_'+id,JSON.stringify({S:b,STU:[],PO:po}))}catch(e){}
+  closeDlg();loadProfile(id)};
+ $('dc').onclick=closeDlg;$('dy').onclick=ok;$('mb').onkeydown=e=>{if(e.key=='Enter')ok()};setTimeout(()=>{const e=$('pn');if(e)e.focus()},30)};
+$('pre').onclick=()=>{const p=curP();dlg(`<h3>Profil adını düzenle</h3><div class="one"><label style="flex:1 1 100%">Profil adı<input id="pn" value="${q_(p.name)}"></label></div><div class="act"><button id="dc">Vazgeç</button><button class="p" id="dy">Kaydet</button></div>`);
+ const ok=()=>{const n=$('pn').value.trim();if(!n)return;p.name=n;savePR();closeDlg();renderPR()};
+ $('dc').onclick=closeDlg;$('dy').onclick=ok;$('mb').onkeydown=e=>{if(e.key=='Enter')ok()};setTimeout(()=>{const e=$('pn');if(e)e.focus()},30)};
+$('prd').onclick=()=>{if(PR.list.length<2)return;const p=curP();
+ confirmDlg('Profili sil',`<b>${esc(p.name)}</b> profili öğrenci listesi ve oturma düzeniyle birlikte tamamen silinecek. Emin misin?`,'Sil',()=>{
+  try{localStorage.removeItem('sod_p_'+p.id)}catch(e){}PR.list=PR.list.filter(x=>x.id!=p.id);loadProfile(PR.list[0].id,true)})};
+renderPR();
+/* yedekleme / sıfırlama */
+const BK='sebasmobil-sinif-oturma-duzeni',gst=t=>$('gst').textContent=t;
+const sodKeys=()=>{const k=[];try{for(let i=0;i<localStorage.length;i++){const n=localStorage.key(i);if(n&&n.startsWith('sod'))k.push(n)}}catch(e){}return k};
+const glock=h=>{$('gm').hidden=h;document.documentElement.classList.toggle('lock',!h)};
+const gtab=t=>{$('gy').hidden=t!='y';$('gs').hidden=t!='s';document.querySelectorAll('#gm .tb').forEach(b=>b.classList.toggle('on',b.dataset.t==t))};
+$('gearb').onclick=()=>{gst('');gtab('y');glock(false)};
+$('gcl').onclick=()=>glock(true);
+document.querySelectorAll('#gm .tb').forEach(b=>b.onclick=()=>{gst('');gtab(b.dataset.t)});
+async function saveFile(blob,fn){let d=null;try{d=window.claude&&await window.claude.use('downloads')}catch(e){}
+ if(d){try{await d.save({filename:fn,data:blob});return'ok'}catch(e){return e&&e.code=='declined'?'declined':'err'}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();return'ok'}
+$('gb').onclick=async()=>{persist();const data={};sodKeys().forEach(k=>data[k]=localStorage.getItem(k));
+ const blob=new Blob([JSON.stringify({app:BK,date:new Date().toISOString(),data})],{type:'application/json'});
+ const r=await saveFile(blob,'Oturma-Duzeni-Yedek-'+new Date().toISOString().slice(0,10)+'.json');
+ gst(r=='ok'?`Yedek alındı (${PR.list.length} profil).`:r=='declined'?'Kaydetme iptal edildi.':'Yedek kaydedilemedi.')};
+$('gr').onclick=()=>{$('gf').value='';$('gf').click()};
+$('gf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{let o,pr;try{o=JSON.parse(r.result)}catch(x){}
+  if(!o||o.app!==BK||!o.data||typeof o.data!='object'||!Object.keys(o.data).every(k=>k.startsWith('sod')&&typeof o.data[k]=='string')){gst('Bu dosya geçerli bir yedek değil.');return}
+  try{pr=JSON.parse(o.data[PK])}catch(x){}
+  if(!pr||!Array.isArray(pr.list)||!pr.list.length){gst('Yedekte profil bilgisi bulunamadı.');return}
+  confirmDlg('Yedekten geri yükle',`<b>${pr.list.length}</b> profil içeren yedek (${esc((o.date||'').slice(0,10))}) yüklenecek. Şu anki <b>tüm veriler silinip</b> yedekle değiştirilecek. Emin misin?`,'Geri yükle',()=>{
+   try{sodKeys().forEach(k=>localStorage.removeItem(k));Object.keys(o.data).forEach(k=>localStorage.setItem(k,o.data[k]))}catch(x){gst('Geri yükleme başarısız.');return}
+   gst('Geri yüklendi, yenileniyor…');location.reload()})};
+ r.readAsText(f)};
+$('rs1').onclick=()=>confirmDlg('Profili sıfırla',`<b>${esc(curP().name)}</b> profilindeki öğrenciler, düzen, yerleşim ve PDF ayarları silinecek. Emin misin?`,'Sıfırla',()=>{
+ S=defS();STU=[];PO=Object.assign({},PO0);PO.sub=curP().name;persist();all();after();pwrite();gst('Profil sıfırlandı.')});
+$('rs2').onclick=()=>confirmDlg('Görünüm ayarlarını sıfırla','Tema ve kartların açık/kapalı durumu varsayılana dönecek. Emin misin?','Sıfırla',()=>{
+ try{localStorage.removeItem('sod_theme');localStorage.removeItem('sod_open')}catch(e){}location.reload()});
+$('rs3').onclick=()=>confirmDlg('Tüm verileri sil','Tüm profiller, öğrenciler, düzenler ve ayarlar <b>kalıcı olarak</b> silinecek. Emin misin?','Hepsini sil',()=>{
+ try{sodKeys().forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()});
 /* PWA manifest */
 (()=>{try{const I='data:image/png;base64,';
  const m={name:'Sınıf Oturma Düzeni',short_name:'Sınıf Düzeni',description:'sebasmobil',display:'standalone',orientation:'any',background_color:'#1F5E4A',theme_color:'#1F5E4A',lang:'tr',start_url:location.href.split('#')[0],
