@@ -245,7 +245,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.67 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.68 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -624,6 +624,7 @@
       <input type="checkbox" id="hasHeader" checked>
       <label for="hasHeader" style="margin:0;font-weight:400;">İlk satır başlık (içe aktarılmasın)</label>
     </div>
+    <div class="checkline" id="importSplitRow" style="display:none;"><input type="checkbox" id="importSurnameFirst"><label for="importSurnameFirst" style="margin:0;font-weight:400;">Soyad önce yazılmış (ilk kelime soyad, ör. "Yılmaz Ahmet")</label></div>
     <div class="msg" id="importWarn" style="display:none;"></div>
     <div class="checkline" id="importSkipRow" style="display:none;"><input type="checkbox" id="importSkip" checked><label for="importSkip" id="importSkipLbl" style="margin:0;font-weight:400;"></label></div>
     <label>Önizleme</label>
@@ -1097,7 +1098,7 @@ const IMPORT_FIELDS = {
   ],
   students: [
     {key:'firstName', label:'Ad', required:true, kw:['ad','adı','adi','isim','first','ilk','öğrenci','ogrenci']},
-    {key:'lastName', label:'Soyad', required:true, kw:['soyad','soyadı','soyadi','last','surname']},
+    {key:'lastName', label:'Soyad', kw:['soyad','soyadı','soyadi','last','surname']},
     {key:'no', label:'Öğrenci No', kw:['numara','no','okulno','öğrenci no','ogrenci no','okul no']},
     {key:'grade', label:'Sınıf', kw:['sınıf','sinif','grade']},
     {key:'section', label:'Şube', kw:['şube','sube','section','şb']},
@@ -1125,7 +1126,7 @@ function openImportModal(file, target){
   }
   importTarget = target;
   $('importTitle').textContent = target==='books' ? 'Kitapları İçe Aktar' : (target==='archive' ? 'Okuma Arşivine Ekle' : 'Öğrencileri İçe Aktar');
-  $('importYear').value = ''; $('importSkip').checked = true;
+  $('importYear').value = ''; $('importSkip').checked = true; $('importSurnameFirst').checked = false;
   const reader = new FileReader();
   reader.onload = e => {
     try{
@@ -1152,7 +1153,9 @@ function guessColumns(fields, header, maxCols){
     const h = String(header[c]||'').toLocaleLowerCase('tr-TR').trim();
     if(!h) continue;
     const tokens = h.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+    const combined = fields.some(x=>x.key==='lastName') && tokens.some(t=>t.startsWith('soyad')) && tokens.some(t=>['ad','adı','adi','isim','öğrenci','ogrenci'].includes(t));
     fields.forEach(f=>{
+      if(combined){ if(f.key==='firstName') cands.push({key:f.key, c, sc:7, req:true}); return; }
       if((f.key==='firstName' || f.key==='title') && tokens.some(t=>t.startsWith('soyad'))) return;
       if(f.key!=='no' && tokens.some(t=>t==='no' || t==='numara' || t.startsWith('numaras'))) return;
       if(f.key==='no' && tokens.some(t=>t==='sıra' || t==='sira' || t==='sirasi')) return;
@@ -1223,6 +1226,13 @@ function mappedRecords(){
       const c = map[f.key];
       rec[f.key] = (c!==undefined && c!=='') ? String(r[c]!==undefined ? r[c] : '').trim() : '';
     });
+    if((importTarget === 'students' || importTarget === 'archive') && !rec.lastName && rec.firstName){
+      const parts = rec.firstName.trim().split(/\s+/);
+      if(parts.length > 1){
+        rec.lastName = $('importSurnameFirst').checked ? parts.shift() : parts.pop();
+        rec.firstName = parts.join(' '); rec._split = true;
+      } else rec._single = true;
+    }
     const requiredKey = fields.find(f=>f.required).key;
     if(rec[requiredKey]) records.push(rec);
   });
@@ -1234,7 +1244,7 @@ function updatePreview(){
   const fields = IMPORT_FIELDS[importTarget];
   const table = $('importPreview');
   const headRow = '<tr>' + fields.map(f=>`<th>${esc(f.label)}</th>`).join('') + '</tr>';
-  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${esc(rec[f.key])}</td>`).join('')+'</tr>').join('');
+  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${f === fields[0] && rec._split ? '✂️ ' : ''}${esc(rec[f.key])}</td>`).join('')+'</tr>').join('');
   table.innerHTML = headRow + (bodyRows || `<tr><td colspan="${fields.length}">(Veri bulunamadı)</td></tr>`);
   if(records.length > 6){
     const tr = document.createElement('tr');
@@ -1249,6 +1259,13 @@ function updateImportWarn(records){
   $('importYearRow').style.display = importTarget === 'archive' ? 'block' : 'none';
   const lines = []; let skipN = 0, skipLbl = '';
   w.style.color = '';
+  const nameTarget = importTarget === 'students' || importTarget === 'archive';
+  $('importSplitRow').style.display = nameTarget ? 'flex' : 'none';
+  if(nameTarget){
+    const sp = records.filter(r=>r._split), one = records.filter(r=>r._single);
+    if(sp.length) lines.push('✂️ ' + sp.length + ' satırda ad-soyad ayrıldı (' + ($('importSurnameFirst').checked ? 'ilk' : 'son') + ' kelime soyad): ' + sp.slice(0,3).map(r=>r.firstName + ' | ' + r.lastName).join(', ') + (sp.length > 3 ? ' …' : ''));
+    if(one.length) lines.push('⚠️ ' + one.length + ' satırda tek kelime var, soyad boş kalacak: ' + one.slice(0,4).map(r=>r.firstName).join(', ') + (one.length > 4 ? ' …' : ''));
+  }
   if(importTarget === 'books'){
     const ex = [], sim = [];
     records.forEach(r=>{ const h = bookArchiveHits(r.title, r.author); if(h.exact.length) ex.push(r.title); else if(h.similar.length) sim.push(r.title); });
@@ -1271,6 +1288,7 @@ function updateImportWarn(records){
 
 $('sheetSelect').addEventListener('change', e=>loadSheetRows(e.target.value));
 $('hasHeader').addEventListener('change', updatePreview);
+$('importSurnameFirst').addEventListener('change', updatePreview);
 
 $('cancelImport').addEventListener('click', ()=>{
   $('importBackdrop').classList.remove('open');
@@ -1306,7 +1324,7 @@ $('confirmImport').addEventListener('click', ()=>{
   }
   const arr = importTarget === 'books' ? state.books : state.students;
   records.forEach(rec=>{
-    rec.id = uid();
+    rec.id = uid(); delete rec._split; delete rec._single;
     if(importTarget === 'books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(fullName(s), rec.ownerName) === 0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = fullName(st); }
     arr.push(rec);
     if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
