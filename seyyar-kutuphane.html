@@ -245,7 +245,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.68 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.69 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -1154,8 +1154,10 @@ function guessColumns(fields, header, maxCols){
     if(!h) continue;
     const tokens = h.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
     const combined = fields.some(x=>x.key==='lastName') && tokens.some(t=>t.startsWith('soyad')) && tokens.some(t=>['ad','adı','adi','isim','öğrenci','ogrenci'].includes(t));
+    const combinedGS = fields.some(x=>x.key==='grade') && fields.some(x=>x.key==='section') && tokens.some(t=>t.startsWith('sınıf') || t.startsWith('sinif')) && tokens.some(t=>t.startsWith('şube') || t.startsWith('sube'));
     fields.forEach(f=>{
       if(combined){ if(f.key==='firstName') cands.push({key:f.key, c, sc:7, req:true}); return; }
+      if(combinedGS){ if(f.key==='grade') cands.push({key:f.key, c, sc:7, req:false}); return; }
       if((f.key==='firstName' || f.key==='title') && tokens.some(t=>t.startsWith('soyad'))) return;
       if(f.key!=='no' && tokens.some(t=>t==='no' || t==='numara' || t.startsWith('numaras'))) return;
       if(f.key==='no' && tokens.some(t=>t==='sıra' || t==='sira' || t==='sirasi')) return;
@@ -1214,6 +1216,7 @@ function currentMapping(){
   return map;
 }
 
+const GRADE_SECTION_RE = /^(\d{1,2})\s*[.\-\/\\]?\s*(?:sınıf|sinif)?\s*[.\-\/\\]?\s*([A-Za-zÇĞİÖŞÜçğıöşü])\s*(?:şubesi|subesi|şube|sube)?\.?$/i;
 function mappedRecords(){
   const map = currentMapping();
   const skipHeader = $('hasHeader').checked;
@@ -1233,6 +1236,10 @@ function mappedRecords(){
         rec.firstName = parts.join(' '); rec._split = true;
       } else rec._single = true;
     }
+    if(importTarget === 'students' && rec.grade && !rec.section){
+      const gm = GRADE_SECTION_RE.exec(String(rec.grade).trim());
+      if(gm){ rec.grade = gm[1]; rec.section = gm[2].toLocaleUpperCase('tr-TR'); rec._gs = true; }
+    }
     const requiredKey = fields.find(f=>f.required).key;
     if(rec[requiredKey]) records.push(rec);
   });
@@ -1244,7 +1251,7 @@ function updatePreview(){
   const fields = IMPORT_FIELDS[importTarget];
   const table = $('importPreview');
   const headRow = '<tr>' + fields.map(f=>`<th>${esc(f.label)}</th>`).join('') + '</tr>';
-  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${f === fields[0] && rec._split ? '✂️ ' : ''}${esc(rec[f.key])}</td>`).join('')+'</tr>').join('');
+  const bodyRows = records.slice(0,6).map(rec=>'<tr>'+fields.map(f=>`<td>${f === fields[0] && (rec._split || rec._gs) ? '✂️ ' : ''}${esc(rec[f.key])}</td>`).join('')+'</tr>').join('');
   table.innerHTML = headRow + (bodyRows || `<tr><td colspan="${fields.length}">(Veri bulunamadı)</td></tr>`);
   if(records.length > 6){
     const tr = document.createElement('tr');
@@ -1264,6 +1271,8 @@ function updateImportWarn(records){
   if(nameTarget){
     const sp = records.filter(r=>r._split), one = records.filter(r=>r._single);
     if(sp.length) lines.push('✂️ ' + sp.length + ' satırda ad-soyad ayrıldı (' + ($('importSurnameFirst').checked ? 'ilk' : 'son') + ' kelime soyad): ' + sp.slice(0,3).map(r=>r.firstName + ' | ' + r.lastName).join(', ') + (sp.length > 3 ? ' …' : ''));
+    const gs = records.filter(r=>r._gs);
+    if(gs.length) lines.push('🏫 ' + gs.length + ' satırda sınıf/şube ayrıldı (sayı sınıf, harf şube): ' + gs.slice(0,3).map(r=>r.grade + ' | ' + r.section).join(', ') + (gs.length > 3 ? ' …' : ''));
     if(one.length) lines.push('⚠️ ' + one.length + ' satırda tek kelime var, soyad boş kalacak: ' + one.slice(0,4).map(r=>r.firstName).join(', ') + (one.length > 4 ? ' …' : ''));
   }
   if(importTarget === 'books'){
@@ -1324,7 +1333,7 @@ $('confirmImport').addEventListener('click', ()=>{
   }
   const arr = importTarget === 'books' ? state.books : state.students;
   records.forEach(rec=>{
-    rec.id = uid(); delete rec._split; delete rec._single;
+    rec.id = uid(); delete rec._split; delete rec._single; delete rec._gs;
     if(importTarget === 'books'){ const st = rec.ownerName ? state.students.find(s=>trCmp(fullName(s), rec.ownerName) === 0) : null; rec.ownerId = st ? st.id : ''; if(st) rec.ownerName = fullName(st); }
     arr.push(rec);
     if(rec.level && !state.levels.includes(rec.level)) state.levels.push(rec.level);
