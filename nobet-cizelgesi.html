@@ -828,11 +828,13 @@ function makePDF(o){
   const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight(),M=o.m,C=o.c,gap=6,TH=11;
   const sw=(PW-2*M-gap*(C-1))/C,fs=C===1?10:C===2?8.5:7.5,lh=fs*0.3528*1.25,px=1.6,py=1.1;
   const n=colN(),short=C>1,title=$('title').value;
-  const rows=last.map(r=>({t:r.type,d:short?p2(r.dt.getDate())+'.'+p2(r.dt.getMonth()+1)+'.'+r.dt.getFullYear():fmt(r.dt),g:short?GUNK[r.dt.getDay()]:GUN[r.dt.getDay()],s:r.st}));
+  const rows=last.map(r=>({t:r.type,d:short?p2(r.dt.getDate())+'.'+p2(r.dt.getMonth()+1)+'.'+String(r.dt.getFullYear()).slice(2):fmt(r.dt),g:short?GUNK[r.dt.getDay()]:GUN[r.dt.getDay()],s:r.st}));
+  const cs=new Set();last.forEach(r=>r.st.forEach(x=>{if(cls(x))cs.add(cls(x))}));
+  const lb=x=>cs.size>1?lab(x):(x.no?x.no+' – ':'')+x.ad;
   doc.setFontSize(fs);
   const mw=(a,b)=>{doc.setFont('F',b?'bold':'normal');return Math.max(...a.map(x=>doc.getTextWidth(x)))};
-  const wD=Math.max(mw(rows.map(r=>r.d)),mw(['Tarih'],1))+2*px;
-  const wG=Math.max(mw(rows.map(r=>r.g)),mw(['Gün'],1))+2*px;
+  const wD=Math.max(mw(rows.map(r=>r.d),1),mw(['Tarih'],1))+2*px+.6;
+  const wG=Math.max(mw(rows.map(r=>r.g),1),mw(['Gün'],1))+2*px+.6;
   const wS=Math.max((sw-wD-wG)/n,5);
   const fit=(t,w,b)=>{doc.setFont('F',b?'bold':'normal');doc.setFontSize(fs);return t?doc.splitTextToSize(t,Math.max(w-2*px,2)):[]};
   const HD={fill:[219,234,254],bold:1},HOL={fill:[254,226,226],color:[185,28,28],bold:1},WK={fill:[243,244,246],color:[119,119,119]};
@@ -862,7 +864,7 @@ function makePDF(o){
   rows.forEach(r=>{
     let dl=fit(r.d,wD,r.t!=='n'),gl=fit(r.g,wG,r.t!=='n'),sl=[],h;
     if(r.t==='n'){
-      for(let i=0;i<n;i++)sl.push(fit(r.s[i]?lab(r.s[i]):'',wS));
+      for(let i=0;i<n;i++)sl.push(fit(r.s[i]?lb(r.s[i]):'',wS));
       h=Math.max(1,dl.length,gl.length,...sl.map(l=>l.length))*lh+2*py;
     }else h=lh+2*py;
     if(y+h>PH-M-4)newStrip();
