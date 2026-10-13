@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  S-Değerlendirme Ölçekleri — Pro 1.0.52
+  S-Değerlendirme Ölçekleri — Pro 1.0.53
   Copyright (C) 2025 sebasmobil
 
   Bu program özgür yazılımdır: Free Software Foundation tarafından yayımlanan
@@ -1053,7 +1053,7 @@ input.score-input:disabled{background:var(--primary-bg);color:var(--muted);}
 <body>
 
 <div class="topbar">
-  <span>Pro 1.0.52</span>
+  <span>Pro 1.0.53</span>
   <span class="sep">|</span>
   <span>© sebasmobil</span>
   <span class="sep">|</span>
@@ -1736,7 +1736,9 @@ function getMappingTargets(){
     {value:'__skip__', label:'— Aktarma —'},
     {value:'no', label:'No / Numara'},
     {value:'name', label:'Adı Soyadı'},
-    {value:'cls', label:'Sınıf / Şube (örn. 5/B)'},
+    {value:'cls', label:'Sınıf / Şube (örn. 5/B) — Birleşik'},
+    {value:'cls_sinif', label:'Sınıf (Ayrı) — Şube ile birleştirilir'},
+    {value:'cls_sube', label:'Şube (Ayrı) — Sınıf ile birleştirilir'},
   ];
   ['proje','dersici','odev'].forEach(type=>{
     DB.modules[type].forEach(mod=>{
@@ -1755,7 +1757,11 @@ function guessTarget(header, usedTargets){
   };
   if(['no','numara','okul no'].some(c=>h.includes(c))) return tryPick('no');
   if(['ad soyad','adi soyadi','isim','ogrenci'].some(c=>h.includes(c))) return tryPick('name');
-  if(['sinif','sube','sinif/sube','sinif sube'].some(c=>h.includes(c))) return tryPick('cls');
+  if(['sinif/sube','sinif sube','sinif-sube'].some(c=>h.includes(c))) return tryPick('cls');
+  if(h==='sinif' || h==='sınıf' || h.match(/^sinif$/)) return tryPick('cls_sinif');
+  if(h==='sube' || h==='şube' || h.match(/^sube$/)) return tryPick('cls_sube');
+  if(h.includes('sinif') && !h.includes('sube')) return tryPick('cls_sinif');
+  if(h.includes('sube') && !h.includes('sinif')) return tryPick('cls_sube');
 
   const baseMap = {
     proje: ['proje'],
@@ -1819,8 +1825,20 @@ function showMappingModal(headers, rows){
     return g;
   });
 
+  const hasSinif = guesses.includes('cls_sinif');
+  const hasSube  = guesses.includes('cls_sube');
+
   const container = document.getElementById('mappingRows');
   let html = '';
+
+  // Info banner when both sınıf and şube detected separately
+  if(hasSinif && hasSube){
+    html += `<div style="background:#e8f4fd;border:1.5px solid #4a7fa5;color:#1a3a5a;border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:10px;line-height:1.5;">
+      ℹ️ <b>Sınıf ve Şube ayrı sütun olarak algılandı.</b><br>
+      Aktarım sırasında otomatik birleştirilecek — örneğin <b>6</b> + <b>B</b> → <b>6/B</b>
+    </div>`;
+  }
+
   headers.forEach((h, i)=>{
     // gather a sample value from first non-empty data row
     let sample = '';
@@ -1828,8 +1846,9 @@ function showMappingModal(headers, rows){
       if(rows[r][i]!=='' && rows[r][i]!=null){ sample = rows[r][i]; break; }
     }
     const headerLabel = (h===''||h==null) ? `(Sütun ${i+1})` : h.toString();
-    html += `<div class="map-row">
-      <div class="map-col-name">${headerLabel}</div>
+    const isSinifOrSube = guesses[i]==='cls_sinif' || guesses[i]==='cls_sube';
+    html += `<div class="map-row" ${isSinifOrSube ? 'style="border-color:#4a7fa5;"' : ''}>
+      <div class="map-col-name">${headerLabel}${isSinifOrSube ? ' <span style="color:#4a7fa5;font-size:.65rem;font-weight:700;">BİRLEŞTİRİLECEK</span>' : ''}</div>
       <select data-colidx="${i}">
         ${targets.map(t=>`<option value="${t.value}" ${guesses[i]===t.value?'selected':''}>${t.label}</option>`).join('')}
       </select>
@@ -1855,15 +1874,21 @@ document.getElementById('mappingOk').addEventListener('click', ()=>{
   const usedTargets = new Set();
   let duplicateTarget = null;
 
+  let idxClsSinif = -1, idxClsSube = -1;
   selects.forEach(sel=>{
     const colIdx = +sel.dataset.colidx;
     const val = sel.value;
     if(val==='__skip__') return;
-    if(usedTargets.has(val)){ duplicateTarget = val; }
-    usedTargets.add(val);
+    // cls_sinif + cls_sube are allowed together — skip duplicate check for them
+    if(val!=='cls_sinif' && val!=='cls_sube'){
+      if(usedTargets.has(val)){ duplicateTarget = val; }
+      usedTargets.add(val);
+    }
     if(val==='no') idxNo = colIdx;
     else if(val==='name') idxName = colIdx;
     else if(val==='cls') idxCls = colIdx;
+    else if(val==='cls_sinif') idxClsSinif = colIdx;
+    else if(val==='cls_sube') idxClsSube = colIdx;
     else {
       const [type, modId] = val.split(':');
       modColMap[type][modId] = colIdx;
@@ -1895,7 +1920,15 @@ document.getElementById('mappingOk').addEventListener('click', ()=>{
     if(!row || row.every(c=>c==='' || c===null || c===undefined)) continue;
     const no = idxNo>=0 ? (row[idxNo]||'').toString().trim() : (count+1).toString();
     const name = idxName>=0 ? (row[idxName]||'').toString().trim() : '';
-    const cls = idxCls>=0 ? (row[idxCls]||'').toString().trim() : '';
+    let cls = '';
+    if(idxCls>=0){
+      cls = (row[idxCls]||'').toString().trim();
+    } else if(idxClsSinif>=0 || idxClsSube>=0){
+      const sinif = idxClsSinif>=0 ? (row[idxClsSinif]||'').toString().trim() : '';
+      const sube  = idxClsSube >=0 ? (row[idxClsSube] ||'').toString().trim() : '';
+      if(sinif && sube) cls = sinif + '/' + sube;
+      else cls = sinif || sube;
+    }
     if(!name) continue;
     const sid = 's'+count;
     DB.students.push({id:sid, no:no, name:name, cls:cls});
