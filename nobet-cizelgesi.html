@@ -41,9 +41,13 @@ body{font-family:system-ui,Arial,sans-serif;margin:0;background:var(--bg);color:
 header{background:var(--head);color:#fff;padding:10px 16px;font-size:18px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px}
 #thm{background:#ffffff26;color:#fff;width:38px;height:38px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
 #thm svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#thm .sun{display:none}
-:root[data-theme=dark] #thm .sun{display:block}
-:root[data-theme=dark] #thm .moon{display:none}
+#thm svg{display:none}
+:root[data-tmode=auto] #thm .au,:root[data-tmode=light] #thm .sun,:root[data-tmode=dark] #thm .moon{display:block}
+header{position:relative}
+#tmenu{position:absolute;right:10px;top:calc(100% + 4px);z-index:30;background:var(--card);color:var(--text);border:1px solid var(--cardb);border-radius:10px;box-shadow:var(--shadow);padding:4px;min-width:220px}
+#tmenu button{display:block;width:100%;text-align:left;background:transparent;color:var(--text);padding:10px;font-size:14px;font-weight:400}
+#tmenu button.on{background:var(--cell);font-weight:600}
+#tmenu button.on::after{content:' ✓'}
 .wrap{display:grid;grid-template-columns:360px minmax(0,1fr);gap:14px;padding:14px;align-items:start}
 @media(max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);padding:10px}}
 .wrap>*{min-width:0}
@@ -93,15 +97,18 @@ button.r{background:#dc2626;color:#fff;padding:4px 8px;font-size:13px}
 @media print{:root[data-theme=dark]{--text:#111;--card:#fff;--tbl:#fff;--th:#dbeafe;--tbd:#999;--holb:#fee2e2;--holt:#b91c1c;--wkb:#f3f4f6;--wkt:#777;--bg:#fff;--cardb:#fff}}
 @media print{header,.set,.bar{display:none}.wrap{display:block;padding:0}.card{box-shadow:none;padding:0}body{background:#fff}}
 </style>
-<script>(function(){var t=null;try{t=localStorage.getItem('nbt_tema')}catch(e){}if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';document.documentElement.setAttribute('data-theme',t)})()</script>
+<script>(function(){var t=null;try{t=localStorage.getItem('nbt_tema')}catch(e){}var m=(t==='light'||t==='dark')?t:'auto';if(m==='auto')t=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';var r=document.documentElement;r.setAttribute('data-theme',t);r.setAttribute('data-tmode',m)})()</script>
 </head>
 <body>
-<div id="vbar" class="np">Pro 1.1 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></div>
+<div id="vbar" class="np">Pro 1.2 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></div>
 <header><span>Nöbetçi Öğrenci Çizelgesi</span>
- <button id="thm" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">
+ <button id="thm" aria-label="Tema" title="Tema">
+  <svg class="au" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
   <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
   <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
- </button></header>
+ </button>
+ <div id="tmenu" hidden><button data-t="auto">Otomatik (telefonu takip et)</button><button data-t="light">Aydınlık</button><button data-t="dark">Karanlık</button></div>
+</header>
 <div class="wrap">
 <div class="set">
  <div class="card">
@@ -953,11 +960,23 @@ $('pgo').onclick=()=>{
   }catch(e){dlg('PDF oluşturulamadı: '+e.message)}
 };
 
-$('thm').onclick=()=>{
-  const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',t);
-  try{localStorage.setItem('nbt_tema',t)}catch(e){}
+let TM='auto';
+try{const t=localStorage.getItem('nbt_tema');if(t==='light'||t==='dark')TM=t}catch(e){}
+const mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+function applyTheme(){
+  const eff=TM==='auto'?(mq&&mq.matches?'dark':'light'):TM,r=document.documentElement;
+  r.setAttribute('data-theme',eff);r.setAttribute('data-tmode',TM);
+  $('tmenu').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===TM));
+}
+if(mq){const f=()=>{if(TM==='auto')applyTheme()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}
+$('thm').onclick=e=>{e.stopPropagation();$('tmenu').hidden=!$('tmenu').hidden};
+$('tmenu').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  TM=b.dataset.t;try{localStorage.setItem('nbt_tema',TM)}catch(x){}
+  applyTheme();
 };
+document.addEventListener('click',()=>{$('tmenu').hidden=true});
+applyTheme();
 let rfManual=false;
 $('rfrom').onchange=()=>{rfManual=$('rfrom').value!==key(new Date());render()};
 function setToday(){if(rfManual)return;const k=key(new Date());if($('rfrom').value!==k){$('rfrom').value=k;render()}}
