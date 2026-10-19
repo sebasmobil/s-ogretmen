@@ -107,7 +107,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 2.0 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 2.1 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -400,14 +400,18 @@ all();after();
   d.addEventListener('toggle',()=>{o[d.dataset.k]=d.open;try{localStorage.setItem('sod_open',JSON.stringify(o))}catch(e){}})})})();
 
 /* tema */
-(()=>{const R=document.documentElement,M=document.querySelector('meta[name="theme-color"]');
- const sys=()=>matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
- const show=t=>{$('tg').textContent=t=='dark'?'☀️':'🌙';if(M)M.content=t=='dark'?'#1a2030':'#ffffff'};
- let t=null;try{t=localStorage.getItem('sod_theme')}catch(e){}
- if(t!=='dark'&&t!=='light')t=null;
- if(t)R.dataset.theme=t;
- show(t||sys());
- $('tg').onclick=()=>{const c=R.dataset.theme||sys(),n=c=='dark'?'light':'dark';R.dataset.theme=n;show(n);try{localStorage.setItem('sod_theme',n)}catch(e){}}})();
+const THEME=(()=>{const R=document.documentElement,M=document.querySelector('meta[name="theme-color"]'),mq=matchMedia('(prefers-color-scheme: dark)');
+ const get=()=>{let t=null;try{t=localStorage.getItem('sod_theme')}catch(e){}return t=='dark'||t=='light'?t:'auto'};
+ const eff=m=>m=='auto'?(mq.matches?'dark':'light'):m;
+ const apply=()=>{const m=get();if(m=='auto')delete R.dataset.theme;else R.dataset.theme=m;
+  $('tg').textContent=m=='auto'?'🌓':m=='dark'?'🌙':'☀️';$('tg').title='Tema: '+(m=='auto'?'Telefonu takip et':m=='dark'?'Karanlık':'Aydınlık');
+  if(M)M.content=eff(m)=='dark'?'#1a2030':'#ffffff'};
+ const set=m=>{try{if(m=='auto')localStorage.removeItem('sod_theme');else localStorage.setItem('sod_theme',m)}catch(e){}apply()};
+ if(mq.addEventListener)mq.addEventListener('change',apply);else if(mq.addListener)mq.addListener(apply);
+ apply();return{get,set}})();
+$('tg').onclick=()=>{const m=THEME.get(),it=[['auto','📱 Telefonu takip et (otomatik)'],['light','☀️ Aydınlık'],['dark','🌙 Karanlık']];
+ dlg(`<h3>Tema</h3><div class="gx">${it.map(([k,l])=>`<button data-th="${k}" class="${k==m?'p':''}" style="justify-self:stretch;text-align:left">${l}${k==m?' ✓':''}</button>`).join('')}</div><p style="font-size:12px;color:var(--mu);margin:8px 0 0">Otomatik seçilince telefonun aydınlık/karanlık ayarı değiştiğinde uygulama da kendiliğinden geçer.</p><div class="act"><button id="dc">Kapat</button></div>`);
+ $('dc').onclick=closeDlg;$('mb').querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{THEME.set(b.dataset.th);closeDlg()})};
 /* PDF */
 const PO0={ori:'l',pap:'A4',title:'Sınıf Oturma Düzeni',sub:'',tcol:'#FFD27A',dfill:'#FFFFFF',dstr:'#444444',lw:'0.3',fm:'1',fmt:'full',bw:'0',cl:1,div:1,he:0,lt:1,lb:1,ld:1,lp:1,date:1,foot:1};
 let PO=Object.assign({},PO0);try{Object.assign(PO,PD.PO||{})}catch(e){}
