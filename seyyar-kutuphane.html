@@ -245,7 +245,7 @@
 <button id="pdfFab" type="button">📄 PDF</button>
 
 <div class="topbar">
-  <span>v1.69 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
+  <span>v1.70 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></span>
   <button class="themeBtn" id="openTheme" type="button">🎨 Tema</button>
 </div>
 
@@ -253,10 +253,12 @@
   <div class="modal">
     <h2>Görünüm</h2>
     <label>Tema</label>
-    <div class="themeToggle">
+    <div class="themeToggle" style="margin-bottom:.4rem;">
+      <button data-theme-choice="auto" type="button">📱 Otomatik</button>
       <button data-theme-choice="light" type="button">☀ Aydınlık</button>
       <button data-theme-choice="dark" type="button">🌙 Karanlık</button>
     </div>
+    <div class="count" id="themeHint" style="margin:0 0 1rem;"></div>
     <label>Renk Teması</label>
     <div class="paletteSwatches">
       <button data-palette-choice="green" style="background:#B23A2E" title="Kırmızı"></button>
@@ -717,16 +719,37 @@ let profiles = bootstrapProfiles();
 
 // --- Theme & color palette ---
 const THEME_KEY = 'kb-theme-v1';
-function loadTheme(){ try{ const r = localStorage.getItem(THEME_KEY); if(r) return JSON.parse(r); }catch(e){} return {theme:'dark', palette:'green'}; }
+function loadTheme(){
+  try{
+    const r = localStorage.getItem(THEME_KEY);
+    if(r){ const t = JSON.parse(r); if(t && typeof t === 'object'){ if(!['auto','light','dark'].includes(t.theme)) t.theme = 'auto'; if(!t.palette) t.palette = 'green'; return t; } }
+  }catch(e){}
+  return {theme:'auto', palette:'green'};
+}
 function saveTheme(t){ try{ localStorage.setItem(THEME_KEY, JSON.stringify(t)); }catch(e){} }
+const systemDarkQuery = (typeof window !== 'undefined' && window.matchMedia) ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+function effectiveTheme(t){
+  if(t.theme === 'light' || t.theme === 'dark') return t.theme;
+  return (systemDarkQuery && !systemDarkQuery.matches) ? 'light' : 'dark';
+}
 function applyTheme(t){
-  document.documentElement.setAttribute('data-theme', t.theme);
+  const eff = effectiveTheme(t);
+  document.documentElement.setAttribute('data-theme', eff);
   document.documentElement.setAttribute('data-palette', t.palette);
   document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active', b.dataset.themeChoice===t.theme));
   document.querySelectorAll('[data-palette-choice]').forEach(b=>b.classList.toggle('active', b.dataset.paletteChoice===t.palette));
+  const hint = document.getElementById('themeHint');
+  if(hint) hint.textContent = t.theme === 'auto' ? 'Otomatik: telefonun karanlık/aydınlık ayarını izler (şu an: ' + (eff === 'light' ? 'aydınlık' : 'karanlık') + ').' : '';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', eff === 'light' ? '#FAFAF8' : '#0a0b0e');
 }
 let themeState = loadTheme();
 applyTheme(themeState);
+if(systemDarkQuery){
+  const onSys = ()=>{ if(themeState.theme === 'auto') applyTheme(themeState); };
+  if(systemDarkQuery.addEventListener) systemDarkQuery.addEventListener('change', onSys); else if(systemDarkQuery.addListener) systemDarkQuery.addListener(onSys);
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && themeState.theme === 'auto') applyTheme(themeState); });
 $('openTheme').addEventListener('click', ()=>{ applyTheme(themeState); $('themeBackdrop').classList.add('open'); });
 $('closeTheme').addEventListener('click', ()=>$('themeBackdrop').classList.remove('open'));
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click', ()=>{
@@ -2935,7 +2958,8 @@ attachTwoStep($('confirmFullRestore'), 'Geri Yükle', '⚠️ TÜM UYGULAMANIN �
     saveUI();
     booksOpen = !!ui.books; studentsOpen = !!ui.students;
     matrixName = ui.reportNameStyle || 'full';
-    themeState = (data.theme && typeof data.theme === 'object') ? data.theme : {theme:'dark', palette:'green'};
+    themeState = (data.theme && typeof data.theme === 'object') ? data.theme : {theme:'auto', palette:'green'};
+    if(!['auto','light','dark'].includes(themeState.theme)) themeState.theme = 'auto';
     saveTheme(themeState);
     applyTheme(themeState);
     $('det1').open = !!ui.hist1; $('det2').open = !!ui.hist2;
@@ -2982,7 +3006,7 @@ attachTwoStep($('resetUiBtn'), '🎨 Görünüm/Arayüz Tercihlerini Sıfırla',
   saveUI();
   booksOpen = false; studentsOpen = false;
   matrixOrient = 'p'; matrixName = 'full'; listOrient = 'p';
-  themeState = {theme:'dark', palette:'green'};
+  themeState = {theme:'auto', palette:'green'};
   saveTheme(themeState);
   applyTheme(themeState);
   $('det1').open = false; $('det2').open = false;
