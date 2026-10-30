@@ -15,9 +15,10 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 header{background:var(--card);border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding:10px 16px}
 h1{font-size:17px;margin:0;font-weight:700}h3{margin:0 0 10px}
-nav{display:flex;gap:4px}
-nav button{border:0;background:none;color:var(--mut);padding:8px 18px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:12;display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--ln)}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:13px 8px;border-radius:10px;font:inherit;font-size:16px;font-weight:700;cursor:pointer}
 nav button.on{background:var(--acs);color:var(--ac)}
+body{padding-bottom:84px}
 main{padding:16px;max-width:1000px;margin:auto}
 section{display:none}section.on{display:block}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:12px}
@@ -37,7 +38,12 @@ button:disabled{opacity:.4}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
 .cc{border:1px solid var(--ln);background:var(--bg);border-radius:18px;padding:7px 14px;font-weight:600;cursor:pointer}.cc.on{background:var(--ac);border-color:var(--ac);color:var(--onac)}
 .sw{width:38px;height:38px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--ln);cursor:pointer;padding:0}.sw.on{box-shadow:0 0 0 3px var(--ink)}
-#thm{margin-left:auto;padding:6px 10px;font-size:18px;line-height:1}
+#tm{display:flex;margin-left:auto;border:1px solid var(--ln);border-radius:10px;overflow:hidden}
+#tm button{border:0;background:none;color:var(--mut);width:38px;height:34px;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#tm button.on{background:var(--acs);color:var(--ac)}
+#tm svg{width:20px;height:20px}
+#set{padding:6px 10px;font-size:18px;line-height:1}
+#thm{margin-left:0;padding:6px 10px;font-size:18px;line-height:1}
 .ck2{display:flex;gap:8px;align-items:center;padding:6px 0}
 .wrap{overflow:auto;max-height:calc(100vh - 230px);border:1px solid var(--ln);border-radius:10px;background:var(--card)}
 table{border-collapse:collapse;width:100%}th,td{padding:8px 10px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
@@ -74,22 +80,28 @@ td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
 .okb{width:100%;margin-top:8px;height:48px;border:0;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer}
 .okb.nx{background:#f7b6d6;color:#6b1b44}.okb.sv{background:#fbe3a0;color:#5b4500}
 .okb:active,.okb.pr{filter:brightness(.9)}
-#fab{position:fixed;right:14px;bottom:18px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
-#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
+#fab{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
 #toast.warn,#toast.ok{background:#e5384a;color:#fff;font-size:19px;font-weight:700;padding:14px 22px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;width:max-content;max-width:90vw;z-index:60}
 #toast.ok{background:#16a34a}
 #toast.warn.on{animation:shk .35s}
 @keyframes shk{25%{transform:translateX(calc(-50% - 9px))}75%{transform:translateX(calc(-50% + 9px))}}
+.rl{display:flex;flex-direction:column;gap:8px}.rl>button{text-align:left}.rl small{display:block;color:var(--mut);font-weight:400}
+hr{border:0;border-top:1px solid var(--ln);margin:12px 0}
+textarea{background:var(--bg);border:1px solid var(--ln);border-radius:7px;padding:8px;color:var(--ink);font:inherit}
+#mclose{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#e5484d;color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}#mclose:active{filter:brightness(.9)}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 @media(pointer:coarse){.kh{display:none}}
-@media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px}nav{flex:1}nav button{flex:1;padding:9px 4px}.wrap{max-height:none}}
+@media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
 </style>
 </head>
 <body>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button></nav>
-  <button class="g" id="thm" title="Tema" aria-label="Tema">🎨</button>
+  <div id="tm" role="group" aria-label="Görünüm"><button data-m="light" title="Aydınlık" aria-label="Aydınlık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg></button><button data-m="dark" title="Karanlık" aria-label="Karanlık"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg></button><button data-m="auto" title="Otomatik (sistem)" aria-label="Otomatik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></div>
+  <button class="g" id="thm" title="Renk teması" aria-label="Renk teması">🎨</button>
+  <button class="g" id="set" title="Ayarlar" aria-label="Ayarlar">⚙️</button>
 </header>
 <main>
 
@@ -159,7 +171,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
 <div id="sm" class="ov"><div class="dlg sd">
-  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span></div><button class="g" id="mclose">✕ Kapat</button></div>
+  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span></div><button id="mclose" aria-label="Kapat" title="Kapat">✕</button></div>
   <div id="mqs"></div>
   <div class="mdisp"><span id="mql"></span><b id="mval"></b><small id="mmax"></small></div>
   <div class="ka" id="ka"><button class="r" data-a="nul">Boş geç</button><button class="bl" data-a="one">Bu soru tam</button><button class="gr" data-a="all">Hepsi tam</button></div>
@@ -269,7 +281,7 @@ function mR(){const n=arr.length;$('#mnm').textContent=ms.name;
  $('#mmeta').textContent=[ms.no,ms.cls].filter(Boolean).join(' · ')+` · Toplam ${T(arr)||0}/${sum(xe.max)}`;
  $('#mqs').innerHTML=arr.map((v,k)=>`<button class="chip${k===mc?' on':''}${v!=null?' f':''}" data-i="${k}">${k+1}<small>${fmt(v)}</small></button>`).join('');
  $('#mql').textContent='Soru '+(mc+1);$('#mval').textContent=(!fresh&&mb!=='')?mb:(arr[mc]==null?'–':fmt(arr[mc]));$('#mmax').textContent='/ '+fmt(xe.max[mc]);
- $('#ok').textContent=mc===n-1?'Kaydet ve kapat ✓':'Tamam ›';$('#ok').className='okb '+(mc===n-1?'sv':'nx');
+ $('#ok').textContent=mc===n-1?'Kapat':'Tamam ›';$('#ok').className='okb '+(mc===n-1?'sv':'nx');
  const on=$('#mqs .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'})}
 function closeScore(){if(!$('#sm').classList.contains('on'))return;$('#sm').classList.remove('on');save();
  const r=document.querySelector(`#el [data-id="${ms.id}"]`);if(r){if($('#emiss').checked&&arr.some(v=>v!=null))r.remove();else r.outerHTML=rowH(xe,ms)}prog();
@@ -377,7 +389,7 @@ function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütü
   const add=(n,R)=>{const ws=XLSX.utils.aoa_to_sheet([hd,...R.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},...ex.max.map(()=>({wch:9})),{wch:9}];XLSX.utils.book_append_sheet(wb,ws,n)};
   add(nm(ex.title,'Tümü'),L);if(per)ex.cls.slice().sort(cmpC).forEach(c=>add(nm(ex.title,lab(c)),L.filter(s=>s.cls===c)))});
  XLSX.writeFile(wb,(multi?'yazililar':list[0].title).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
-(()=>{const f=$('#fab'),place=(x,y)=>{x=Math.max(0,Math.min(innerWidth-56,x));y=Math.max(0,Math.min(innerHeight-56,y));f.style.left=x+'px';f.style.top=y+'px';f.style.right=f.style.bottom='auto'};
+(()=>{const f=$('#fab'),place=(x,y)=>{x=Math.max(0,Math.min(innerWidth-56,x));y=Math.max(0,Math.min(innerHeight-140,y));f.style.left=x+'px';f.style.top=y+'px';f.style.right=f.style.bottom='auto'};
  if(S.fab)place(S.fab[0],S.fab[1]);let st=null;
  f.onpointerdown=e=>{const r=f.getBoundingClientRect();st={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY,m:false};f.setPointerCapture(e.pointerId)};
  f.onpointermove=e=>{if(!st)return;if(Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6)st.m=true;if(st.m)place(e.clientX-st.dx,e.clientY-st.dy)};
@@ -387,24 +399,83 @@ function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütü
 const PAL=[['Varsayılan',null],['Mavi','#2563eb'],['Gök mavisi','#0284c7'],['Turkuaz','#0891b2'],['Yeşil','#16a34a'],['Çimen','#65a30d'],['Sarı','#eab308'],['Turuncu','#ea580c'],['Kırmızı','#dc2626'],['Gül','#e11d48'],['Pembe','#db2777'],['Mor','#7c3aed'],['İndigo','#4f46e5'],['Kahve','#92400e'],['Gri','#475569']];
 function applyTheme(){const t=S.theme||{mode:'auto',ac:null},r=document.documentElement,st=r.style;
  r.dataset.t=t.mode==='auto'?'':t.mode;
+ document.querySelectorAll('#tm button').forEach(b=>b.classList.toggle('on',b.dataset.m===(t.mode||'auto')));
  if(t.ac){const n=parseInt(t.ac.slice(1),16),L=(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255;
   st.setProperty('--ac',t.ac);st.setProperty('--acs','color-mix(in srgb,'+t.ac+' 16%,var(--card))');st.setProperty('--onac',L>.62?'#111':'#fff')}
  else['--ac','--acs','--onac'].forEach(k=>st.removeProperty(k))}
 function thDlg(){const t=S.theme||(S.theme={mode:'auto',ac:null}),g=$('#gd');
- g.innerHTML=`<h3>Tema</h3><div class="hint">Görünüm</div>
- <div class="chips">${[['auto','Sistem'],['light','Aydınlık'],['dark','Karanlık']].map(([k,n])=>`<button class="cc${t.mode===k?' on':''}" data-m="${k}">${n}</button>`).join('')}</div>
- <div class="hint">Renk</div>
+ g.innerHTML=`<h3>Renk teması</h3>
  <div class="chips">${PAL.map(([n,c],i)=>`<button class="sw${t.ac===c?' on':''}" data-i="${i}" title="${n}" aria-label="${n}" style="background:${c||'#0e6b63'}"></button>`).join('')}</div>
  <label class="ck2">Kendi rengim <input type="color" id="thc" value="${t.ac||'#0e6b63'}" style="padding:0;width:46px;height:34px"></label>
  <div class="row" style="justify-content:flex-end;margin:6px 0 0"><button class="b" id="thok">Tamam</button></div>`;
  $('#gm').classList.add('on');
  g.onclick=e=>{const b=e.target.closest('button');if(!b)return;
   if(b.id==='thok')return closeG();
-  if(b.dataset.m)t.mode=b.dataset.m;else if(b.dataset.i)t.ac=PAL[+b.dataset.i][1];else if(b.classList.contains('sw'))t.ac=null;
+  if(b.dataset.i)t.ac=PAL[+b.dataset.i][1];else if(b.classList.contains('sw'))t.ac=null;
   save();applyTheme();thDlg()};
  $('#thc').oninput=e=>{t.ac=e.target.value;applyTheme()};
  $('#thc').onchange=()=>{save();thDlg()}}
 $('#thm').onclick=thDlg;
+$('#tm').onclick=e=>{const b=e.target.closest('button');if(!b)return;(S.theme||(S.theme={mode:'auto',ac:null})).mode=b.dataset.m;save();applyTheme()};
+/* Ayarlar: yedekleme ve sıfırlama */
+const KEYS=()=>Object.keys(localStorage).filter(k=>k.indexOf('hng')===0&&k!=='hng');
+function mkBackup(){const d={};KEYS().forEach(k=>d[k]=localStorage.getItem(k));d.hng2=JSON.stringify(S);
+ return JSON.stringify({app:'hizli-not-girisi',v:1,date:new Date().toISOString(),data:d})}
+function dl(name,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},600)}
+function doRestore(txt){let o,n;try{o=JSON.parse(txt)}catch(e){return toast('Yedek okunamadı')}
+ if(!o||o.app!=='hizli-not-girisi'||!o.data||!o.data.hng2)return toast('Bu bir Hızlı Not Girişi yedeği değil');
+ try{n=JSON.parse(o.data.hng2)}catch(e){return toast('Yedek bozuk')}
+ if(!Array.isArray(n.st)||!Array.isArray(n.ex))return toast('Yedek bozuk');
+ const dt=o.date?new Date(o.date).toLocaleString('tr'):'';
+ if(!confirm(`Yedek ${dt}\n${n.st.length} öğrenci, ${n.ex.length} yazılı.\n\nŞu anki tüm veriler bu yedekle DEĞİŞTİRİLECEK. Devam edilsin mi?`))return;
+ n.ex.forEach(e=>{e.sc=e.sc||{};e.cls=e.cls||[]});
+ KEYS().forEach(k=>localStorage.removeItem(k));
+ Object.keys(o.data).forEach(k=>{if(k.indexOf('hng')===0&&k!=='hng')try{localStorage.setItem(k,o.data[k])}catch(e){}});
+ S=n;sel.clear();cur=null;applyTheme();go('ex');closeG();toast('Yedek geri yüklendi')}
+const cleanSc=()=>{const ids=new Set(S.st.map(s=>s.id));S.ex.forEach(e=>Object.keys(e.sc).forEach(k=>{if(!ids.has(k))delete e.sc[k]}))};
+function afterReset(msg){save();sel.clear();if(cur&&!exById(cur))cur=null;go(view);toast(msg);setDlg('r')}
+function setDlg(tab){tab=tab||'b';const g=$('#gd');
+ const tabs=`<div class="chips"><button class="cc${tab==='b'?' on':''}" data-t="b">Yedekleme</button><button class="cc${tab==='r'?' on':''}" data-t="r">Sıfırlama</button></div>`;
+ let body;
+ if(tab==='b')body=`<p class="hint">Öğrenciler, yazılılar, girilen notlar, tema ve renk, Excel simgesinin yeri dahil uygulamadaki her şey tek dosyada yedeklenir. Şu an: ${S.st.length} öğrenci · ${S.ex.length} yazılı.</p>
+ <div class="row"><button class="b" data-a="dl">Yedeği indir</button><button class="g" data-a="cp">Panoya kopyala</button></div>
+ <hr><div class="hint" style="margin-bottom:6px">Geri yükle</div>
+ <div class="row"><button class="g" data-a="pick">Yedek dosyası seç</button></div>
+ <details><summary class="hint">Metin olarak yapıştır</summary><textarea id="bt" rows="4" style="width:100%;margin:8px 0" placeholder="Yedek metnini buraya yapıştırın"></textarea><button class="g" data-a="rs">Geri yükle</button></details>
+ <p class="hint">Geri yükleme şu anki tüm verilerin yerini alır.</p>`;
+ else body=`<p class="hint">Silinenler geri getirilemez. Önce <b>Yedekleme</b> sekmesinden yedek almanız önerilir.</p>
+ <div class="rl">
+ <button class="g d" data-r="scores">Tüm notları sıfırla<small>Yazılılar ve öğrenciler kalır</small></button>
+ <button class="g d" data-r="exams">Tüm yazılıları sil<small>Notlarıyla birlikte; öğrenciler kalır</small></button>
+ <button class="g d" data-r="students">Tüm öğrencileri sil<small>Yazılılar kalır; girilen notlar da silinir</small></button>
+ <div class="row" style="margin:0"><select id="rx" style="flex:1">${S.ex.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')||'<option value="">Yazılı yok</option>'}</select><button class="g d" data-r="exscores">Notlarını sıfırla</button><button class="g d" data-r="exdel">Yazılıyı sil</button></div>
+ <div class="row" style="margin:0"><select id="rc" style="flex:1">${classes().map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'}</select><button class="g d" data-r="cls">Sınıfı sil</button></div>
+ <button class="g d" data-r="theme">Tema ve renkleri sıfırla</button>
+ <button class="g d" data-r="fab">Excel simgesinin yerini sıfırla</button>
+ <button class="b" style="background:var(--er);color:#fff" data-r="all">Tüm uygulamayı sıfırla</button></div>`;
+ g.innerHTML=`<h3>Ayarlar</h3>${tabs}${body}<div class="row" style="justify-content:flex-end;margin:10px 0 0"><button class="g" data-a="x">Kapat</button></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.t)return setDlg(d.t);
+  if(d.a==='x')return closeG();
+  if(d.a==='dl'){dl('hizli-not-girisi-yedek-'+new Date().toISOString().slice(0,10)+'.json',mkBackup());return toast('Yedek indirildi')}
+  if(d.a==='cp'){const t=mkBackup();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Yedek panoya kopyalandı'),()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Yedek panoya kopyalandı')}catch(x){toast('Kopyalanamadı')}ta.remove()});return}
+  if(d.a==='pick'){const f=document.createElement('input');f.type='file';f.accept='.json,application/json,text/plain';f.onchange=async()=>{if(f.files[0])doRestore(await f.files[0].text())};f.click();return}
+  if(d.a==='rs'){const t=$('#bt').value.trim();return t?doRestore(t):toast('Önce yedek metnini yapıştırın')}
+  const r=d.r;if(!r)return;
+  const ex=exById($('#rx')&&$('#rx').value),c=classes()[+($('#rc')?$('#rc').value:-1)];
+  if(r==='scores'){if(confirm('Tüm yazılılardaki girilmiş notlar silinsin mi?\nYazılılar ve öğrenciler kalır.')){S.ex.forEach(e=>e.sc={});afterReset('Tüm notlar sıfırlandı')}}
+  else if(r==='exams'){if(S.ex.length&&confirm(S.ex.length+' yazılı notlarıyla birlikte silinsin mi?\nÖğrenci listesi kalır.')){S.ex=[];afterReset('Yazılılar silindi')}}
+  else if(r==='students'){if(S.st.length&&confirm(S.st.length+' öğrenci silinsin mi?\nGirilen notlar da silinir, yazılılar kalır.')){S.st=[];cleanSc();afterReset('Öğrenciler silindi')}}
+  else if(r==='exscores'){if(!ex)return toast('Yazılı seçin');if(confirm(`“${ex.title}” yazılısının notları silinsin mi?`)){ex.sc={};afterReset('Notlar sıfırlandı')}}
+  else if(r==='exdel'){if(!ex)return toast('Yazılı seçin');if(confirm(`“${ex.title}” yazılısı ve notları silinsin mi?`)){S.ex=S.ex.filter(x=>x!==ex);afterReset('Yazılı silindi')}}
+  else if(r==='cls'){if(c===undefined)return toast('Sınıf seçin');const n=S.st.filter(s=>s.cls===c).length;
+   if(confirm(`${lab(c)} sınıfındaki ${n} öğrenci silinsin mi?\nNotları da silinir.`)){S.st=S.st.filter(s=>s.cls!==c);S.ex.forEach(e=>e.cls=e.cls.filter(x=>x!==c));cleanSc();afterReset('Sınıf silindi')}}
+  else if(r==='theme'){if(confirm('Görünüm ve renk teması varsayılana dönsün mü?')){S.theme=null;applyTheme();afterReset('Tema sıfırlandı')}}
+  else if(r==='fab'){const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';S.fab=null;afterReset('Simge yeri sıfırlandı')}
+  else if(r==='all'){if(prompt('TÜM veriler (öğrenciler, yazılılar, notlar, tema) silinecek.\nOnaylamak için SIL yazın.')==='SIL'){KEYS().forEach(k=>localStorage.removeItem(k));S={st:[],ex:[],fab:null,theme:null};cur=null;applyTheme();const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';afterReset('Uygulama sıfırlandı')}}}}
+$('#set').onclick=()=>setDlg('b');
+
 applyTheme();
 
 /* Her yazı alanına dokununca içeriği seç */
