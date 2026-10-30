@@ -7,116 +7,112 @@
 <!-- sebasmobil · Lisans: AGPL v3.0 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f1f4f6;--card:#fff;--ink:#17252f;--mut:#667785;--ln:#d5dde3;--ac:#0e6b63;--acs:#dff1ee;--er:#c0392b;--ers:#fde7e4;color-scheme:light dark}
-@media(prefers-color-scheme:dark){:root{--bg:#10181d;--card:#18232a;--ink:#e6eef2;--mut:#8ea0ad;--ln:#2b3a44;--ac:#3fbfb0;--acs:#173a37;--er:#ff7b6b;--ers:#3d1f1b}}
-*{box-sizing:border-box}
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--mut:#6b7280;--ln:#e0e3e8;--ac:#0e6b63;--acs:#e0f2ef;--er:#c0392b;--onac:#fff;color-scheme:light dark}
+:root[data-t=light]{color-scheme:light}
+:root[data-t=dark]{--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e}}
+*{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{background:var(--card);border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 16px}
-h1{font-size:17px;margin:0;font-weight:700}
-nav{display:flex;gap:4px;flex:1}
-nav button{border:0;background:none;color:var(--mut);padding:8px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+header{background:var(--card);border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding:10px 16px}
+h1{font-size:17px;margin:0;font-weight:700}h3{margin:0 0 10px}
+nav{display:flex;gap:4px}
+nav button{border:0;background:none;color:var(--mut);padding:8px 18px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
 nav button.on{background:var(--acs);color:var(--ac)}
-main{padding:16px;max-width:1200px;margin:auto}
+main{padding:16px;max-width:1000px;margin:auto}
 section{display:none}section.on{display:block}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:12px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
 input,select,button{font:inherit;color:var(--ink)}
 input,select{background:var(--bg);border:1px solid var(--ln);border-radius:7px;padding:7px 9px;min-width:0}
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
-button.b{background:var(--ac);color:#fff;border:0;border-radius:7px;padding:8px 14px;font-weight:600;cursor:pointer}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button.b{background:var(--ac);color:var(--onac);border:0;border-radius:7px;padding:8px 14px;font-weight:600;cursor:pointer}
 button.g{background:none;border:1px solid var(--ln);border-radius:7px;padding:7px 12px;cursor:pointer}
 button.d{color:var(--er);border-color:var(--er)}
-button.b:disabled,button.g:disabled{opacity:.4;cursor:default}
-.mx{display:flex;flex-wrap:wrap;gap:8px}
-.mx label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:2px}
-.mx input{width:70px;text-align:center;font-size:15px}
-.wrap{overflow:auto;max-height:calc(100vh - 190px);border:1px solid var(--ln);border-radius:10px;background:var(--card)}
-table{border-collapse:collapse;width:100%}
-th,td{padding:4px 8px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
-th{position:sticky;top:0;background:var(--card);z-index:2;font-size:13px;color:var(--mut);box-shadow:0 1px 0 var(--ln)}
-th small{display:block;font-weight:400}
-.sc{width:56px;text-align:center;font-size:16px;font-variant-numeric:tabular-nums;padding:6px 2px}
-.sc.err{background:var(--ers);border-color:var(--er)}
-#gb tr:focus-within{background:var(--acs)}
-.nm{font-weight:600}.tt{font-weight:700;font-variant-numeric:tabular-nums}
-.e{width:100%;background:transparent;border-color:transparent}.e:hover{border-color:var(--ln)}
-td.n{width:90px}td.c{width:110px}
+button:disabled{opacity:.4}
 .hint{color:var(--mut);font-size:13px}
-kbd{background:var(--bg);border:1px solid var(--ln);border-radius:4px;padding:0 5px;font-size:12px}
-#map{display:none}
-#map.on{display:block}
-.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:10px}
+.et{flex:1;font-size:17px}
+.bar{height:6px;background:var(--bg);border-radius:4px;margin:8px 0 2px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.mx{display:flex;flex-wrap:wrap;gap:8px}.mx label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:2px}.mx input{width:66px;text-align:center;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.cc{border:1px solid var(--ln);background:var(--bg);border-radius:18px;padding:7px 14px;font-weight:600;cursor:pointer}.cc.on{background:var(--ac);border-color:var(--ac);color:var(--onac)}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--ln);cursor:pointer;padding:0}.sw.on{box-shadow:0 0 0 3px var(--ink)}
+#thm{margin-left:auto;padding:6px 10px;font-size:18px;line-height:1}
+.ck2{display:flex;gap:8px;align-items:center;padding:6px 0}
+.wrap{overflow:auto;max-height:calc(100vh - 230px);border:1px solid var(--ln);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%}th,td{padding:8px 10px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);font-size:13px;color:var(--mut);box-shadow:0 1px 0 var(--ln)}
+td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
+#el{display:flex;flex-direction:column;border:1px solid var(--ln);border-radius:10px;background:var(--card);overflow:hidden}
+.sr{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--ln);border-left:5px solid transparent;padding:12px 12px;font-size:16px;cursor:pointer}
+.sr:hover{background:var(--bg)}.sn{display:flex;flex-direction:column}.sn small{color:var(--mut);font-size:13px}
+.sr.part{border-left-color:#f59e0b}.sr.done{border-left-color:#22a559;background:var(--acs)}.sp{font-weight:700;white-space:nowrap}
+#map{display:none}#map.on{display:block}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px}
 .mg label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
-.mg select{font-size:14px}
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
-#toast.on{opacity:1}
-footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
-.ph{display:none}
-button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-#t-m{max-width:480px;margin:0 auto;user-select:none;-webkit-user-select:none}
-.mtop{display:flex;gap:8px;align-items:center;margin-bottom:8px}.mtop select{flex:1}
-.mcard{padding:10px}
-.mnav{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.mwho{flex:1;text-align:center;display:flex;flex-direction:column;min-width:0}
-.mwho b{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.big{width:52px;height:52px;font-size:26px;padding:0}
-#mqs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:4px}
-.chip{flex:0 0 auto;min-width:48px;height:50px;border:1px solid var(--ln);background:var(--bg);border-radius:8px;font-weight:700;line-height:1.15;cursor:pointer}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;align-items:center;justify-content:center;padding:8px}.ov.on{display:flex}
+.dlg{background:var(--card);border-radius:16px;padding:14px;width:100%;max-width:440px;max-height:96vh;overflow:auto}
+.sd{max-width:none;width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;display:flex;flex-direction:column;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));overflow:hidden;user-select:none;-webkit-user-select:none}
+#sm{padding:0}
+.sd>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto;flex:none}
+.mnav{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.mwho{flex:1;display:flex;flex-direction:column;min-width:0}.mwho b{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mqs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.chip{flex:0 0 auto;min-width:46px;height:48px;border:1px solid var(--ln);background:var(--bg);border-radius:8px;font-weight:700;line-height:1.15;cursor:pointer}
 .chip small{display:block;font-weight:400;color:var(--mut);min-height:14px}
-.chip.f{border-color:var(--ac)}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}.chip.on small{color:#fff}
-.mdisp{text-align:center;padding:4px 0 10px}
-.mdisp span{display:block;color:var(--mut)}
-.mdisp b{font-size:48px;font-variant-numeric:tabular-nums;line-height:1.1}
-.mdisp small{font-size:18px;color:var(--mut);margin-left:6px}
-.kp,.ka{display:grid;gap:8px}
-.kp{grid-template-columns:repeat(3,1fr)}.ka{grid-template-columns:1fr 1fr;margin-top:8px}
-.kp button{height:58px;font-size:26px;font-weight:600;background:var(--bg);border:1px solid var(--ln);border-radius:10px;cursor:pointer}
-.ka button{height:52px;font-size:16px;font-weight:600;border-radius:10px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
-.kp button:active,.ka button:active{background:var(--acs)}
-.ka .p{background:var(--ac);color:#fff;border-color:var(--ac)}
-#pick{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20}
-#pick.on{display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);width:100%;max-width:520px;max-height:85vh;border-radius:16px 16px 0 0;padding:12px;display:flex;flex-direction:column}
-#pl{overflow:auto}
-#pl button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--ln);padding:13px 6px;font-size:16px;cursor:pointer}
-@media(max-width:760px){
-.ph{display:block}.dk{display:none}
-main{padding:10px}input,select{font-size:16px}
-header{padding:8px 10px;gap:6px 10px}h1{flex:1}
-nav{order:3;flex-basis:100%}nav button{flex:1;padding:9px 4px;font-size:14px}
-header>.hint{display:none}.wrap{max-height:none}}
+.chip.f{border-color:#22a559}.chip.on{background:#f7b6d6;color:#6b1b44;border-color:#f7b6d6}.chip.on small{color:#6b1b44}
+.mdisp{text-align:center;padding:2px 0 8px}.mdisp span{display:block;color:var(--mut);font-size:13px}
+.mdisp b{font-size:52px;font-variant-numeric:tabular-nums;line-height:1.1}.mdisp small{font-size:17px;color:var(--mut);margin-left:6px}
+.ka{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.ka button{height:46px;font-size:14.5px;font-weight:700;border:0;border-radius:10px;cursor:pointer}
+.r{background:#f6b3b3;color:#5c1f1f}.bl{background:#b3d2f6;color:#1c3a5e}.gr{background:#b3e4c1;color:#1b4a2b}
+.sd>.kp{flex:1;min-height:0}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
+.kp button{height:100%;min-height:44px;font-size:30px;font-weight:600;background:var(--bg);border:1px solid var(--ln);border-radius:10px;cursor:pointer;transition:transform .08s}
+.kp button:active,.kp button.pr{background:#ffd9a8;color:#5b3300;border-color:#ffd9a8;transform:scale(.94)}
+.ka button:active,.ka button.pr{filter:brightness(.9);transform:scale(.95)}
+.okb{width:100%;margin-top:8px;height:48px;border:0;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer}
+.okb.nx{background:#f7b6d6;color:#6b1b44}.okb.sv{background:#fbe3a0;color:#5b4500}
+.okb:active,.okb.pr{filter:brightness(.9)}
+#fab{position:fixed;right:14px;bottom:18px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
+#toast.warn,#toast.ok{background:#e5384a;color:#fff;font-size:19px;font-weight:700;padding:14px 22px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;width:max-content;max-width:90vw;z-index:60}
+#toast.ok{background:#16a34a}
+#toast.warn.on{animation:shk .35s}
+@keyframes shk{25%{transform:translateX(calc(-50% - 9px))}75%{transform:translateX(calc(-50% + 9px))}}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
+@media(pointer:coarse){.kh{display:none}}
+@media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px}nav{flex:1}nav button{flex:1;padding:9px 4px}.wrap{max-height:none}}
 </style>
 </head>
 <body>
 <header>
   <h1>Hızlı Not Girişi</h1>
-  <nav>
-    <button data-t="q" class="on">1. Sorular</button>
-    <button data-t="s">2. Öğrenciler</button>
-    <button data-t="g" class="dk">3. Not girişi</button>
-    <button data-t="m" class="ph">3. Telefonla giriş</button>
-  </nav>
-  <label class="hint"><input type="checkbox" id="per" checked> Sınıf sayfaları da olsun</label>
-  <button class="b" id="xl">Excel'e aktar</button>
+  <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button></nav>
+  <button class="g" id="thm" title="Tema" aria-label="Tema">🎨</button>
 </header>
 <main>
 
-<section id="t-q" class="on">
-  <div class="card">
-    <div class="row">
-      <input id="exam" placeholder="Sınav adı (ör. 8. Sınıf Türkçe 1. Yazılı)" style="flex:1;min-width:220px">
-      <label>Soru sayısı <input id="nq" type="number" min="1" max="40" style="width:70px"></label>
-    </div>
-    <div class="mx" id="mx"></div>
-    <p class="hint">Toplam puan: <b id="tot"></b>. Her sorunun tam puanını yazın; girişte <kbd>M</kbd> tuşu bu puanı otomatik yazar.</p>
+<section id="v-ex" class="on">
+  <div id="exl">
+    <div class="row"><b class="et">Yazılılar</b><button class="b" id="newex">+ Yeni yazılı</button></div>
+    <div id="cards"></div>
   </div>
-  <button class="b" onclick="tab('s')">Öğrencilere geç</button>
+  <div id="exe" hidden>
+    <div class="row"><button class="g" id="back">‹ Yazılılar</button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
+    <div class="row">
+      <input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" style="flex:1;min-width:180px" autocomplete="off">
+      <select id="ecf"></select>
+      <label class="hint"><input type="checkbox" id="emiss"> Hiç not girilmemişler</label>
+    </div>
+    <div id="el"></div>
+  </div>
 </section>
 
-<section id="t-s">
+<section id="v-st">
   <div class="card">
     <div class="row">
-      <label class="g" style="display:inline-block"><button class="b" onclick="$('#file').click()">Excel / CSV'den aktar</button></label>
+      <button class="b" onclick="$('#file').click()">Excel / CSV'den aktar</button>
       <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
       <span class="hint">Sütunları sonraki adımda eşleştireceksiniz.</span>
     </div>
@@ -136,132 +132,210 @@ header>.hint{display:none}.wrap{max-height:none}}
       </div>
       <div class="hint" id="pv"></div>
     </div>
-    <div class="row">
-      <input id="an" placeholder="No" style="width:90px">
-      <input id="ad" placeholder="Ad Soyad" style="flex:1;min-width:160px">
-      <input id="ac" placeholder="Sınıf (9/A)" style="width:110px">
+    <div class="row" style="margin:0">
+      <input id="an" placeholder="No" style="width:84px">
+      <input id="ad" placeholder="Ad Soyad" style="flex:1;min-width:150px">
+      <input id="ac" placeholder="Sınıf (6/A)" style="width:100px">
       <button class="b" id="add">Ekle</button>
     </div>
   </div>
   <div class="row">
-    <input id="q2" type="search" placeholder="Öğrenci ara…" style="flex:1;min-width:160px">
+    <input id="q2" type="search" placeholder="Öğrenci ara…" style="flex:1;min-width:150px">
     <select id="cf2"></select>
-    <button class="g" id="srt">Sınıf/No sırala</button>
+    <button class="g" id="srt">Sırala</button>
     <button class="g d" id="dsel" disabled>Seçilenleri sil</button>
     <button class="g d" id="dall">Tümünü sil</button>
   </div>
   <div class="wrap"><table>
-    <thead><tr><th><input type="checkbox" id="ca" title="Görünenlerin hepsini seç"></th><th>No</th><th>Ad Soyad</th><th>Sınıf</th><th></th></tr></thead>
+    <thead><tr><th><input type="checkbox" id="ca"></th><th>No</th><th>Ad Soyad</th><th>Sınıf</th><th></th></tr></thead>
     <tbody id="sb"></tbody>
   </table></div>
-  <p class="hint">Hücrelere tıklayıp adı, numarayı, sınıfı düzenleyebilirsiniz. <kbd>Shift</kbd> ile tıklayarak aralık seçebilirsiniz.</p>
-</section>
-
-<section id="t-g">
-  <div class="row">
-    <input id="q" type="search" placeholder="Ad veya numara yaz, Enter ile ilk notuna geç" style="flex:1;min-width:200px" autocomplete="off">
-    <select id="cf"></select>
-    <button class="g" id="clr">Notları sıfırla</button>
-    <b class="hint" id="pg"></b>
-  </div>
-  <p class="hint">
-    <kbd>Enter</kbd> sonraki soru · <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> gezin · <kbd>M</kbd> soruya tam puan · <kbd>T</kbd> tüm sorulara tam puan, sonraki öğrenci · <kbd>Esc</kbd> aramaya dön
-  </p>
-  <div class="wrap"><table>
-    <thead id="gh"></thead>
-    <tbody id="gb"></tbody>
-  </table></div>
-</section>
-
-<section id="t-m">
-  <div class="mtop">
-    <button class="b" id="mpick">Öğrenci seç</button>
-    <select id="mcf"></select>
-    <b class="hint" id="mpg"></b>
-  </div>
-  <div class="card mcard">
-    <div class="mnav">
-      <button class="g big" id="mprev" aria-label="Önceki öğrenci">‹</button>
-      <div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span></div>
-      <button class="g big" id="mnext" aria-label="Sonraki öğrenci">›</button>
-    </div>
-    <div id="mqs"></div>
-    <div class="mdisp"><span id="mql"></span><b id="mval"></b><small id="mmax"></small></div>
-    <div class="kp" id="kp">
-      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-      <button data-k=",">,</button><button data-k="0">0</button><button data-k="del" aria-label="Sil">⌫</button>
-    </div>
-    <div class="ka" id="ka">
-      <button data-a="one">Bu soru tam</button>
-      <button data-a="all">Hepsi tam ⇉</button>
-      <button data-a="nul">Boş geç</button>
-      <button data-a="ok" class="p">Tamam ›</button>
-    </div>
-  </div>
-  <p class="hint">Puan yazınca otomatik sonraki soruya geçer (ör. 10 puanlık soruda 5). 10 gibi iki haneli puanda <b>Tamam</b>'a basın. 0,5 için önce <b>,</b> tuşuna basın. Son sorudan sonra sonraki öğrenciye geçer.</p>
+  <p class="hint">Aralık seçmek için bir kutuya tıklayıp <b>Shift</b> ile diğerine tıklayın. Düzenlemek için ✎ simgesine basın.</p>
 </section>
 
 </main>
-<div id="pick"><div class="sheet">
-  <div class="row"><input id="pq" type="search" placeholder="Ad veya numara ara" style="flex:1" autocomplete="off"><button class="g" id="pclose">Kapat</button></div>
-  <div id="pl"></div>
-</div></div>
 <footer>sebasmobil · AGPL v3.0 · Veriler yalnızca bu tarayıcıda saklanır</footer>
+
+<div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
+
+<div id="sm" class="ov"><div class="dlg sd">
+  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span></div><button class="g" id="mclose">✕ Kapat</button></div>
+  <div id="mqs"></div>
+  <div class="mdisp"><span id="mql"></span><b id="mval"></b><small id="mmax"></small></div>
+  <div class="ka" id="ka"><button class="r" data-a="nul">Boş geç</button><button class="bl" data-a="one">Bu soru tam</button><button class="gr" data-a="all">Hepsi tam</button></div>
+  <div class="kp" id="kp">
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k=",">,</button><button data-k="0">0</button><button data-k="del" aria-label="Sil">⌫</button>
+  </div>
+  <button class="okb nx" id="ok"></button>
+  <p class="hint kh" style="margin:8px 0 0">Klavye: rakamlar · Enter = Tamam · M = bu soru tam · T = hepsi tam · ←→ soru · Esc = kapat</p>
+</div></div>
+
+<div id="fab" hidden title="Excel'e aktar"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></div>
 <div id="toast"></div>
 
 <script>
 const $=s=>document.querySelector(s);
-let S;try{S=JSON.parse(localStorage.getItem('hng'))}catch(e){}
-S=S||{exam:'',max:[10,10,10,10,10],st:[]};
-let IM=[],sel=new Set(),last=-1;
-const save=()=>{try{localStorage.setItem('hng',JSON.stringify(S))}catch(e){}};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+let S=load('hng2');
+if(!S){S={st:[],ex:[],fab:null};const o=load('hng');
+ if(o&&o.st&&o.st.length){S.st=o.st.map(s=>({id:s.id,no:s.no,name:s.name,cls:s.cls}));
+  const ex={id:uid(),title:o.exam||'Yazılı',max:o.max,cls:[...new Set(o.st.map(s=>s.cls))],sc:{}};
+  o.st.forEach(s=>{if(s.sc&&s.sc.some(v=>v!=null))ex.sc[s.id]=s.sc});S.ex.push(ex)}}
+const save=()=>{try{localStorage.setItem('hng2',JSON.stringify(S))}catch(e){}};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=v=>v==null?'':String(v).replace('.',',');
 const norm=s=>String(s).toLocaleLowerCase('tr').replace(/ç/g,'c').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ı/g,'i');
 const sum=a=>Math.round(a.reduce((x,y)=>x+(y||0),0)*100)/100;
-const T=s=>s.sc.every(v=>v==null)?'':sum(s.sc);
-const byId=id=>S.st.find(s=>s.id===id);
-let tm;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>t.classList.remove('on'),2200)};
-const classes=()=>[...new Set(S.st.map(s=>s.cls).filter(Boolean))].sort(cmpC);
+const T=a=>a.every(v=>v==null)?'':sum(a);
 const cmpC=(a,b)=>String(a).localeCompare(b,'tr',{numeric:true});
-function vis(q,cl){q=norm(q||'');return S.st.filter(s=>(!cl||s.cls===cl)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))}
+const lab=c=>c||'Sınıfsız';
+const classes=()=>[...new Set(S.st.map(s=>s.cls))].sort(cmpC);
+const exById=id=>S.ex.find(e=>e.id===id),stById=id=>S.st.find(s=>s.id===id);
+const exSt=ex=>S.st.filter(s=>ex.cls.includes(s.cls));
+const gs=(ex,id,mk)=>{let a=ex.sc[id];if(!a){if(!mk)return ex.max.map(()=>null);a=ex.sc[id]=ex.max.map(()=>null)}while(a.length<ex.max.length)a.push(null);a.length=ex.max.length;return a};
+const done=(ex,s)=>gs(ex,s.id).every(v=>v!=null);
+let tm;const toast=(m,w)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('warn',w===true);t.classList.toggle('ok',w==='ok');
+ if(w&&$('#sm').classList.contains('on')){t.style.bottom='auto';t.style.top=$('.sd .mnav').getBoundingClientRect().top+'px'}else{t.style.top='';t.style.bottom=''}
+ if(w===true){try{navigator.vibrate&&navigator.vibrate([40,40,40])}catch(e){}}
+ t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>t.classList.remove('on'),2300)};
+const closeG=()=>$('#gm').classList.remove('on');
 
-/* Sekmeler */
-function tab(t){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id==='t-'+t));if(t==='g'){fillCls();rG();$('#q').focus()}if(t==='s'){fillCls();rS()}if(t==='m'){fillCls();mInit()}}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+/* Görünümler */
+let view='ex',cur=null,ecl=[];
+function go(v){view=v;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+ $('#v-ex').classList.toggle('on',v==='ex');$('#v-st').classList.toggle('on',v==='st');
+ $('#exl').hidden=!!cur;$('#exe').hidden=!cur;
+ if(v==='ex'){cur?rE():rC()}else{fillCls();rS()}
+ $('#fab').hidden=!(v==='ex'&&!cur)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
+$('#back').onclick=()=>{cur=null;go('ex')};
 
-/* Sorular */
-function rQ(){$('#exam').value=S.exam;$('#nq').value=S.max.length;$('#mx').innerHTML=S.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('');$('#tot').textContent=sum(S.max)}
-$('#exam').oninput=e=>{S.exam=e.target.value;save()};
-$('#nq').onchange=e=>{const n=Math.max(1,Math.min(40,+e.target.value||1));while(S.max.length<n)S.max.push(10);S.max.length=n;S.st.forEach(s=>{while(s.sc.length<n)s.sc.push(null);s.sc.length=n});save();rQ()};
-$('#mx').oninput=e=>{const i=+e.target.dataset.i;S.max[i]=parseFloat(String(e.target.value).replace(',','.'))||0;$('#tot').textContent=sum(S.max);save()};
+/* Yazılı listesi */
+function rC(){$('#cards').innerHTML=S.ex.length?S.ex.map(ex=>{const L=exSt(ex),d=L.filter(s=>done(ex,s)).length,p=L.length?Math.round(d*100/L.length):0;
+ return `<div class="card ec" data-id="${ex.id}"><div class="row" style="margin:0"><b class="et">${esc(ex.title)}</b><button class="g ed" title="Düzenle">✎</button><button class="g d xd" title="Sil">🗑</button></div>
+ <div class="hint">${ex.cls.length?ex.cls.map(c=>esc(lab(c))).join(', '):'Sınıf seçilmedi'} · ${ex.max.length} soru · ${sum(ex.max)} puan</div>
+ <div class="bar"><i style="width:${p}%"></i></div>
+ <div class="row" style="margin:6px 0 0"><span class="hint" style="flex:1">${d}/${L.length} öğrenci tamamlandı</span><button class="b go">Not gir</button></div></div>`}).join(''):'<div class="card hint">Henüz yazılı yok. “+ Yeni yazılı” ile başlayın.</div>'}
+$('#cards').onclick=e=>{const c=e.target.closest('.ec');if(!c)return;const ex=exById(c.dataset.id);
+ if(e.target.closest('.ed'))exDlg(ex.id);
+ else if(e.target.closest('.xd')){if(confirm(`“${ex.title}” yazılısı ve girilen tüm notları silinsin mi?\nÖğrenci listesi etkilenmez.`)){S.ex=S.ex.filter(x=>x!==ex);save();rC()}}
+ else{cur=ex.id;$('#eq').value='';$('#emiss').checked=false;go('ex')}};
+$('#newex').onclick=()=>exDlg();
 
-/* Sınıf filtresi */
-function fillCls(){for(const id of['#cf','#cf2','#mcf']){const el=$(id),v=el.value;el.innerHTML='<option value="">Tüm sınıflar</option>'+classes().map(c=>`<option>${esc(c)}</option>`).join('');el.value=classes().includes(v)?v:''}}
+/* Yazılı oluştur / düzenle */
+function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd');
+ g.innerHTML=`<h3>${old?'Yazılıyı düzenle':'Yeni yazılı'}</h3>
+ <input id="xt" placeholder="Yazılı adı (ör. Fen Bilimleri 1. Dönem 2. Yazılı)" value="${esc(ex.title)}" style="width:100%;margin-bottom:10px">
+ <div class="row"><label>Soru sayısı <input id="xn" type="number" min="1" max="40" value="${ex.max.length}" style="width:70px"></label>
+ <label>Hepsi <input id="xa" type="number" min="0" style="width:64px"></label><button class="g" id="xap">Uygula</button></div>
+ <div class="mx" id="xm"></div>
+ <p class="hint">Toplam: <b id="xtot"></b> puan</p>
+ <div class="hint">Uygulanacağı sınıflar (istediklerinize dokunun)</div>
+ <div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
+ <div class="row"><button class="g" id="xall">Tümü</button><button class="g" id="xnone">Hiçbiri</button></div>
+ <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc2">İptal</button><button class="b" id="xs">Kaydet</button></div>`;
+ const pm=()=>{$('#xm').innerHTML=ex.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('');$('#xtot').textContent=sum(ex.max)};
+ pm();$('#gm').classList.add('on');
+ g.oninput=e=>{const t=e.target;if(t.id==='xt')ex.title=t.value;else if(t.dataset.i!==undefined){ex.max[+t.dataset.i]=parseFloat(String(t.value).replace(',','.'))||0;$('#xtot').textContent=sum(ex.max)}};
+ g.onchange=e=>{if(e.target.id==='xn'){const n=Math.max(1,Math.min(40,+e.target.value||1));while(ex.max.length<n)ex.max.push(ex.max[ex.max.length-1]||10);ex.max.length=n;e.target.value=n;pm()}};
+ g.onclick=e=>{const t=e.target;
+  if(t.classList.contains('cc')){const c=CL[+t.dataset.i],k=ex.cls.indexOf(c);k<0?ex.cls.push(c):ex.cls.splice(k,1);t.classList.toggle('on')}
+  else if(t.id==='xall'||t.id==='xnone'){ex.cls=t.id==='xall'?CL.slice():[];g.querySelectorAll('.cc').forEach(b=>b.classList.toggle('on',t.id==='xall'))}
+  else if(t.id==='xap'){const v=parseFloat(String($('#xa').value).replace(',','.'));if(!isNaN(v)){ex.max=ex.max.map(()=>v);pm()}}
+  else if(t.id==='xc2')closeG();
+  else if(t.id==='xs'){ex.title=ex.title.trim()||'Adsız yazılı';if(old)S.ex[S.ex.indexOf(old)]=ex;else S.ex.push(ex);Object.keys(ex.sc).forEach(k=>gs(ex,k,true));save();closeG();cur?rE():rC()}}}
+
+/* Not girişi: öğrenci listesi */
+function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
+ return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n===a.length?'✓ '+sum(a):n?n+'/'+a.length:''}</span></button>`}
+function rE(){const ex=exById(cur);$('#etit').textContent=ex.title;ecl=ex.cls.slice().sort(cmpC);
+ $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('');rL()}
+function rL(){const ex=exById(cur),q=norm($('#eq').value),v=$('#ecf').value,ms=$('#emiss').checked;
+ const L=exSt(ex).filter(s=>(v===''||s.cls===ecl[+v])&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))&&(!ms||gs(ex,s.id).every(v=>v==null)));
+ $('#el').innerHTML=L.map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Öğrenci bulunamadı.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
+function prog(){const ex=exById(cur),L=exSt(ex);$('#epg').textContent=`${L.filter(s=>done(ex,s)).length}/${L.length} tamamlandı`}
+$('#eq').oninput=rL;$('#ecf').onchange=rL;$('#emiss').onchange=rL;
+$('#eq').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('#el .sr');if(b)b.click()}};
+$('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id)};
+
+/* Not penceresi */
+let xe,ms,arr,mc=0,mb='',fresh=true;
+function openScore(sid){xe=exById(cur);ms=stById(sid);arr=gs(xe,sid,true);const i=arr.findIndex(v=>v==null);mc=i<0?0:i;mb='';fresh=true;$('#sm').classList.add('on');mR()}
+function mR(){const n=arr.length;$('#mnm').textContent=ms.name;
+ $('#mmeta').textContent=[ms.no,ms.cls].filter(Boolean).join(' · ')+` · Toplam ${T(arr)||0}/${sum(xe.max)}`;
+ $('#mqs').innerHTML=arr.map((v,k)=>`<button class="chip${k===mc?' on':''}${v!=null?' f':''}" data-i="${k}">${k+1}<small>${fmt(v)}</small></button>`).join('');
+ $('#mql').textContent='Soru '+(mc+1);$('#mval').textContent=(!fresh&&mb!=='')?mb:(arr[mc]==null?'–':fmt(arr[mc]));$('#mmax').textContent='/ '+fmt(xe.max[mc]);
+ $('#ok').textContent=mc===n-1?'Kaydet ve kapat ✓':'Tamam ›';$('#ok').className='okb '+(mc===n-1?'sv':'nx');
+ const on=$('#mqs .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'})}
+function closeScore(){if(!$('#sm').classList.contains('on'))return;$('#sm').classList.remove('on');save();
+ const r=document.querySelector(`#el [data-id="${ms.id}"]`);if(r){if($('#emiss').checked&&arr.some(v=>v!=null))r.remove();else r.outerHTML=rowH(xe,ms)}prog();
+ if(matchMedia('(pointer:fine)').matches){$('#eq').focus();$('#eq').select()}}
+const vib=()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
+function mAdv(){fresh=true;mb='';if(mc<arr.length-1){mc++;mR()}else closeScore()}
+function actOne(){arr[mc]=xe.max[mc];save();mAdv()}
+function actNul(){arr[mc]=null;save();mAdv()}
+function actAll(){xe.max.forEach((m,i)=>arr[i]=m);save();fresh=true;mb='';mR();toast('✓ Tüm sorulara tam puan yazıldı','ok')}
+function mKey(k){const max=xe.max[mc],was=fresh;
+ if(k==='del'){mb=fresh?'':mb.slice(0,-1);fresh=false;arr[mc]=mb===''?null:Number(mb.replace(',','.'));save();return mR()}
+ let b=fresh?'':mb;
+ if(k===','){if(b.includes(','))return;b=(b||'0')+','}else b=(b==='0')?k:b+k;
+ const x=Number(b.replace(',','.'));
+ if(x>max){fresh=was;toast(`⚠ Soru ${mc+1} için en fazla ${fmt(max)}`,true);return}
+ fresh=false;mb=b;arr[mc]=x;save();
+ const fin=!b.includes(',')?(b==='0'||Number(b+'0')>max):/,\d$/.test(b);
+ fin?mAdv():mR()}
+$('#kp').onclick=e=>{const b=e.target.closest('button');if(b){vib();mKey(b.dataset.k)}};
+$('#ka').onclick=e=>{const b=e.target.closest('button');if(!b)return;vib();({one:actOne,nul:actNul,all:actAll})[b.dataset.a]()};
+$('#ok').onclick=()=>{vib();mAdv()};
+$('#mclose').onclick=closeScore;
+$('#mqs').onclick=e=>{const b=e.target.closest('.chip');if(b){mc=+b.dataset.i;fresh=true;mb='';mR()}};
+$('#sm').addEventListener('pointerdown',e=>{const b=e.target.closest('.kp button,.ka button,.okb');if(b){b.classList.add('pr');setTimeout(()=>b.classList.remove('pr'),220)}});
+document.addEventListener('keydown',e=>{if(!$('#sm').classList.contains('on')||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+ if(/^\d$/.test(k)||k===','||k==='.'){e.preventDefault();mKey(k==='.'?',':k)}
+ else if(k==='Backspace'){e.preventDefault();mKey('del')}
+ else if(k==='Enter'){e.preventDefault();mAdv()}
+ else if(k==='m'||k==='M'||k==='+'||k==='*'){e.preventDefault();actOne()}
+ else if(k==='t'||k==='T'){e.preventDefault();actAll()}
+ else if(k==='ArrowLeft'||k==='ArrowRight'){e.preventDefault();mc=Math.max(0,Math.min(arr.length-1,mc+(k==='ArrowRight'?1:-1)));fresh=true;mb='';mR()}
+ else if(k==='Escape')closeScore()});
 
 /* Öğrenciler */
-function rS(){const L=vis($('#q2').value,$('#cf2').value);
-$('#sb').innerHTML=L.length?L.map(s=>`<tr data-id="${s.id}"><td><input type="checkbox" class="ck" ${sel.has(s.id)?'checked':''}></td><td class="n"><input class="e" data-f="no" value="${esc(s.no)}"></td><td><input class="e" data-f="name" value="${esc(s.name)}"></td><td class="c"><input class="e" data-f="cls" value="${esc(s.cls)}"></td><td><button class="g d x" title="Sil">✕</button></td></tr>`).join(''):'<tr><td colspan="5" class="hint" style="padding:18px">Henüz öğrenci yok. Excel\'den aktarın veya yukarıdan tek tek ekleyin.</td></tr>';
-$('#dsel').disabled=!sel.size;$('#dsel').textContent=sel.size?`Seçilenleri sil (${sel.size})`:'Seçilenleri sil'}
+let sel=new Set(),last=-1,IM=[];
+function fillCls(){const el=$('#cf2'),v=el.value,C=classes();el.innerHTML='<option value="">Tüm sınıflar</option>'+C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('');el.value=C.includes(v)?v:''}
+const visS=()=>{const q=norm($('#q2').value),c=$('#cf2').value;return S.st.filter(s=>(!c||s.cls===c)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))};
+function rS(){const L=visS();
+ $('#sb').innerHTML=L.length?L.map(s=>`<tr data-id="${s.id}"><td><input type="checkbox" class="ck" ${sel.has(s.id)?'checked':''}></td><td>${esc(s.no)}</td><td class="nm">${esc(s.name)}</td><td>${esc(s.cls)}</td><td class="ac2"><button class="g ep" title="Düzenle">✎</button><button class="g d x" title="Sil">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="hint" style="padding:18px">Öğrenci yok. Excel’den aktarın veya yukarıdan ekleyin.</td></tr>';
+ $('#dsel').disabled=!sel.size;$('#dsel').textContent=sel.size?`Seçilenleri sil (${sel.size})`:'Seçilenleri sil'}
 $('#q2').oninput=rS;$('#cf2').onchange=rS;
-$('#sb').onchange=e=>{const t=e.target;if(!t.dataset.f)return;const s=byId(t.closest('tr').dataset.id);s[t.dataset.f]=t.value.trim();save();if(t.dataset.f==='cls')fillCls()};
 $('#sb').onclick=e=>{const t=e.target,tr=t.closest('tr');if(!tr)return;const id=tr.dataset.id;
- if(t.classList.contains('x')){S.st=S.st.filter(s=>s.id!==id);sel.delete(id);save();fillCls();rS()}
- if(t.classList.contains('ck')){const ids=[...document.querySelectorAll('#sb tr')].map(r=>r.dataset.id),i=ids.indexOf(id);
-  if(e.shiftKey&&last>-1){const [a,b]=[Math.min(i,last),Math.max(i,last)];ids.slice(a,b+1).forEach(x=>t.checked?sel.add(x):sel.delete(x))}else t.checked?sel.add(id):sel.delete(id);last=i;rS()}};
-$('#ca').onchange=e=>{vis($('#q2').value,$('#cf2').value).forEach(s=>e.target.checked?sel.add(s.id):sel.delete(s.id));rS()};
+ if(t.closest('.x')){const s=stById(id);if(confirm(`${s.name} silinsin mi?`)){S.st=S.st.filter(x=>x!==s);sel.delete(id);save();fillCls();rS()}}
+ else if(t.closest('.ep'))stDlg(id);
+ else if(t.classList.contains('ck')){const ids=[...document.querySelectorAll('#sb tr')].map(r=>r.dataset.id),i=ids.indexOf(id);
+  if(e.shiftKey&&last>-1){const a=Math.min(i,last),b=Math.max(i,last);ids.slice(a,b+1).forEach(x=>t.checked?sel.add(x):sel.delete(x))}else t.checked?sel.add(id):sel.delete(id);last=i;rS()}};
+$('#ca').onchange=e=>{visS().forEach(s=>e.target.checked?sel.add(s.id):sel.delete(s.id));rS()};
 $('#dsel').onclick=()=>{if(confirm(sel.size+' öğrenci silinsin mi?')){S.st=S.st.filter(s=>!sel.has(s.id));sel.clear();save();fillCls();rS()}};
-$('#dall').onclick=()=>{if(S.st.length&&confirm('Tüm öğrenciler (ve girilen notlar) silinsin mi?')){S.st=[];sel.clear();save();fillCls();rS()}};
-$('#srt').onclick=()=>{sortS();save();rS()};
+$('#dall').onclick=()=>{if(S.st.length&&confirm('Tüm öğrenciler silinsin mi?')){S.st=[];sel.clear();save();fillCls();rS()}};
 const sortS=()=>S.st.sort((a,b)=>cmpC(a.cls,b.cls)||cmpC(a.no,b.no)||a.name.localeCompare(b.name,'tr'));
+$('#srt').onclick=()=>{sortS();save();rS()};
+function stDlg(id){const s=stById(id),g=$('#gd');
+ g.innerHTML=`<h3>Öğrenciyi düzenle</h3>
+ <label class="hint">Ad Soyad<input id="sn" value="${esc(s.name)}" style="width:100%;margin-bottom:8px"></label>
+ <div class="row"><label class="hint">Numara<input id="sno" value="${esc(s.no)}" style="width:100%"></label><label class="hint">Sınıf<input id="scl" list="cl" value="${esc(s.cls)}" style="width:100%"></label></div>
+ <datalist id="cl">${classes().map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+ <div class="row" style="justify-content:space-between;margin:0"><button class="g d" id="sdel">Sil</button><span><button class="g" id="sc2">İptal</button> <button class="b" id="ssv">Kaydet</button></span></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const i=e.target.id;
+  if(i==='sc2')closeG();
+  else if(i==='sdel'){if(confirm(s.name+' silinsin mi?')){S.st=S.st.filter(x=>x!==s);save();closeG();fillCls();rS()}}
+  else if(i==='ssv'){const n=$('#sn').value.trim();if(!n)return toast('Ad Soyad boş olamaz');s.name=n;s.no=$('#sno').value.trim();s.cls=$('#scl').value.trim();save();closeG();fillCls();rS()}}}
 function addOne(){const name=$('#ad').value.trim();if(!name)return toast('Ad Soyad yazın');
- S.st.push({id:uid(),no:$('#an').value.trim(),name,cls:$('#ac').value.trim(),sc:S.max.map(()=>null)});
- save();$('#an').value=/^\d+$/.test($('#an').value)?+$('#an').value+1:'';$('#ad').value='';fillCls();rS();$('#ad').focus()}
-$('#add').onclick=addOne;
-['#an','#ad','#ac'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')addOne()});
+ S.st.push({id:uid(),no:$('#an').value.trim(),name,cls:$('#ac').value.trim()});save();
+ $('#an').value=/^\d+$/.test($('#an').value)?+$('#an').value+1:'';$('#ad').value='';fillCls();rS();$('#ad').focus()}
+$('#add').onclick=addOne;['#an','#ad','#ac'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')addOne()});
 
 /* İçe aktarma */
 $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -273,15 +347,14 @@ const colL=i=>String.fromCharCode(65+i%26);
 function openMap(){const h=IM[0],n=Math.max(...IM.slice(0,20).map(r=>r.length));
  const opt='<option value="">— yok —</option>'+Array.from({length:n},(_,i)=>`<option value="${i}">${colL(i)}: ${esc(String(h[i]??'').slice(0,24))}</option>`).join('');
  const g=(re,ex)=>{const i=h.findIndex(x=>re.test(norm(x))&&!(ex&&ex.test(norm(x))));return i<0?'':i};
- const nm=g(/soyad/)!==''&&g(/^(ad|adi|isim)$/)!==''?g(/^(ad|adi|isim)$/):g(/ad/,/soyad$/);
+ const a=g(/^(ad|adi|isim)$/),nm=g(/soyad/)!==''&&a!==''?a:g(/ad|isim/,/soyad$/);
  const m={name:nm===''?g(/ad|isim/):nm,sur:g(/^soyad|soyadi$/),no:g(/no|numara/),cls:g(/sinif/),sub:g(/sube/)};
  for(const k in m){$('#m_'+k).innerHTML=opt;$('#m_'+k).value=m[k]}
  $('#map').classList.add('on');pv()}
 $('#map').onchange=pv;
 function mapped(){const H=$('#hdr').checked,ix=k=>$('#m_'+k).value===''?-1:+$('#m_'+k).value,[a,b,n,c,d]=['name','sur','no','cls','sub'].map(ix);
- return IM.slice(H?1:0).map(r=>{const v=i=>i<0?'':String(r[i]??'').trim(),sb=v(d).toLocaleUpperCase('tr');let cl=v(c);
-  if(sb)cl=cl?cl+'/'+sb:sb;
-  return{id:uid(),no:v(n),name:[v(a),v(b)].filter(Boolean).join(' '),cls:cl,sc:S.max.map(()=>null)}}).filter(s=>s.name)}
+ return IM.slice(H?1:0).map(r=>{const v=i=>i<0?'':String(r[i]??'').trim(),sb=v(d).toLocaleUpperCase('tr');let cl=v(c);if(sb)cl=cl?cl+'/'+sb:sb;
+  return{id:uid(),no:v(n),name:[v(a),v(b)].filter(Boolean).join(' '),cls:cl}}).filter(s=>s.name)}
 function pv(){const L=mapped();$('#pv').innerHTML=`<b>${L.length}</b> öğrenci bulundu. Örnek: `+L.slice(0,3).map(s=>`${esc(s.no)} · ${esc(s.name)} · ${esc(s.cls)}`).join(' | ')}
 $('#doimp').onclick=()=>{const L=mapped();if(!L.length)return toast('Ad sütununu seçin');
  if($('#mode').value==='rep')S.st=[];
@@ -289,95 +362,60 @@ $('#doimp').onclick=()=>{const L=mapped();if(!L.length)return toast('Ad sütunun
  L.forEach(s=>{if(s.no&&have.has(s.no+'|'+s.cls))return;S.st.push(s);k++});
  sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı')};
 
-/* Not girişi */
-function prog(){const d=S.st.filter(s=>s.sc.every(v=>v!=null)).length;$('#pg').textContent=`${d}/${S.st.length} tamamlandı`}
-function rG(){const L=vis($('#q').value,$('#cf').value),n=S.max.length;
- $('#gh').innerHTML=`<tr><th>No</th><th>Ad Soyad</th><th>Sınıf</th>${S.max.map((m,i)=>`<th style="text-align:center">S${i+1}<small>/${fmt(m)}</small></th>`).join('')}<th>Toplam</th><th></th></tr>`;
- $('#gb').innerHTML=L.length?L.map((s,r)=>`<tr data-id="${s.id}"><td>${esc(s.no)}</td><td class="nm">${esc(s.name)}</td><td>${esc(s.cls)}</td>${S.max.map((_,c)=>`<td><input class="sc" data-r="${r}" data-c="${c}" inputmode="decimal" autocomplete="off" value="${fmt(s.sc[c])}"></td>`).join('')}<td class="tt">${T(s)}</td><td><button class="g tam" tabindex="-1">Tam</button></td></tr>`).join(''):`<tr><td colspan="${n+5}" class="hint" style="padding:18px">${S.st.length?'Aramaya uyan öğrenci yok.':'Önce öğrenci ekleyin.'}</td></tr>`;prog()}
-$('#q').oninput=rG;$('#cf').onchange=rG;
-$('#q').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const x=document.querySelector('#gb .sc');if(x){x.focus();x.select()}}};
-const go=(r,c)=>{const x=document.querySelector(`#gb .sc[data-r="${r}"][data-c="${c}"]`);if(x){x.focus();x.select()}return x};
-function setv(t){const tr=t.closest('tr'),s=byId(tr.dataset.id),c=+t.dataset.c,v=t.value.trim().replace(',','.');
- if(v===''){s.sc[c]=null;t.classList.remove('err')}
- else{const x=Number(v);if(isNaN(x)||x<0||x>S.max[c]){t.classList.add('err');toast(`Soru ${c+1} için en fazla ${fmt(S.max[c])}`);return false}t.classList.remove('err');s.sc[c]=x}
- tr.querySelector('.tt').textContent=T(s);save();prog();return true}
-function full(tr){const r=+tr.querySelector('.sc').dataset.r;tr.querySelectorAll('.sc').forEach(t=>{t.value=fmt(S.max[+t.dataset.c]);setv(t)});if(!go(r+1,0)){$('#q').focus();$('#q').select()}}
-$('#gb').oninput=e=>{if(e.target.classList.contains('sc'))setv(e.target)};
-$('#gb').onclick=e=>{if(e.target.classList.contains('tam'))full(e.target.closest('tr'))};
-$('#gb').onfocusin=e=>{if(e.target.classList.contains('sc'))e.target.select()};
-$('#gb').onkeydown=e=>{const t=e.target;if(!t.classList.contains('sc'))return;
- const r=+t.dataset.r,c=+t.dataset.c,k=e.key,n=S.max.length;
- const next=()=>{if(!(c<n-1?go(r,c+1):go(r+1,0))){$('#q').focus();$('#q').select()}};
- if(k==='Enter'){e.preventDefault();if(!t.classList.contains('err'))next()}
- else if(k==='ArrowDown'){e.preventDefault();go(r+1,c)}
- else if(k==='ArrowUp'){e.preventDefault();go(r-1,c)}
- else if(k==='ArrowRight'){e.preventDefault();go(r,c+1)}
- else if(k==='ArrowLeft'){e.preventDefault();go(r,c-1)}
- else if(k==='Escape'){$('#q').focus();$('#q').select()}
- else if(k.length===1&&!e.ctrlKey&&!e.metaKey){
-  if('mM+*'.includes(k)){e.preventDefault();t.value=fmt(S.max[c]);setv(t);next()}
-  else if('tT'.includes(k)){e.preventDefault();full(t.closest('tr'))}
-  else if(!/[\d.,]/.test(k))e.preventDefault()}};
-$('#clr').onclick=()=>{if(confirm('Tüm öğrencilerin girilen notları silinsin mi? (Öğrenci listesi kalır)')){S.st.forEach(s=>s.sc=S.max.map(()=>null));save();rG()}};
+/* Excel'e aktar (yüzen simge) */
+function expDlg(){const g=$('#gd');
+ g.innerHTML=`<h3>Excel'e aktar</h3>${S.ex.map((e,i)=>`<label class="ck2"><input type="checkbox" class="xe" data-i="${i}" checked> ${esc(e.title)}</label>`).join('')||'<p class="hint">Henüz yazılı yok.</p>'}
+ <label class="ck2"><input type="checkbox" id="xp" checked> Sınıf sayfaları da olsun</label>
+ <div class="row" style="justify-content:flex-end;margin:8px 0 0"><button class="g" id="xc3">İptal</button><button class="b" id="xgo">İndir</button></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{if(e.target.id==='xc3')closeG();else if(e.target.id==='xgo'){const L=[...g.querySelectorAll('.xe:checked')].map(c=>S.ex[+c.dataset.i]);if(!L.length)return toast('Yazılı seçin');doExp(L,$('#xp').checked);closeG()}}}
+function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
+ const wb=XLSX.utils.book_new(),used=new Set(),multi=list.length>1;
+ const nm=(t,c)=>{const b=((multi?t.slice(0,16)+' ':'')+c).replace(/[\[\]:*?\/\\]/g,'-').slice(0,31).trim()||'Sayfa';let x=b,i=2;while(used.has(x))x=b.slice(0,28)+'_'+i++;used.add(x);return x};
+ list.forEach(ex=>{const L=exSt(ex),hd=['No','Ad Soyad','Sınıf',...ex.max.map((m,i)=>`S${i+1} (${m})`),'Toplam'],
+  row=s=>{const a=gs(ex,s.id);return[/^\d+$/.test(s.no)?+s.no:s.no,s.name,s.cls,...a.map(v=>v??''),T(a)]};
+  const add=(n,R)=>{const ws=XLSX.utils.aoa_to_sheet([hd,...R.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},...ex.max.map(()=>({wch:9})),{wch:9}];XLSX.utils.book_append_sheet(wb,ws,n)};
+  add(nm(ex.title,'Tümü'),L);if(per)ex.cls.slice().sort(cmpC).forEach(c=>add(nm(ex.title,lab(c)),L.filter(s=>s.cls===c)))});
+ XLSX.writeFile(wb,(multi?'yazililar':list[0].title).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
+(()=>{const f=$('#fab'),place=(x,y)=>{x=Math.max(0,Math.min(innerWidth-56,x));y=Math.max(0,Math.min(innerHeight-56,y));f.style.left=x+'px';f.style.top=y+'px';f.style.right=f.style.bottom='auto'};
+ if(S.fab)place(S.fab[0],S.fab[1]);let st=null;
+ f.onpointerdown=e=>{const r=f.getBoundingClientRect();st={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY,m:false};f.setPointerCapture(e.pointerId)};
+ f.onpointermove=e=>{if(!st)return;if(Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6)st.m=true;if(st.m)place(e.clientX-st.dx,e.clientY-st.dy)};
+ f.onpointerup=()=>{if(!st)return;const m=st.m;st=null;if(m){const r=f.getBoundingClientRect();S.fab=[r.left,r.top];save()}else expDlg()}})();
 
-/* Excel'e aktar */
-$('#xl').onclick=()=>{if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
- if(!S.st.length)return toast('Aktarılacak öğrenci yok');
- const wb=XLSX.utils.book_new(),used=new Set(),hd=['No','Ad Soyad','Sınıf',...S.max.map((m,i)=>`S${i+1} (${m})`),'Toplam'],
- row=s=>[/^\d+$/.test(s.no)?+s.no:s.no,s.name,s.cls,...S.max.map((_,i)=>s.sc[i]??''),T(s)];
- const add=(nm,L)=>{let b=(nm.replace(/[\[\]:*?\/\\]/g,'-').slice(0,28)||'Sınıfsız'),x=b,i=2;while(used.has(x))x=b+'_'+i++;used.add(x);
-  const ws=XLSX.utils.aoa_to_sheet([hd,...L.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},...S.max.map(()=>({wch:9})),{wch:9}];XLSX.utils.book_append_sheet(wb,ws,x)};
- add('Tüm liste',S.st);
- if($('#per').checked)classes().forEach(c=>add(c,S.st.filter(s=>s.cls===c)));
- XLSX.writeFile(wb,(S.exam||'not-listesi').replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')};
+/* Tema */
+const PAL=[['Varsayılan',null],['Mavi','#2563eb'],['Gök mavisi','#0284c7'],['Turkuaz','#0891b2'],['Yeşil','#16a34a'],['Çimen','#65a30d'],['Sarı','#eab308'],['Turuncu','#ea580c'],['Kırmızı','#dc2626'],['Gül','#e11d48'],['Pembe','#db2777'],['Mor','#7c3aed'],['İndigo','#4f46e5'],['Kahve','#92400e'],['Gri','#475569']];
+function applyTheme(){const t=S.theme||{mode:'auto',ac:null},r=document.documentElement,st=r.style;
+ r.dataset.t=t.mode==='auto'?'':t.mode;
+ if(t.ac){const n=parseInt(t.ac.slice(1),16),L=(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255;
+  st.setProperty('--ac',t.ac);st.setProperty('--acs','color-mix(in srgb,'+t.ac+' 16%,var(--card))');st.setProperty('--onac',L>.62?'#111':'#fff')}
+ else['--ac','--acs','--onac'].forEach(k=>st.removeProperty(k))}
+function thDlg(){const t=S.theme||(S.theme={mode:'auto',ac:null}),g=$('#gd');
+ g.innerHTML=`<h3>Tema</h3><div class="hint">Görünüm</div>
+ <div class="chips">${[['auto','Sistem'],['light','Aydınlık'],['dark','Karanlık']].map(([k,n])=>`<button class="cc${t.mode===k?' on':''}" data-m="${k}">${n}</button>`).join('')}</div>
+ <div class="hint">Renk</div>
+ <div class="chips">${PAL.map(([n,c],i)=>`<button class="sw${t.ac===c?' on':''}" data-i="${i}" title="${n}" aria-label="${n}" style="background:${c||'#0e6b63'}"></button>`).join('')}</div>
+ <label class="ck2">Kendi rengim <input type="color" id="thc" value="${t.ac||'#0e6b63'}" style="padding:0;width:46px;height:34px"></label>
+ <div class="row" style="justify-content:flex-end;margin:6px 0 0"><button class="b" id="thok">Tamam</button></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='thok')return closeG();
+  if(b.dataset.m)t.mode=b.dataset.m;else if(b.dataset.i)t.ac=PAL[+b.dataset.i][1];else if(b.classList.contains('sw'))t.ac=null;
+  save();applyTheme();thDlg()};
+ $('#thc').oninput=e=>{t.ac=e.target.value;applyTheme()};
+ $('#thc').onchange=()=>{save();thDlg()}}
+$('#thm').onclick=thDlg;
+applyTheme();
 
-/* Telefonla giriş */
-let mi=null,mc=0,mb='',fresh=true;
-const ML=()=>vis('',$('#mcf').value);
-const vib=()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
-function mInit(){const L=ML();if(!L.some(s=>s.id===mi))mi=L[0]?L[0].id:null;mc=0;fresh=true;mb='';mR()}
-function mR(){const s=byId(mi),n=S.max.length,L=ML(),i=L.findIndex(x=>x.id===mi);mc=Math.min(mc,n-1);
- $('#mnm').textContent=s?s.name:'Öğrenci yok';
- $('#mmeta').textContent=s?[s.no,s.cls].filter(Boolean).join(' · ')+` · Toplam ${T(s)||0}/${sum(S.max)}`:'Önce öğrenci ekleyin';
- $('#mpg').textContent=s?`${i+1}/${L.length}`:'';
- $('#mqs').innerHTML=S.max.map((m,k)=>`<button class="chip${k===mc?' on':''}${s&&s.sc[k]!=null?' f':''}" data-i="${k}">${k+1}<small>${s?fmt(s.sc[k]):''}</small></button>`).join('');
- const cur=s?s.sc[mc]:null;
- $('#mql').textContent='Soru '+(mc+1);
- $('#mval').textContent=(!fresh&&mb!=='')?mb:(cur==null?'–':fmt(cur));
- $('#mmax').textContent='/ '+fmt(S.max[mc]);
- const on=$('#mqs .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'})}
-function mGo(d){const L=ML(),i=L.findIndex(x=>x.id===mi),j=i+d;if(j<0||j>=L.length)return false;mi=L[j].id;fresh=true;mb='';return true}
-function mAdv(){fresh=true;mb='';if(mc<S.max.length-1)mc++;else if(mGo(1))mc=0;else toast('Listenin sonu');mR()}
-function mSet(v){const s=byId(mi);if(s){s.sc[mc]=v;save()}}
-function mKey(k){const s=byId(mi);if(!s)return;const max=S.max[mc],was=fresh;vib();
- if(k==='del'){mb=fresh?'':mb.slice(0,-1);fresh=false;mSet(mb===''?null:Number(mb.replace(',','.')));return mR()}
- let b=fresh?'':mb;
- if(k===','){if(b.includes(','))return;b=(b||'0')+','}
- else b=(b==='0')?k:b+k;
- const x=Number(b.replace(',','.'));
- if(x>max){fresh=was;toast(`Soru ${mc+1} için en fazla ${fmt(max)}`);return}
- fresh=false;mb=b;mSet(x);
- const done=!b.includes(',')?(b==='0'||Number(b+'0')>max):/,\d$/.test(b);
- done?mAdv():mR()}
-$('#kp').onclick=e=>{const b=e.target.closest('button');if(b)mKey(b.dataset.k)};
-$('#ka').onclick=e=>{const b=e.target.closest('button'),s=byId(mi);if(!b||!s)return;vib();const a=b.dataset.a;
- if(a==='one'){mSet(S.max[mc]);mAdv()}
- else if(a==='all'){s.sc=S.max.slice();save();fresh=true;mb='';if(mGo(1))mc=0;else toast('Listenin sonu');mR()}
- else if(a==='nul'){mSet(null);mAdv()}
- else mAdv()};
-$('#mqs').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;mc=+b.dataset.i;fresh=true;mb='';mR()};
-$('#mprev').onclick=()=>{if(mGo(-1))mc=0;mR()};
-$('#mnext').onclick=()=>{if(mGo(1))mc=0;else toast('Listenin sonu');mR()};
-$('#mcf').onchange=mInit;
-function pR(){const L=vis($('#pq').value,$('#mcf').value);
- $('#pl').innerHTML=L.map(s=>`<button data-id="${s.id}"><span>${esc(s.name)} <small class="hint">${esc(s.no)} ${esc(s.cls)}</small></span><span>${s.sc.every(v=>v!=null)?'✓':''}</span></button>`).join('')||'<p class="hint">Öğrenci yok</p>'}
-$('#mpick').onclick=()=>{$('#pq').value='';pR();$('#pick').classList.add('on');$('#pq').focus()};
-$('#pq').oninput=pR;
-$('#pclose').onclick=()=>$('#pick').classList.remove('on');
-$('#pick').onclick=e=>{if(e.target.id==='pick')$('#pick').classList.remove('on')};
-$('#pl').onclick=e=>{const b=e.target.closest('button');if(!b)return;mi=b.dataset.id;mc=0;fresh=true;mb='';$('#pick').classList.remove('on');mR()};
+/* Her yazı alanına dokununca içeriği seç */
+const NOSEL=['checkbox','radio','color','file','button','range'];
+const selectable=t=>t&&((t.tagName==='INPUT'&&!NOSEL.includes(t.type))||t.tagName==='TEXTAREA');
+document.addEventListener('focusin',e=>{const t=e.target;if(!selectable(t))return;t._fs=1;
+ const s=()=>{try{t.select();t.setSelectionRange&&t.setSelectionRange(0,t.value.length)}catch(x){}};s();setTimeout(s,0);setTimeout(s,60)});
+document.addEventListener('mouseup',e=>{if(selectable(e.target)&&e.target._fs){e.preventDefault();e.target._fs=0}});
+document.addEventListener('touchend',e=>{if(selectable(e.target))e.target._fs=0});
 
-rQ();fillCls();
+go('ex');
 </script>
 </body>
 </html>
