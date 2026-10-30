@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not Doldurucu</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;color:#222;background:#f6f7f9}
+  h1{font-size:22px;margin-bottom:4px}
+  .card{background:#fff;border:1px solid #dde;border-radius:10px;padding:16px;margin:14px 0}
+  label{font-weight:600;display:block;margin-bottom:6px}
+  input[type=number]{font-size:22px;width:100px;padding:6px;border:1px solid #99a;border-radius:6px}
+  input[type=text]{padding:5px;border:1px solid #99a;border-radius:6px;width:150px}
+  textarea{width:100%;height:130px;font-family:monospace;font-size:12px;box-sizing:border-box}
+  button{font-size:15px;padding:9px 16px;border:0;border-radius:6px;background:#2b6cb0;color:#fff;cursor:pointer}
+  button:hover{background:#245a94}
+  a.bm{display:inline-block;padding:10px 16px;background:#2f855a;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;cursor:grab}
+  small,.hint{color:#555}
+  ol li{margin:6px 0}
+  details{margin-top:10px}
+  #ok{color:#2f855a;font-weight:600;margin-left:10px}
+</style>
+</head>
+<body>
+<h1>Not Doldurucu</h1>
+<div class="hint">Kaç sütunluk veri gireceksiniz? Sayıyı yazın, kod otomatik güncellenir.</div>
+
+<div class="card">
+  <label for="n">Kaç sütunlu veri girmek istiyorsunuz?</label>
+  <input type="number" id="n" min="1" max="100" value="5">
+  <details>
+    <summary>Gelişmiş ayarlar (sayfa farklıysa)</summary>
+    <p>
+      Ana tablo ID: <input type="text" id="tid" value="Table29"><br><br>
+      Liste tablosu ID: <input type="text" id="lid" value="dgListem"><br><br>
+      Kutu sınıfı: <input type="text" id="cls" value="frmInput2">
+    </p>
+  </details>
+</div>
+
+<div class="card">
+  <label>1. Seçenek: Yer imi çubuğuna sürükleyin</label>
+  <a class="bm" id="bm" href="#">Notları Doldur</a>
+  <p><small>Bu yeşil düğmeyi tarayıcının yer imi çubuğuna sürükleyip bırakın.</small></p>
+</div>
+
+<div class="card">
+  <label>2. Seçenek: Kodu kopyalayıp yer imi adresine yapıştırın</label>
+  <textarea id="code" readonly></textarea>
+  <p><button id="copy">Kodu Kopyala</button><span id="ok"></span></p>
+</div>
+
+<div class="card">
+  <label>Nasıl kullanılır?</label>
+  <ol>
+    <li>Yer imini oluşturun (sürükleyin ya da yeni yer iminin adres kısmına kodu yapıştırın).</li>
+    <li>Not sayfasını açın ve bu yer imine tıklayın. Sayfanın üstünde bir kutu çıkar.</li>
+    <li>Excel'de ilgili <b id="nn">5</b> sütunu seçip kopyalayın (başlık satırı olmadan) ve kutuya yapıştırın.</li>
+    <li>"Notları Doldur"a basın. A sütunu 1. kutuya, B sütunu 2. kutuya diye dolar.</li>
+  </ol>
+  <small>Satır sayısı öğrenci sayısına eşit değilse ya da sütun sayısı uyuşmazsa hiçbir şey doldurmaz ve nedenini söyler. Kaydetmeden önce birkaç öğrenciyi kontrol edin.</small>
+</div>
+
+<script>
+function core(N,TID,LID,CLS){
+  var T=document.getElementById(TID);
+  if(!T){alert(TID+" bulunamadı");return;}
+  if(document.getElementById("notBox")){return;}
+  var d=document.createElement("div");
+  d.id="notBox";
+  d.style.padding="6px";
+  var ta=document.createElement("textarea");
+  ta.rows=6;
+  ta.style.width="80%";
+  ta.placeholder=N+" sütunu Excel'den kopyalayıp buraya yapıştırın";
+  var b=document.createElement("button");
+  b.type="button";
+  b.textContent="Notları Doldur ("+N+" sütun)";
+  d.appendChild(ta);
+  d.appendChild(document.createElement("br"));
+  d.appendChild(b);
+  T.insertBefore(d,T.childNodes[0]);
+  b.onclick=function(){
+    var rows=ta.value.replace(/\r/g,"").split("\n");
+    while(rows.length&&rows[rows.length-1].trim()===""){rows.pop();}
+    var L=document.getElementById(LID);
+    if(!L){alert(LID+" bulunamadı");return;}
+    var tr=[].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
+    if(rows.length!==tr.length){alert("Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length);return;}
+    var i,j,v,f;
+    for(i=0;i<rows.length;i++){
+      v=rows[i].split("\t");
+      f=tr[i].getElementsByClassName(CLS);
+      if(v.length!==N){alert((i+1)+". satırda "+v.length+" sütun var, "+N+" olmalı.");return;}
+      if(f.length<N){alert((i+1)+". öğrenci satırında yalnızca "+f.length+" kutu var, "+N+" gerekiyor.");return;}
+    }
+    for(i=0;i<rows.length;i++){
+      v=rows[i].split("\t");
+      f=tr[i].getElementsByClassName(CLS);
+      for(j=0;j<N;j++){
+        f[j].value=v[j].trim();
+        f[j].dispatchEvent(new Event("change",{bubbles:true}));
+      }
+    }
+    alert("Dolduruldu: "+rows.length+" öğrenci, "+N+" sütun.");
+  };
+}
+
+function build(){
+  var n=parseInt(document.getElementById("n").value,10);
+  if(!n||n<1){n=1;}
+  var tid=document.getElementById("tid").value.trim();
+  var lid=document.getElementById("lid").value.trim();
+  var cls=document.getElementById("cls").value.trim();
+  var body=core.toString().replace(/\s*\n\s*/g," ");
+  var code="("+body+")("+n+","+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+");";
+  document.getElementById("code").value="javascript:"+code;
+  document.getElementById("bm").href="javascript:"+encodeURIComponent(code);
+  document.getElementById("bm").textContent="Notları Doldur ("+n+" sütun)";
+  document.getElementById("nn").textContent=n;
+  document.getElementById("ok").textContent="";
+}
+
+["n","tid","lid","cls"].forEach(function(id){
+  document.getElementById(id).addEventListener("input",build);
+});
+
+document.getElementById("bm").addEventListener("click",function(e){
+  e.preventDefault();
+  alert("Bu düğmeyi tıklamayın, yer imi çubuğuna sürükleyin.");
+});
+
+document.getElementById("copy").addEventListener("click",function(){
+  var t=document.getElementById("code");
+  t.select();
+  var done=function(){document.getElementById("ok").textContent="Kopyalandı";};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand("copy");done();});
+  }else{
+    document.execCommand("copy");done();
+  }
+});
+
+build();
+</script>
+</body>
+</html>
