@@ -18,7 +18,7 @@
 :root[data-t=dark]{--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e;color-scheme:dark}
 @media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e}}
 html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
-input,select,textarea{font-size:16px}
+input,select,textarea{font-size:16px!important}
 *{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 header{background:var(--card);border-bottom:1px solid var(--ln);position:sticky;top:26px;z-index:5;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding:10px 16px}
@@ -144,13 +144,17 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .chip small{font-size:18px;min-height:20px}
 #mdots{display:flex;justify-content:center;gap:6px;margin-top:4px}#mdots:empty{display:none}
 #mdots i{width:7px;height:7px;border-radius:50%;background:var(--ln)}#mdots i.on{background:var(--ac)}
+#eo{position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column}#eo[hidden]{display:none}
+.eob{display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;border-bottom:1px solid var(--ln);background:var(--card)}
+.eob a{color:var(--ink);text-decoration:none;font-size:22px;padding:0 8px}
+#eof{flex:1;border:0;width:100%;min-height:0;background:#fff}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 @media(pointer:coarse){.kh{display:none}}
 @media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.5</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.7</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -221,6 +225,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
+<div id="eo" hidden><div class="eob"><button class="g" id="eoback">‹ Uygulamaya dön</button><b style="flex:1;text-align:center">e-Okul aktarma</b><a id="eonew" href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" title="Yeni sekmede aç">↗</a></div><iframe id="eof" title="e-Okul aktarma" allow="clipboard-read; clipboard-write; fullscreen"></iframe></div>
 <div id="cm" class="ov"><div class="dlg" id="cd"></div></div>
 <div id="sm" class="ov"><div class="dlg sd">
   <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px"><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span><button class="g d" id="mrst" style="font-size:12px;padding:3px 9px;border-radius:14px">↺ Notları sıfırla</button></div></div><b class="tot" id="mtot"></b></div>
@@ -233,7 +238,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
     <button data-k=",">,</button><button data-k="0">0</button><button data-k="del" aria-label="Sil">⌫</button>
   </div>
   <div class="ka" id="ka"><button class="r" data-a="nul"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></svg>Boş geç</button><button class="bl" data-a="one"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Bu soru tam</button><button class="gr" data-a="all"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12.8l4.2 4.2L14 8.2"/><path d="M10.2 16.6l.4.4L21.8 7.6"/></svg>Hepsi tam</button></div>
-  <div class="bb"><button class="sz" id="bsz">⌨ Orta</button><button id="bp" aria-label="Önceki soru">‹</button><button id="bn" aria-label="Sonraki soru">›</button><button class="kz" id="bk">Kapat</button></div>
+  <div class="bb"><button class="kz" id="bk">Kapat</button><button id="bp" aria-label="Önceki soru">‹</button><button id="bn" aria-label="Sonraki soru">›</button><button class="sz" id="bsz">⌨ Orta</button></div>
   <p class="hint kh" style="margin-top:8px;margin-bottom:0">Klavye: rakamlar · Enter = sonraki soru · M = bu soru tam · T = hepsi tam · ←→ soru · Esc = kapat</p>
 </div></div>
 
@@ -593,6 +598,10 @@ const m={name:'Hızlı Not Girişi',short_name:'Not Girişi',lang:'tr',start_url
 const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));document.head.appendChild(l)}catch(e){}})();
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('gesturechange',e=>e.preventDefault());
+function openEokul(){const f=$('#eof');if(!f.getAttribute('src'))f.src='https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html';$('#eo').hidden=false}
+document.querySelector('nav a').addEventListener('click',e=>{e.preventDefault();openEokul()});
+$('#eoback').onclick=()=>{$('#eo').hidden=true};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#eo').hidden)$('#eo').hidden=true});
 go('ex');
 </script>
 </body>
