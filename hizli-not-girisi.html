@@ -144,17 +144,19 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .chip small{font-size:18px;min-height:20px}
 #mdots{display:flex;justify-content:center;gap:6px;margin-top:4px}#mdots:empty{display:none}
 #mdots i{width:7px;height:7px;border-radius:50%;background:var(--ln)}#mdots i.on{background:var(--ac)}
-#eo{position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column}#eo[hidden]{display:none}
-.eob{display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;border-bottom:1px solid var(--ln);background:var(--card)}
-.eob a{color:var(--ink);text-decoration:none;font-size:22px;padding:0 8px}
+#eo{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}
+#eo[hidden]{display:none}
+.eow{flex:1;max-width:900px;display:flex;flex-direction:column;background:var(--card);border-radius:16px;overflow:hidden}
 #eof{flex:1;border:0;width:100%;min-height:0;background:#fff}
+.eox{display:flex;justify-content:center;padding:8px;border-top:1px solid var(--ln)}
+#eoback{width:46px;height:46px;border-radius:50%;border:0;background:#e5484d;color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 @media(pointer:coarse){.kh{display:none}}
 @media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.7</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.8</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -225,7 +227,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
-<div id="eo" hidden><div class="eob"><button class="g" id="eoback">‹ Uygulamaya dön</button><b style="flex:1;text-align:center">e-Okul aktarma</b><a id="eonew" href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" title="Yeni sekmede aç">↗</a></div><iframe id="eof" title="e-Okul aktarma" allow="clipboard-read; clipboard-write; fullscreen"></iframe></div>
+<div id="eo" hidden><div class="eow"><iframe id="eof" title="e-Okul aktarma" allow="clipboard-read; clipboard-write; fullscreen"></iframe><div class="eox"><button id="eoback" aria-label="Kapat" title="Kapat">✕</button></div></div></div>
 <div id="cm" class="ov"><div class="dlg" id="cd"></div></div>
 <div id="sm" class="ov"><div class="dlg sd">
   <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px"><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span><button class="g d" id="mrst" style="font-size:12px;padding:3px 9px;border-radius:14px">↺ Notları sıfırla</button></div></div><b class="tot" id="mtot"></b></div>
