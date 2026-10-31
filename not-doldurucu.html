@@ -1,527 +1,585 @@
-<!doctype html>
-<!--
-  Not Doldurucu Pro 1.0.10
-  Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
-  Copyright (C) 2026 sebasmobil
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published
-  by the Free Software Foundation, version 3 of the License.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program.  If not, see <https://www.gnu.org/licenses/agpl-3.0.html>.
--->
+<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#2c7a7b">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Not Doldurucu">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
-<link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.10</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hızlı Not Girişi</title>
+<!-- sebasmobil · Lisans: AGPL v3.0 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  :root{
-    --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
-    --bar:#e9ecf3;--bar-text:#4a5068;--bar-line:#d3d8e4;
-    --input:#fff;--input-border:#99a;--btn:#2b6cb0;--btn-hover:#245a94;--ok:#2f855a;
-    color-scheme:light;
-  }
-  :root[data-theme="dark"]{
-    --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
-    --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
-    --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
-    color-scheme:dark;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme]){
-      --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
-      --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
-      --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
-      color-scheme:dark;
-    }
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;color:var(--text);background:var(--bg)}
-  .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 16px;background:var(--bar);color:var(--bar-text);border-bottom:1px solid var(--bar-line);font-size:15px}
-  .bar .info{grid-column:2;text-align:center}
-  .bar .tools{grid-column:3;justify-self:end}
-  .bar a.lic{color:inherit;text-decoration:none;cursor:pointer}
-  .bar a.lic:hover{opacity:.75}
-  #themeBtn{background:transparent;border:0;padding:4px 6px;cursor:pointer;line-height:0;border-radius:8px}
-  #themeBtn:hover{background:rgba(128,128,128,.2)}
-  .wrap{max-width:720px;margin:24px auto;padding:0 16px}
-  h1{font-size:22px;margin-bottom:4px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin:14px 0}
-  label{font-weight:600;display:block;margin-bottom:6px}
-  input[type=text]{padding:5px;border:1px solid var(--input-border);border-radius:6px;width:150px;background:var(--input);color:var(--text)}
-  textarea{width:100%;height:130px;font-family:monospace;font-size:12px;background:var(--input);color:var(--text);border:1px solid var(--input-border);border-radius:6px}
-  button.main{font-size:15px;padding:9px 16px;border:0;border-radius:6px;background:var(--btn);color:#fff;cursor:pointer}
-  button.main:hover{background:var(--btn-hover)}
-  a.bm{display:inline-block;padding:10px 16px;background:var(--ok);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;cursor:grab}
-  small,.hint{color:var(--muted)}
-  ol li,ul li{margin:6px 0}
-  details{margin-top:6px}
-  #ok{color:var(--ok);font-weight:600;margin-left:10px}
-  .foot{text-align:center;font-size:13px;color:var(--muted);margin:24px 0 8px}
-  .foot a{color:var(--muted)}
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--mut:#6b7280;--ln:#e0e3e8;--ac:#0e6b63;--acs:#e0f2ef;--er:#c0392b;--onac:#fff;color-scheme:light dark}
+:root[data-t=light]{color-scheme:light}
+:root[data-t=dark]{--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#000;--card:#111214;--ink:#f2f4f5;--mut:#8b949c;--ln:#25282c;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--ln);position:sticky;top:26px;z-index:5;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding:10px 16px}
+h1{font-size:17px;margin:0;font-weight:700}h3{margin:0 0 10px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:12;display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--ln)}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:13px 8px;border-radius:10px;font:inherit;font-size:16px;font-weight:700;cursor:pointer}
+nav button.on{background:var(--acs);color:var(--ac)}
+body{padding:26px 0 84px}
+#vb{position:fixed;top:0;left:0;right:0;height:26px;z-index:13;display:flex;align-items:center;justify-content:center;background:var(--card);border-bottom:1px solid var(--ln);color:var(--mut);font-size:12.5px;white-space:nowrap;overflow:hidden}
+main{padding:16px;max-width:1000px;margin:auto}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+input,select,button{font:inherit;color:var(--ink)}
+input,select{background:var(--bg);border:1px solid var(--ln);border-radius:7px;padding:7px 9px;min-width:0}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button.b{background:var(--ac);color:var(--onac);border:0;border-radius:7px;padding:8px 14px;font-weight:600;cursor:pointer}
+button.g{background:none;border:1px solid var(--ln);border-radius:7px;padding:7px 12px;cursor:pointer}
+button.d{color:var(--er);border-color:var(--er)}
+button:disabled{opacity:.4}
+.hint{color:var(--mut);font-size:13px}
+.et{flex:1;font-size:17px}
+.bar{height:6px;background:var(--bg);border-radius:4px;margin:8px 0 2px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.mx{display:flex;flex-wrap:wrap;gap:8px}.mx label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:2px}.mx input{width:66px;text-align:center;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.cc{border:1px solid var(--ln);background:var(--bg);border-radius:18px;padding:7px 14px;font-weight:600;cursor:pointer}.cc.on{background:var(--ac);border-color:var(--ac);color:var(--onac)}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--ln);cursor:pointer;padding:0}.sw.on{box-shadow:0 0 0 3px var(--ink)}
+#tm{display:flex;margin-left:auto;border:1px solid var(--ln);border-radius:10px;overflow:hidden}
+#tm button{border:0;background:none;color:var(--mut);width:38px;height:34px;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#tm button.on{background:var(--acs);color:var(--ac)}
+#tm svg{width:20px;height:20px}
+#set{padding:6px 10px;font-size:18px;line-height:1}
+#thm{margin-left:0;padding:6px 10px;font-size:18px;line-height:1}
+.ck2{display:flex;gap:8px;align-items:center;padding:6px 0}
+.wrap{overflow:auto;max-height:calc(100vh - 230px);border:1px solid var(--ln);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%}th,td{padding:8px 10px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);font-size:13px;color:var(--mut);box-shadow:0 1px 0 var(--ln)}
+td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
+#el{display:flex;flex-direction:column;border:1px solid var(--ln);border-radius:10px;background:var(--card);overflow:hidden}
+.sr{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--ln);border-left:5px solid transparent;padding:12px 12px;font-size:16px;cursor:pointer}
+.sr:hover{background:var(--bg)}.sn{display:flex;flex-direction:column}.sn small{color:var(--mut);font-size:13px}
+.sr.part{border-left-color:#f59e0b}.sr.done{border-left-color:#22a559;background:var(--acs)}.sp{font-weight:700;white-space:nowrap}
+#map{display:none}#map.on{display:block}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px}
+.mg label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;align-items:center;justify-content:center;padding:8px}.ov.on{display:flex}
+.dlg{background:var(--card);border-radius:16px;padding:14px;width:100%;max-width:440px;max-height:96vh;overflow:auto}
+.sd{max-width:none;width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;display:flex;flex-direction:column;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));overflow-y:auto;user-select:none;-webkit-user-select:none}
+#sm{padding:0}
+.sd>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto;flex:none}
+.mnav{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.mwho{flex:1;display:flex;flex-direction:column;min-width:0}.mwho b{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mqs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.chip{flex:0 0 auto;min-width:46px;height:48px;border:1px solid var(--ln);background:var(--bg);border-radius:8px;font-weight:700;line-height:1.15;cursor:pointer}
+.chip small{display:block;font-weight:400;color:var(--mut);min-height:14px}
+.chip.f{border-color:#22a559}.chip.on{background:#f7b6d6;color:#6b1b44;border-color:#f7b6d6}.chip.on small{color:#6b1b44}
+.mdisp{text-align:center;padding:2px 0 8px}.mdisp span{display:block;color:var(--mut);font-size:13px}
+.mdisp b{font-size:52px;font-variant-numeric:tabular-nums;line-height:1.1}.mdisp small{font-size:17px;color:var(--mut);margin-left:6px}
+.ka{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.ka button{height:46px;font-size:14.5px;font-weight:700;border:0;border-radius:10px;cursor:pointer}
+.r{background:#f6b3b3;color:#5c1f1f}.bl{background:#b3d2f6;color:#1c3a5e}.gr{background:#b3e4c1;color:#1b4a2b}
+.sd>.kp{flex:1;min-height:0}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
+.kp button{height:100%;min-height:44px;font-size:30px;font-weight:600;background:var(--bg);border:1px solid var(--ln);border-radius:10px;cursor:pointer;transition:transform .08s}
+.kp button:active,.kp button.pr{background:#ffd9a8;color:#5b3300;border-color:#ffd9a8;transform:scale(.94)}
+.ka button:active,.ka button.pr{filter:brightness(.9);transform:scale(.95)}
+.okb{width:100%;margin-top:8px;height:48px;border:0;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer}
+.okb.nx{background:#f7b6d6;color:#6b1b44}.okb.sv{background:#fbe3a0;color:#5b4500}
+.okb:active,.okb.pr{filter:brightness(.9)}
+#fab{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
+#toast.warn,#toast.ok{background:#e5384a;color:#fff;font-size:19px;font-weight:700;padding:14px 22px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;width:max-content;max-width:90vw;z-index:60}
+#toast.ok{background:#16a34a}
+#toast.warn.on{animation:shk .35s}
+@keyframes shk{25%{transform:translateX(calc(-50% - 9px))}75%{transform:translateX(calc(-50% + 9px))}}
+.rl{display:flex;flex-direction:column;gap:8px}.rl>button{text-align:left}.rl small{display:block;color:var(--mut);font-weight:400}
+hr{border:0;border-top:1px solid var(--ln);margin:12px 0}
+textarea{background:var(--bg);border:1px solid var(--ln);border-radius:7px;padding:8px;color:var(--ink);font:inherit}
+#mclose{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#e5484d;color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}#mclose:active{filter:brightness(.9)}
+.ctl{position:sticky;top:var(--hh,57px);z-index:4;background:var(--bg);padding:8px 0 0;margin-top:-8px}
+.sd>.mdisp{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0;min-height:56px}
+.mdisp b{font-size:78px;line-height:1}.mdisp small{font-size:24px}
+.sd>.kp{flex:0 1 calc(var(--kh,54px)*4 + 24px);min-height:150px;width:var(--kw,88%);grid-template-rows:repeat(4,minmax(0,1fr));grid-auto-rows:auto}
+.kp button{height:100%;min-height:0;font-size:clamp(20px,calc(var(--kh,54px)*.5),32px)}
+.ka{margin-top:8px;margin-bottom:0}
+.ka button{display:flex;align-items:center;justify-content:center;gap:6px;height:44px;font-size:14px}
+.bb{display:flex;gap:8px;margin-top:8px}
+.bb button{height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);font-size:26px;font-weight:700;line-height:1;cursor:pointer;padding:0}
+.bb #bp,.bb #bn{flex:1}.bb .sz{flex:none;padding:0 12px;font-size:14px}
+.bb .kz{flex:none;padding:0 18px;font-size:16px;background:#fbe3a0;border-color:#fbe3a0;color:#5b4500}
+.bb button.pr,.bb button:active{filter:brightness(.88)}
+.tot{flex:none;background:var(--acs);color:var(--ac);border-radius:12px;padding:3px 12px;font-size:30px;line-height:1.15;font-variant-numeric:tabular-nums}
+.tot small{font-size:15px;opacity:.85}
+.chip{min-width:58px;height:66px;font-size:19px}
+.chip small{font-size:20px;font-weight:800;color:#1fa95b;min-height:24px}
+.chip.f{border-width:2px}.chip:not(.on){color:var(--mut)}.chip.on small{color:#1e40af}
+#cm{z-index:80}#toast,#toast.warn{z-index:90}
+.sec{border-radius:12px;padding:12px;margin-bottom:12px;border:1.5px solid}
+.sec.sa{background:rgba(90,155,240,.12);border-color:rgba(90,155,240,.55)}
+.sec.sb{background:rgba(70,185,120,.12);border-color:rgba(70,185,120,.55)}
+.st{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;margin-bottom:6px}
+.st small{font-weight:400;color:var(--mut);font-size:12px}
+.sn1{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:14px;color:#fff;flex:none}
+.sa .sn1{background:#3b82f6}.sb .sn1{background:#22a559}
+.pb{width:100%;height:44px;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
+.pb.a{background:#b3d2f6;color:#1c3a5e}.pb.b{background:#b3e4c1;color:#1b4a2b}
+nav button{font-size:15px;padding:13px 4px}
+nav a{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mut);padding:13px 4px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;line-height:1.15}
+nav a:active{background:var(--acs)}
+.slist{display:flex;flex-direction:column;border:1px solid var(--ln);border-radius:10px;background:var(--card);overflow:hidden}
+.srow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--ln)}
+.srow .ck{width:20px;height:20px;flex:none}
+.srow .sm{flex:1;min-width:0;display:flex;flex-direction:column}
+.srow .sm b{overflow-wrap:anywhere}.srow .sm span{color:var(--mut);font-size:13px}
+.srow button{padding:6px 10px;flex:none}
+.sbx{position:relative;flex:1;min-width:140px}.sbx input{width:100%;padding-right:38px}
+.clr{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:0;background:var(--ln);color:var(--ink);font-size:13px;cursor:pointer;padding:0}
+input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}
+#mqs{scroll-snap-type:x mandatory;gap:0;padding-bottom:0;scrollbar-width:none}#mqs::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-content:start}
+.chip{min-width:0;height:58px;font-size:15px;padding:0}
+.chip small{font-size:18px;min-height:20px}
+#mdots{display:flex;justify-content:center;gap:6px;margin-top:4px}#mdots:empty{display:none}
+#mdots i{width:7px;height:7px;border-radius:50%;background:var(--ln)}#mdots i.on{background:var(--ac)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
+@media(pointer:coarse){.kh{display:none}}
+@media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
 </style>
 </head>
 <body>
+<div id="vb"><span>Pro <span id="ver">1.0.3</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<header>
+  <h1>Hızlı Not Girişi</h1>
+  <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
+  <div id="tm" role="group" aria-label="Görünüm"><button data-m="light" title="Aydınlık" aria-label="Aydınlık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg></button><button data-m="dark" title="Karanlık" aria-label="Karanlık"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg></button><button data-m="auto" title="Otomatik (sistem)" aria-label="Otomatik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></div>
+  <button class="g" id="thm" title="Renk teması" aria-label="Renk teması">🎨</button>
+  <button class="g" id="set" title="Ayarlar" aria-label="Ayarlar">⚙️</button>
+</header>
+<main>
 
-<div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.10</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
-  <div class="tools"><button id="themeBtn" type="button" aria-label="Tema"></button></div>
-</div>
+<section id="v-ex" class="on">
+  <div id="exl">
+    <div class="row"><b class="et">Yazılılar</b><button class="b" id="newex">+ Yeni yazılı</button></div>
+    <div id="cards"></div>
+  </div>
+  <div id="exe" hidden>
+    <div class="ctl">
+      <div class="row"><button class="g" id="back">‹ Yazılılar</button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
+      <div class="row"><div class="sbx"><input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" autocomplete="off"><button class="clr" data-for="eq" hidden aria-label="Temizle">✕</button></div><select id="ecf"></select></div>
+      <div class="row"><select id="es"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select><label class="hint"><input type="checkbox" id="emiss"> Hiç not girilmemişler</label></div>
+    </div>
+    <div id="el"></div>
+  </div>
+</section>
 
-<div class="wrap">
-<h1>Not Doldurucu</h1>
-<div class="hint">Sütun sayısı girmenize gerek yok. Yapıştırdığınız veriye bakıp kendisi bulur. Yer imini bir kez oluşturmanız yeterli.</div>
+<section id="v-st">
+  <div class="card">
+    <div class="row">
+      <button class="b" onclick="$('#file').click()">Excel / CSV'den aktar</button>
+      <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
+      <span class="hint">Sütunları sonraki adımda eşleştireceksiniz.</span>
+    </div>
+    <div id="map" class="card" style="background:var(--bg)">
+      <div class="mg">
+        <label>Ad (veya Ad Soyad)<select id="m_name"></select></label>
+        <label>Soyad (ayrıysa)<select id="m_sur"></select></label>
+        <label>Okul numarası<select id="m_no"></select></label>
+        <label>Sınıf (veya Sınıf/Şube)<select id="m_cls"></select></label>
+        <label>Şube (ayrıysa, sınıfla birleşir)<select id="m_sub"></select></label>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="hdr" checked> İlk satır başlık</label>
+        <select id="mode"><option value="add">Listeye ekle</option><option value="rep">Listeyi değiştir</option></select>
+        <button class="b" id="doimp">İçe aktar</button>
+        <button class="g" onclick="$('#map').classList.remove('on')">Vazgeç</button>
+      </div>
+      <div class="hint" id="pv"></div>
+    </div>
+    <div class="row" style="margin:0">
+      <input id="an" placeholder="No" style="width:84px">
+      <input id="ad" placeholder="Ad Soyad" style="flex:1;min-width:150px">
+      <input id="ac" placeholder="Sınıf (6/A)" style="width:100px">
+      <button class="b" id="add">Ekle</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="sbx"><input id="q2" type="search" placeholder="Öğrenci ara…" autocomplete="off"><button class="clr" data-for="q2" hidden aria-label="Temizle">✕</button></div>
+    <select id="cf2"></select>
+    <select id="ss"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select>
+    <button class="g d" id="dsel" disabled>Seçilenleri sil</button>
+    <button class="g d" id="dall">Tümünü sil</button>
+  </div>
+  <div class="row" style="margin-bottom:6px"><label class="hint" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ca"> Görünenlerin hepsini seç</label></div>
+  <div id="sb" class="slist"></div>
+  <p class="hint">Aralık seçmek için bir kutuya tıklayıp <b>Shift</b> ile diğerine tıklayın. Düzenlemek için ✎ simgesine basın.</p>
+</section>
 
-<div class="card">
-  <label>1. Seçenek: Yer imi çubuğuna sürükleyin</label>
-  <a class="bm" id="bm" href="#">Notları Doldur</a>
-  <p><small>Bu yeşil düğmeyi tarayıcının yer imi çubuğuna sürükleyip bırakın.</small></p>
-</div>
+</main>
 
-<div class="card">
-  <label>2. Seçenek: Kodu kopyalayıp yer imi adresine yapıştırın</label>
-  <textarea id="code" readonly></textarea>
-  <p><button class="main" id="copy">Kodu Kopyala</button><span id="ok"></span></p>
-  <details>
-    <summary>Gelişmiş ayarlar (sayfa farklıysa)</summary>
-    <p>
-      Ana tablo ID: <input type="text" id="tid" value="Table29"><br><br>
-      Liste tablosu ID: <input type="text" id="lid" value="dgListem"><br><br>
-      Kutu sınıfı: <input type="text" id="cls" value="frmInput2">
-    </p>
-  </details>
-</div>
+<div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
-<div class="card">
-  <label>Nasıl çalışır?</label>
-  <ol>
-    <li>Not sayfasını açın ve yer imine tıklayın. Sayfanın üstünde bir kutu çıkar.</li>
-    <li>Excel'de sütunları seçip kopyalayın (başlık satırı olmadan) ve kutuya yapıştırın.</li>
-    <li>"Önizle ve Raporla"ya basın. Kimin hangi notu alacağını gösteren bir rapor çıkar. Doğruysa "Onayla ve Doldur"a basın. Raporu isterseniz kopyalayabilirsiniz.</li>
-  </ol>
-  <ul>
-    <li><b>Numara kutusu işaretliyse (numara modu):</b> Excel'de ilk sütun öğrenci numarası, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.</li>
-    <li><b>Numara kutusu işaretli değilse (sıra modu):</b> Yalnızca notları kopyalayın. 1. satır listedeki 1. öğrenciye, 2. satır 2. öğrenciye yazılır. Satır sayısı öğrenci sayısıyla uyuşmalı.</li>
-    <li>Sütun sayısı otomatik bulunur. Sağdaki tamamen boş sütunlar sayılmaz, ilgili kutulara dokunulmaz.</li>
-    <li>Sizin sütunlarınız sayfadaki kutulardan fazlaysa fazla sütunlar atlanır ve size bildirilir.</li>
-    <li>Rapor; notu girilenleri, notu girilmeyenleri, Excel'de olmayan öğrencileri ve sayfada bulunamayan numaraları ayrı ayrı listeler. Öğrenci adlarını e-Okul sayfasından kendisi okur.</li>
-    <li>Yapıştırdığınız verideki boş hücreler, ilgili kutuyu boşaltır. Raporda "Notu girilmedi" bölümünde görürsünüz.</li>
-  </ul>
-  <small>Kaydetmeden önce birkaç öğrenciyi kontrol edin.</small>
-</div>
-<p class="foot">&copy;sebasmobil 2026 &middot; <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">Lisans: GNU AGPL v3.0</a></p>
-</div>
+<div id="cm" class="ov"><div class="dlg" id="cd"></div></div>
+<div id="sm" class="ov"><div class="dlg sd">
+  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px"><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span><button class="g d" id="mrst" style="font-size:12px;padding:3px 9px;border-radius:14px">↺ Notları sıfırla</button></div></div><b class="tot" id="mtot"></b></div>
+  <div id="mqs"></div><div id="mdots"></div>
+  <div class="mdisp"><span id="mql"></span><div><b id="mval"></b><small id="mmax"></small></div></div>
+  <div class="kp" id="kp">
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k=",">,</button><button data-k="0">0</button><button data-k="del" aria-label="Sil">⌫</button>
+  </div>
+  <div class="ka" id="ka"><button class="r" data-a="nul"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></svg>Boş geç</button><button class="bl" data-a="one"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Bu soru tam</button><button class="gr" data-a="all"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12.8l4.2 4.2L14 8.2"/><path d="M10.2 16.6l.4.4L21.8 7.6"/></svg>Hepsi tam</button></div>
+  <div class="bb"><button class="sz" id="bsz">⌨ Orta</button><button id="bp" aria-label="Önceki soru">‹</button><button id="bn" aria-label="Sonraki soru">›</button><button class="kz" id="bk">Kapat</button></div>
+  <p class="hint kh" style="margin-top:8px;margin-bottom:0">Klavye: rakamlar · Enter = sonraki soru · M = bu soru tam · T = hepsi tam · ←→ soru · Esc = kapat</p>
+</div></div>
+
+<div id="fab" hidden title="Excel'e aktar"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></div>
+<div id="toast"></div>
 
 <script>
-var VERSION="1.0.10";
-document.getElementById("ver").textContent="Pro "+VERSION;
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+let S=load('hng2');
+if(!S){S={st:[],ex:[],fab:null};const o=load('hng');
+ if(o&&o.st&&o.st.length){S.st=o.st.map(s=>({id:s.id,no:s.no,name:s.name,cls:s.cls}));
+  const ex={id:uid(),title:o.exam||'Yazılı',max:o.max,cls:[...new Set(o.st.map(s=>s.cls))],sc:{}};
+  o.st.forEach(s=>{if(s.sc&&s.sc.some(v=>v!=null))ex.sc[s.id]=s.sc});S.ex.push(ex)}}
+const save=()=>{try{localStorage.setItem('hng2',JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=v=>v==null?'':String(v).replace('.',',');
+const norm=s=>String(s).toLocaleLowerCase('tr').replace(/ç/g,'c').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ı/g,'i');
+const sum=a=>Math.round(a.reduce((x,y)=>x+(y||0),0)*100)/100;
+const T=a=>a.every(v=>v==null)?'':sum(a);
+const cmpC=(a,b)=>String(a).localeCompare(b,'tr',{numeric:true});
+const lab=c=>c||'Sınıfsız';
+const classes=()=>[...new Set(S.st.map(s=>s.cls))].sort(cmpC);
+const exById=id=>S.ex.find(e=>e.id===id),stById=id=>S.st.find(s=>s.id===id);
+const exSt=ex=>S.st.filter(s=>ex.cls.includes(s.cls));
+const gs=(ex,id,mk)=>{let a=ex.sc[id];if(!a){if(!mk)return ex.max.map(()=>null);a=ex.sc[id]=ex.max.map(()=>null)}while(a.length<ex.max.length)a.push(null);a.length=ex.max.length;return a};
+const done=(ex,s)=>gs(ex,s.id).every(v=>v!=null);
+/* Onay penceresi (tarayıcı confirm/prompt bazı ortamlarda engelli) */
+function ask(msg,cb,o){o=o||{};const m=$('#cm'),d=$('#cd');
+ d.innerHTML=`<p style="margin:0 0 14px;font-size:16px;white-space:pre-line">${esc(msg)}</p>${o.need?`<input id="cn" placeholder="${esc(o.need)} yazın" autocomplete="off" style="width:100%;margin-bottom:14px">`:''}<div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="cno">Vazgeç</button><button class="b" id="cyes" style="background:var(--er);color:#fff">${esc(o.ok||'Evet, sil')}</button></div>`;
+ m.classList.add('on');
+ $('#cno').onclick=()=>m.classList.remove('on');
+ $('#cyes').onclick=()=>{if(o.need&&$('#cn').value.trim().toUpperCase()!==o.need)return toast('Onay için '+o.need+' yazın');m.classList.remove('on');cb()}}
+let tm;const toast=(m,w)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('warn',w===true);t.classList.toggle('ok',w==='ok');
+ if(w&&$('#sm').classList.contains('on')){t.style.bottom='auto';t.style.top=$('.sd .mnav').getBoundingClientRect().top+'px'}else{t.style.top='';t.style.bottom=''}
+ if(w===true){try{navigator.vibrate&&navigator.vibrate([40,40,40])}catch(e){}}
+ t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>t.classList.remove('on'),2300)};
+const closeG=()=>$('#gm').classList.remove('on');
 
-function core(TID,LID,CLS,VER){
-  /* Not Doldurucu Pro | (c) sebasmobil 2026 | AGPL v3.0 | https://www.gnu.org/licenses/agpl-3.0.html */
-  var T=document.getElementById(TID);
-  if(!T){alert(TID+" bulunamadı");return;}
-  if(document.getElementById("notBox")){return;}
-  var parseRows=function(t){
-    t=t.replace(/\r\n?/g,"\n");
-    if(t.trim()===""){return [];}
-    var r=t.split("\n");
-    if(r.length>1&&r[r.length-1]===""){r.pop();}
-    return r;
-  };
-  var getStudents=function(){
-    var L=document.getElementById(LID);
-    if(!L){return null;}
-    return [].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
-  };
-  var norm=function(t){
-    return String(t).replace(/\s+/g,"").replace(/^0+(?=\d)/,"");
-  };
-  var findCol=function(tr,nums){
-    var want={},i,c,k,nc=0,best={col:-1,hits:0,map:{}};
-    for(i=0;i<nums.length;i++){if(nums[i]!==""){want[nums[i]]=true;}}
-    for(i=0;i<tr.length;i++){nc=Math.max(nc,tr[i].cells.length);}
-    for(c=0;c<nc;c++){
-      var map={},bad={},hits=0;
-      for(i=0;i<tr.length;i++){
-        var cell=tr[i].cells[c];
-        if(!cell){continue;}
-        k=norm(cell.textContent);
-        if(!/^\d+$/.test(k)){continue;}
-        if(map[k]!==undefined){bad[k]=true;}else{map[k]=i;}
-      }
-      for(k in bad){delete map[k];}
-      for(k in map){if(want[k]){hits++;}}
-      if(hits>best.hits){best={col:c,hits:hits,map:map};}
-    }
-    return best;
-  };
-  var nameOf=function(row){
-    var c=row.cells,i,t,x;
-    for(i=0;i<c.length;i++){
-      x=c[i];
-      if(x.getElementsByClassName&&x.getElementsByClassName(CLS).length>0){continue;}
-      t=String(x.textContent).replace(/\s+/g," ").trim();
-      if(t.length<2||/^[\d\s.,\-\/]+$/.test(t)){continue;}
-      return t;
-    }
-    return "";
-  };
-  var looksLikeNumbers=function(r,st){
-    var nn=[],m=0,big=false,i,n;
-    if(!st){return false;}
-    for(i=0;i<r.length;i++){
-      n=norm(r[i].split("\t")[0]);
-      nn.push(n);
-      if(n!==""){m++;}
-    }
-    if(m<2){return false;}
-    var res=findCol(st,nn);
-    for(i=0;i<nn.length;i++){
-      if(nn[i]!==""&&res.map[nn[i]]!==undefined&&parseInt(nn[i],10)>100){big=true;}
-    }
-    return big&&res.hits>=2&&res.hits*2>=m;
-  };
-  var buildPlan=function(rows,tr,numMode){
-    var p={mode:numMode?"num":"sira",jobs:[],absent:[],missing:[],dup:[],K:0,M:Infinity,N:0,total:tr.length,err:null};
-    var i,j,v,job,idx,used={};
-    if(numMode){
-      var data=[],nums=[],cnt={};
-      for(i=0;i<rows.length;i++){
-        v=rows[i].split("\t");
-        nums.push(norm(v[0]));
-        data.push(v.slice(1));
-        if(nums[i]!==""){cnt[nums[i]]=(cnt[nums[i]]||0)+1;}
-      }
-      var res=findCol(tr,nums);
-      if(res.hits===0){p.err="Yapıştırılan numaralardan hiçbiri sayfadaki öğrenci numaralarıyla eşleşmedi.\nİlk satır: "+rows[0].slice(0,40)+"\nİlk sütunun öğrenci numarası olduğundan emin olun.";return p;}
-      for(i=0;i<rows.length;i++){
-        if(nums[i]===""){
-          if(data[i].join("").trim()!==""){p.missing.push("(numarasız "+(i+1)+". satır)");}
-          continue;
-        }
-        idx=res.map[nums[i]];
-        if(cnt[nums[i]]>1){
-          if(!p.dupSeen){p.dupSeen={};}
-          if(!p.dupSeen[nums[i]]){
-            p.dupSeen[nums[i]]=true;
-            p.dup.push({num:nums[i],name:idx!==undefined?nameOf(tr[idx]):""});
-            if(idx!==undefined){used[idx]=true;}
-          }
-          continue;
-        }
-        if(idx===undefined){p.missing.push(nums[i]);continue;}
-        used[idx]=true;
-        p.jobs.push({idx:idx,num:nums[i],name:nameOf(tr[idx]),vals:data[i],blank:data[i].join("").trim()===""});
-      }
-    }else{
-      if(rows.length>tr.length){p.err="Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk satır: "+rows[0].slice(0,40);return p;}
-      for(i=0;i<rows.length;i++){
-        v=rows[i].split("\t");
-        used[i]=true;
-        p.jobs.push({idx:i,num:(i+1)+".",name:nameOf(tr[i]),vals:v,blank:v.join("").trim()===""});
-      }
-    }
-    for(i=0;i<tr.length;i++){
-      if(!used[i]){p.absent.push({num:numMode?"":(i+1)+".",name:nameOf(tr[i]),idx:i});}
-    }
-    if(!p.jobs.length){p.err="Eşleşen öğrenci yok.";return p;}
-    for(i=0;i<p.jobs.length;i++){
-      job=p.jobs[i];
-      for(j=0;j<job.vals.length;j++){
-        if(job.vals[j].trim()!==""&&j+1>p.K){p.K=j+1;}
-      }
-      p.M=Math.min(p.M,tr[job.idx].getElementsByClassName(CLS).length);
-    }
-    if(p.K===0){p.err="Yapıştırılan verinin hepsi boş.";return p;}
-    p.N=Math.min(p.K,p.M);
-    return p;
-  };
-  var fmt=function(vals,n){
-    var o=[],j;
-    for(j=0;j<n;j++){o.push(((vals[j]||"").trim())||"-");}
-    return o.join(" | ");
-  };
-  var lab=function(x){
-    return (x.num?x.num+" ":"")+(x.name||"(ad okunamadı)");
-  };
-  var reportText=function(p,done){
-    var L=[],i,ent=[],emp=[];
-    for(i=0;i<p.jobs.length;i++){if(p.jobs[i].blank){emp.push(p.jobs[i]);}else{ent.push(p.jobs[i]);}}
-    L.push(done?"DOLDURULDU":"ÖNİZLEME (henüz doldurulmadı)");
-    L.push((p.mode==="num"?"Numaraya göre":"Sıraya göre")+" | Not sütunu: "+p.N+" | Sayfadaki öğrenci: "+p.total);
-    if(p.K>p.M){L.push("UYARI: "+p.K+" not sütunu yapıştırdınız, sayfada "+p.M+" kutu var. Fazla "+(p.K-p.M)+" sütun atlanacak.");}
-    L.push("");
-    L.push("NOTU GİRİLENLER ("+ent.length+")");
-    for(i=0;i<ent.length;i++){L.push(lab(ent[i])+": "+fmt(ent[i].vals,p.N));}
-    if(emp.length){
-      L.push("");
-      L.push("NOTU GİRİLMEDİ ("+emp.length+") - kutuları boş kalacak");
-      for(i=0;i<emp.length;i++){L.push(lab(emp[i]));}
-    }
-    if(p.absent.length){
-      L.push("");
-      L.push("EXCEL'DE YOK ("+p.absent.length+") - kutularına dokunulmayacak");
-      for(i=0;i<p.absent.length;i++){L.push(lab(p.absent[i]));}
-    }
-    if(p.missing.length){
-      L.push("");
-      L.push("SAYFADA BULUNAMAYAN NUMARALAR ("+p.missing.length+") - doldurulmayacak");
-      for(i=0;i<p.missing.length;i++){L.push(p.missing[i]);}
-    }
-    if(p.dup.length){
-      L.push("");
-      L.push("BİRDEN FAZLA GEÇEN NUMARALAR ("+p.dup.length+") - doldurulmayacak");
-      for(i=0;i<p.dup.length;i++){L.push(lab(p.dup[i]));}
-    }
-    return L.join("\n");
-  };
-  var copyText=function(t){
-    var ok=function(){alert("Rapor kopyalandı.");};
-    var fb=function(){
-      var x=document.createElement("textarea");
-      x.value=t;
-      x.style.position="fixed";
-      x.style.opacity="0";
-      document.body.appendChild(x);
-      x.select();
-      try{document.execCommand("copy");ok();}catch(e){alert("Kopyalanamadı. Raporu elle seçip kopyalayın.");}
-      document.body.removeChild(x);
-    };
-    try{
-      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fb);return;}
-    }catch(e){}
-    fb();
-  };
-  var d=document.createElement("div");
-  d.id="notBox";
-  d.style.padding="6px";
-  var ta=document.createElement("textarea");
-  ta.rows=6;
-  ta.style.width="80%";
-  ta.placeholder="Excel'den kopyaladığınız sütunları buraya yapıştırın";
-  var lb=document.createElement("label");
-  lb.style.display="block";
-  lb.style.fontSize="13px";
-  lb.style.margin="4px 0";
-  var cb=document.createElement("input");
-  cb.type="checkbox";
-  try{cb.checked=localStorage.getItem("notDoldurNo")==="1";}catch(e){}
-  lb.appendChild(cb);
-  lb.appendChild(document.createTextNode(" İlk sütun öğrenci numarası (numaraya göre eşleştir)"));
-  var hint=document.createElement("div");
-  hint.style.fontSize="12px";
-  hint.style.margin="2px 0 6px";
-  var info=document.createElement("div");
-  info.style.fontSize="12px";
-  info.style.margin="4px 0";
-  var bt=document.createElement("button");
-  bt.type="button";
-  bt.textContent="Önizle ve Raporla";
-  var rep=document.createElement("div");
-  rep.id="notRep";
-  rep.style.display="none";
-  rep.style.margin="8px 0";
-  var repText=document.createElement("div");
-  repText.style.whiteSpace="pre-wrap";
-  repText.style.fontSize="12px";
-  repText.style.maxHeight="260px";
-  repText.style.overflowY="auto";
-  repText.style.border="1px solid #999";
-  repText.style.padding="6px";
-  repText.style.background="#fff";
-  repText.style.color="#000";
-  var bOk=document.createElement("button");
-  bOk.type="button";
-  bOk.textContent="Onayla ve Doldur";
-  var bCopy=document.createElement("button");
-  bCopy.type="button";
-  bCopy.textContent="Raporu Kopyala";
-  var bClose=document.createElement("button");
-  bClose.type="button";
-  bClose.textContent="Kapat";
-  rep.appendChild(repText);
-  rep.appendChild(bOk);
-  rep.appendChild(bCopy);
-  rep.appendChild(bClose);
-  d.appendChild(ta);
-  d.appendChild(lb);
-  d.appendChild(hint);
-  d.appendChild(info);
-  d.appendChild(bt);
-  d.appendChild(rep);
-  T.insertBefore(d,T.childNodes[0]);
-  var curPlan=null,lastText="";
-  var hideRep=function(){rep.style.display="none";curPlan=null;};
-  var upd=function(){
-    var r=parseRows(ta.value),s=getStudents(),k=0,i,j,v;
-    hint.textContent=cb.checked?"Açık (numara modu): Excel'de ilk sütun öğrenci numarası, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.":"Kapalı (sıra modu): Excel'deki 1. satır listedeki 1. öğrenciye, 2. satır 2. öğrenciye yazılır. Yalnızca notları kopyalayın. Satır sayısı öğrenci sayısıyla uyuşmalı.";
-    if(cb.checked){
-      var nums=[];
-      for(i=0;i<r.length;i++){
-        v=r[i].split("\t");
-        nums.push(norm(v[0]));
-        for(j=1;j<v.length;j++){
-          if(v[j].trim()!==""&&j>k){k=j;}
-        }
-      }
-      var res=s?findCol(s,nums):{hits:0};
-      info.textContent="Sürüm "+VER+" | Numara modu | Yapıştırılan: "+r.length+" satır, "+k+" not sütunu | Eşleşen numara: "+res.hits+" | Sayfadaki öğrenci: "+(s?s.length:"?")+(r.length>0&&res.hits===0?" | DİKKAT: Hiçbir numara eşleşmedi. İlk sütun öğrenci numarası mı?":"");
-    }else{
-      for(i=0;i<r.length;i++){
-        v=r[i].split("\t");
-        for(j=0;j<v.length;j++){
-          if(v[j].trim()!==""&&j+1>k){k=j+1;}
-        }
-      }
-      info.textContent="Sürüm "+VER+" | Sıra modu | Yapıştırılan: "+r.length+" satır, "+k+" sütun | Sayfadaki öğrenci: "+(s?s.length:"?")+(looksLikeNumbers(r,s)?" | DİKKAT: İlk sütun öğrenci numarası gibi görünüyor, numara kutusunu işaretleyin.":"");
-    }
-  };
-  ta.addEventListener("input",function(){hideRep();upd();});
-  ta.addEventListener("change",function(){hideRep();upd();});
-  cb.onchange=function(){
-    try{localStorage.setItem("notDoldurNo",cb.checked?"1":"0");}catch(e){}
-    hideRep();
-    upd();
-  };
-  upd();
-  bt.onclick=function(){
-    var rows=parseRows(ta.value);
-    if(!rows.length){alert("Önce Excel'den veri yapıştırın.");return;}
-    var tr=getStudents();
-    if(!tr){alert(LID+" bulunamadı");return;}
-    var nm=cb.checked;
-    if(!nm){
-      if(looksLikeNumbers(rows,tr)&&!confirm("İlk sütun öğrenci numarası gibi görünüyor ama numara kutusu işaretli değil.\nBu durumda numaralar da not olarak kutulara yazılır.\nYine de sırayla önizleme yapılsın mı?")){return;}
-      while(rows.length>tr.length&&rows[rows.length-1].trim()===""){rows.pop();}
-    }
-    var p=buildPlan(rows,tr,nm);
-    if(p.err){hideRep();alert(p.err);return;}
-    curPlan=p;
-    lastText=reportText(p,false);
-    repText.textContent=lastText;
-    repText.scrollTop=0;
-    rep.style.display="block";
-    bOk.style.display="inline-block";
-  };
-  bOk.onclick=function(){
-    if(!curPlan){return;}
-    var p=curPlan,tr=getStudents(),i,j,f;
-    for(i=0;i<p.jobs.length;i++){
-      f=tr[p.jobs[i].idx].getElementsByClassName(CLS);
-      for(j=0;j<p.N;j++){
-        f[j].value=(p.jobs[i].vals[j]||"").trim();
-        f[j].dispatchEvent(new Event("change",{bubbles:true}));
-      }
-    }
-    lastText=reportText(p,true);
-    repText.textContent=lastText;
-    repText.scrollTop=0;
-    bOk.style.display="none";
-    curPlan=null;
-  };
-  bCopy.onclick=function(){copyText(lastText);};
-  bClose.onclick=function(){hideRep();};
-}
+/* Görünümler */
+let view='ex',cur=null,ecl=[];
+function go(v){view=v;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+ $('#v-ex').classList.toggle('on',v==='ex');$('#v-st').classList.toggle('on',v==='st');
+ $('#exl').hidden=!!cur;$('#exe').hidden=!cur;
+ if(v==='ex'){cur?rE():rC()}else{fillCls();rS()}
+ $('#fab').hidden=!(v==='ex'&&!cur)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
+$('#back').onclick=()=>{cur=null;go('ex')};
 
-function build(){
-  var tid=document.getElementById("tid").value.trim();
-  var lid=document.getElementById("lid").value.trim();
-  var cls=document.getElementById("cls").value.trim();
-  var body=core.toString().replace(/\s*\n\s*/g," ");
-  var code="("+body+")("+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+","+JSON.stringify(VERSION)+");";
-  document.getElementById("code").value="javascript:"+code;
-  document.getElementById("bm").href="javascript:"+encodeURIComponent(code);
-  document.getElementById("ok").textContent="";
-}
+/* Yazılı listesi */
+function rC(){$('#cards').innerHTML=S.ex.length?S.ex.map(ex=>{const L=exSt(ex),d=L.filter(s=>done(ex,s)).length,p=L.length?Math.round(d*100/L.length):0;
+ return `<div class="card ec" data-id="${ex.id}"><div class="row" style="margin:0"><b class="et">${esc(ex.title)}</b><button class="g ed" title="Düzenle">✎</button><button class="g d xd" title="Sil">🗑</button></div>
+ <div class="hint">${ex.cls.length?ex.cls.map(c=>esc(lab(c))).join(', '):'Sınıf seçilmedi'} · ${ex.max.length} soru · ${sum(ex.max)} puan</div>
+ <div class="bar"><i style="width:${p}%"></i></div>
+ <div class="row" style="margin:6px 0 0"><span class="hint" style="flex:1">${d}/${L.length} öğrenci tamamlandı</span><button class="b go">Not gir</button></div></div>`}).join(''):'<div class="card hint">Henüz yazılı yok. “+ Yeni yazılı” ile başlayın.</div>'}
+$('#cards').onclick=e=>{const c=e.target.closest('.ec');if(!c)return;const ex=exById(c.dataset.id);
+ if(e.target.closest('.ed'))exDlg(ex.id);
+ else if(e.target.closest('.xd')){ask(`“${ex.title}” yazılısı ve girilen tüm notları silinsin mi?\nÖğrenci listesi etkilenmez.`,()=>{S.ex=S.ex.filter(x=>x!==ex);save();rC()})}
+ else{cur=ex.id;$('#eq').value='';go('ex')}};
+$('#newex').onclick=()=>exDlg();
 
-["tid","lid","cls"].forEach(function(id){
-  document.getElementById(id).addEventListener("input",build);
-});
+/* Yazılı oluştur / düzenle */
+function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd');
+ g.innerHTML=`<h3>${old?'Yazılıyı düzenle':'Yeni yazılı'}</h3>
+ <input id="xt" placeholder="Yazılı adı (ör. Fen Bilimleri 1. Dönem 2. Yazılı)" value="${esc(ex.title)}" style="width:100%;margin-bottom:10px">
+ <div class="row"><label>Soru sayısı <input id="xn" type="number" min="1" max="40" value="${ex.max.length}" style="width:70px"></label>
+ <label>Hepsi <input id="xa" type="number" min="0" style="width:64px"></label><button class="g" id="xap">Uygula</button></div>
+ <div class="mx" id="xm"></div>
+ <p class="hint">Toplam: <b id="xtot"></b> puan</p>
+ <div class="hint">Uygulanacağı sınıflar (istediklerinize dokunun)</div>
+ <div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
+ <div class="row"><button class="g" id="xall">Tümü</button><button class="g" id="xnone">Hiçbiri</button></div>
+ <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc2">İptal</button><button class="b" id="xs">Kaydet</button></div>`;
+ const pm=()=>{$('#xm').innerHTML=ex.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('');$('#xtot').textContent=sum(ex.max)};
+ pm();$('#gm').classList.add('on');
+ g.oninput=e=>{const t=e.target;if(t.id==='xt')ex.title=t.value;else if(t.dataset.i!==undefined){ex.max[+t.dataset.i]=parseFloat(String(t.value).replace(',','.'))||0;$('#xtot').textContent=sum(ex.max)}};
+ g.onchange=e=>{if(e.target.id==='xn'){const n=Math.max(1,Math.min(40,+e.target.value||1));while(ex.max.length<n)ex.max.push(ex.max[ex.max.length-1]||10);ex.max.length=n;e.target.value=n;pm()}};
+ g.onclick=e=>{const t=e.target;
+  if(t.classList.contains('cc')){const c=CL[+t.dataset.i],k=ex.cls.indexOf(c);k<0?ex.cls.push(c):ex.cls.splice(k,1);t.classList.toggle('on')}
+  else if(t.id==='xall'||t.id==='xnone'){ex.cls=t.id==='xall'?CL.slice():[];g.querySelectorAll('.cc').forEach(b=>b.classList.toggle('on',t.id==='xall'))}
+  else if(t.id==='xap'){const v=parseFloat(String($('#xa').value).replace(',','.'));if(!isNaN(v)){ex.max=ex.max.map(()=>v);pm()}}
+  else if(t.id==='xc2')closeG();
+  else if(t.id==='xs'){ex.title=ex.title.trim()||'Adsız yazılı';if(old)S.ex[S.ex.indexOf(old)]=ex;else S.ex.push(ex);Object.keys(ex.sc).forEach(k=>gs(ex,k,true));save();closeG();cur?rE():rC()}}}
 
-document.getElementById("bm").addEventListener("click",function(e){
-  e.preventDefault();
-  alert("Bu düğmeyi tıklamayın, yer imi çubuğuna sürükleyin.");
-});
+/* Not girişi: öğrenci listesi */
+function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
+ return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n===a.length?'✓ '+sum(a):n?n+'/'+a.length:''}</span></button>`}
+function rE(){const ex=exById(cur);$('#etit').textContent=ex.title;ecl=ex.cls.slice().sort(cmpC);
+ $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('');
+ const f=S.fE||{},ix=f.c==null?-1:ecl.indexOf(f.c);$('#ecf').value=ix<0?'':String(ix);$('#emiss').checked=!!f.m;$('#es').value=S.sEn||'cls';syncClr();rL()}
+function rL(){const ex=exById(cur),q=norm($('#eq').value),v=$('#ecf').value,ms=$('#emiss').checked;
+ const L=exSt(ex).filter(s=>(v===''||s.cls===ecl[+v])&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))&&(!ms||gs(ex,s.id).every(v=>v==null)));
+ $('#el').innerHTML=sortList(L,S.sEn||'cls').map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Öğrenci bulunamadı.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
+function prog(){const ex=exById(cur),L=exSt(ex);$('#epg').textContent=`${L.filter(s=>done(ex,s)).length}/${L.length} tamamlandı`}
+$('#es').onchange=e=>{S.sEn=e.target.value;save();rL()};
+$('#eq').oninput=rL;
+$('#ecf').onchange=()=>{const v=$('#ecf').value;(S.fE=S.fE||{}).c=v===''?null:ecl[+v];save();rL()};
+$('#emiss').onchange=()=>{(S.fE=S.fE||{}).m=$('#emiss').checked;save();rL()};
+$('#eq').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('#el .sr');if(b)b.click()}};
+$('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id)};
 
-document.getElementById("copy").addEventListener("click",function(){
-  var t=document.getElementById("code");
-  t.select();
-  var done=function(){document.getElementById("ok").textContent="Kopyalandı";};
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand("copy");done();});
-  }else{
-    document.execCommand("copy");done();
-  }
-});
+/* Not penceresi */
+let xe,ms,arr,mc=0,mb='',fresh=true;
+function openScore(sid){xe=exById(cur);ms=stById(sid);arr=gs(xe,sid,true);const i=arr.findIndex(v=>v==null);mc=i<0?0:i;mb='';fresh=true;$('#sm').classList.add('on');mR()}
+function mR(){const n=arr.length;$('#mnm').textContent=ms.name;
+ $('#mmeta').textContent=[ms.no,ms.cls].filter(Boolean).join(' · ');$('#mtot').innerHTML=`${T(arr)||0}<small>/${sum(xe.max)}</small>`;
+ const PG=12,np=Math.ceil(n/PG),pg=Math.floor(mc/PG);
+ $('#mqs').innerHTML=Array.from({length:np},(_,p)=>`<div class="pg">${arr.slice(p*PG,p*PG+PG).map((v,j)=>{const k=p*PG+j;return `<button class="chip${k===mc?' on':''}${v!=null?' f':''}" data-i="${k}">S${k+1}<small>${fmt(v)}</small></button>`}).join('')}</div>`).join('');
+ $('#mdots').innerHTML=np>1?Array.from({length:np},(_,p)=>`<i class="${p===pg?'on':''}"></i>`).join(''):'';
+ $('#mql').textContent='Soru '+(mc+1);$('#mval').textContent=(!fresh&&mb!=='')?mb:(arr[mc]==null?'–':fmt(arr[mc]));$('#mmax').textContent='/ '+fmt(xe.max[mc]);
+ 
+ $('#mqs').scrollLeft=pg*$('#mqs').clientWidth}
+function closeScore(){if(!$('#sm').classList.contains('on'))return;$('#sm').classList.remove('on');save();
+ const r=document.querySelector(`#el [data-id="${ms.id}"]`);if(r){if($('#emiss').checked&&arr.some(v=>v!=null))r.remove();else r.outerHTML=rowH(xe,ms)}prog();
+ if(matchMedia('(pointer:fine)').matches){$('#eq').focus();$('#eq').select()}}
+const vib=()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
+function mAdv(){fresh=true;mb='';if(mc<arr.length-1)mc++;mR()}
+function actOne(){arr[mc]=xe.max[mc];save();mAdv()}
+function actNul(){arr[mc]=null;save();mAdv()}
+function actAll(){xe.max.forEach((m,i)=>arr[i]=m);save();fresh=true;mb='';mR();toast('✓ Tüm sorulara tam puan yazıldı','ok')}
+function mKey(k){const max=xe.max[mc],was=fresh;
+ if(k==='del'){mb=fresh?'':mb.slice(0,-1);fresh=false;arr[mc]=mb===''?null:Number(mb.replace(',','.'));save();return mR()}
+ let b=fresh?'':mb;
+ if(k===','){if(b.includes(','))return;b=(b||'0')+','}else b=(b==='0')?k:b+k;
+ const x=Number(b.replace(',','.'));
+ if(x>max){fresh=was;toast(`⚠ Soru ${mc+1} için en fazla ${fmt(max)}`,true);return}
+ fresh=false;mb=b;arr[mc]=x;save();
+ const fin=!b.includes(',')?(b==='0'||Number(b+'0')>max):/,\d$/.test(b);
+ fin?mAdv():mR()}
+$('#kp').onclick=e=>{const b=e.target.closest('button');if(b){vib();mKey(b.dataset.k)}};
+$('#ka').onclick=e=>{const b=e.target.closest('button');if(!b)return;vib();({one:actOne,nul:actNul,all:actAll})[b.dataset.a]()};
+$('#bn').onclick=()=>{vib();mAdv()};
+$('#bp').onclick=()=>{vib();fresh=true;mb='';mc=Math.max(0,mc-1);mR()};
+$('#bk').onclick=closeScore;
+$('#mrst').onclick=()=>{if(!ms)return;ask(`${ms.name} öğrencisinin bu yazılıdaki tüm notları silinsin mi?`,()=>{arr.fill(null);save();fresh=true;mb='';mc=0;mR();toast('Öğrencinin notları sıfırlandı','ok')},{ok:'Evet, sıfırla'})};
+const KZ=[[44,76,'Küçük'],[54,88,'Orta'],[64,100,'Büyük']];
+function applyKp(){const z=KZ[S.kp??1],s=$('#sm').style;s.setProperty('--kh',z[0]+'px');s.setProperty('--kw',z[1]+'%');$('#bsz').textContent='⌨ '+z[2]}
+$('#bsz').onclick=()=>{S.kp=((S.kp??1)+1)%3;save();applyKp()};
+$('#mqs').onclick=e=>{const b=e.target.closest('.chip');if(b){mc=+b.dataset.i;fresh=true;mb='';mR()}};
+$('#sm').addEventListener('pointerdown',e=>{const b=e.target.closest('.kp button,.ka button,.bb button');if(b){b.classList.add('pr');setTimeout(()=>b.classList.remove('pr'),220)}});
+document.addEventListener('keydown',e=>{if(!$('#sm').classList.contains('on')||$('#cm').classList.contains('on')||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+ if(/^\d$/.test(k)||k===','||k==='.'){e.preventDefault();mKey(k==='.'?',':k)}
+ else if(k==='Backspace'){e.preventDefault();mKey('del')}
+ else if(k==='Enter'){e.preventDefault();mAdv()}
+ else if(k==='m'||k==='M'||k==='+'||k==='*'){e.preventDefault();actOne()}
+ else if(k==='t'||k==='T'){e.preventDefault();actAll()}
+ else if(k==='ArrowLeft'||k==='ArrowRight'){e.preventDefault();mc=Math.max(0,Math.min(arr.length-1,mc+(k==='ArrowRight'?1:-1)));fresh=true;mb='';mR()}
+ else if(k==='Escape')closeScore()});
 
-var RAYS='<g stroke="#f6c343" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.4" y2="6.4"/><line x1="17.6" y1="17.6" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.4" y2="17.6"/><line x1="17.6" y1="6.4" x2="19.4" y2="4.6"/></g>';
-var ICONS={
-  auto:'<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3A9 9 0 0 1 12 21Z" fill="#f6c343"/><path d="M12 3A9 9 0 0 0 12 21Z" fill="#4a5068"/><circle cx="12" cy="12" r="9" fill="none" stroke="#f6c343" stroke-width="1.8"/></svg>',
-  light:'<svg viewBox="0 0 24 24" width="24" height="24">'+RAYS+'<circle cx="12" cy="12" r="5" fill="#f6c343"/></svg>',
-  dark:'<svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="#f6c343"/></svg>'
-};
-var LABELS={auto:"Tema: Otomatik (sistemi takip eder)",light:"Tema: Aydınlık",dark:"Tema: Karanlık"};
-var ORDER=["auto","light","dark"];
+/* Öğrenciler */
+let sel=new Set(),last=-1,IM=[];
+function fillCls(){const el=$('#cf2'),v=el.value,C=classes();el.innerHTML='<option value="">Tüm sınıflar</option>'+C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('');el.value=C.includes(v)?v:''}
+function sortList(L,k){const c=(a,b)=>cmpC(a.cls,b.cls),n=(a,b)=>cmpC(a.no,b.no),m=(a,b)=>a.name.localeCompare(b.name,'tr'),f=k==='name'?[m,c,n]:k==='no'?[n,c,m]:[c,n,m];
+ return L.slice().sort((a,b)=>f[0](a,b)||f[1](a,b)||f[2](a,b))}
+const visS=()=>{const q=norm($('#q2').value),c=$('#cf2').value;return sortList(S.st.filter(s=>(!c||s.cls===c)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))),S.sSt||'cls')};
+function rS(){const L=visS();
+ $('#sb').innerHTML=L.length?L.map(s=>`<div class="srow" data-id="${s.id}"><input type="checkbox" class="ck" ${sel.has(s.id)?'checked':''}><div class="sm"><b>${esc(s.name)}</b><span>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</span></div><button class="g ep" title="Düzenle">✎</button><button class="g d x" title="Sil">🗑</button></div>`).join(''):'<p class="hint" style="padding:18px;margin:0">Öğrenci yok. Excel’den aktarın veya yukarıdan ekleyin.</p>';syncClr();
+ $('#dsel').disabled=!sel.size;$('#dsel').textContent=sel.size?`Seçilenleri sil (${sel.size})`:'Seçilenleri sil'}
+$('#q2').oninput=rS;$('#cf2').onchange=rS;
+$('#sb').onclick=e=>{const t=e.target,tr=t.closest('.srow');if(!tr)return;const id=tr.dataset.id;
+ if(t.closest('.x')){const s=stById(id);ask(`${s.name} silinsin mi?`,()=>{S.st=S.st.filter(x=>x!==s);sel.delete(id);save();fillCls();rS()})}
+ else if(t.closest('.ep'))stDlg(id);
+ else if(t.classList.contains('ck')){const ids=[...document.querySelectorAll('#sb .srow')].map(r=>r.dataset.id),i=ids.indexOf(id);
+  if(e.shiftKey&&last>-1){const a=Math.min(i,last),b=Math.max(i,last);ids.slice(a,b+1).forEach(x=>t.checked?sel.add(x):sel.delete(x))}else t.checked?sel.add(id):sel.delete(id);last=i;rS()}};
+$('#ca').onchange=e=>{visS().forEach(s=>e.target.checked?sel.add(s.id):sel.delete(s.id));rS()};
+$('#dsel').onclick=()=>{ask(sel.size+' öğrenci silinsin mi?',()=>{S.st=S.st.filter(s=>!sel.has(s.id));sel.clear();save();fillCls();rS()})};
+$('#dall').onclick=()=>{if(S.st.length)ask('Tüm öğrenciler silinsin mi?',()=>{S.st=[];sel.clear();save();fillCls();rS()})};
+const sortS=()=>S.st.sort((a,b)=>cmpC(a.cls,b.cls)||cmpC(a.no,b.no)||a.name.localeCompare(b.name,'tr'));
+$('#ss').onchange=e=>{S.sSt=e.target.value;save();rS()};
+function stDlg(id){const s=stById(id),g=$('#gd');
+ g.innerHTML=`<h3>Öğrenciyi düzenle</h3>
+ <label class="hint">Ad Soyad<input id="sn" value="${esc(s.name)}" style="width:100%;margin-bottom:8px"></label>
+ <div class="row"><label class="hint">Numara<input id="sno" value="${esc(s.no)}" style="width:100%"></label><label class="hint">Sınıf<input id="scl" list="cl" value="${esc(s.cls)}" style="width:100%"></label></div>
+ <datalist id="cl">${classes().map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+ <div class="row" style="justify-content:space-between;margin:0"><button class="g d" id="sdel">Sil</button><span><button class="g" id="sc2">İptal</button> <button class="b" id="ssv">Kaydet</button></span></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const i=e.target.id;
+  if(i==='sc2')closeG();
+  else if(i==='sdel'){ask(s.name+' silinsin mi?',()=>{S.st=S.st.filter(x=>x!==s);save();closeG();fillCls();rS()})}
+  else if(i==='ssv'){const n=$('#sn').value.trim();if(!n)return toast('Ad Soyad boş olamaz');s.name=n;s.no=$('#sno').value.trim();s.cls=$('#scl').value.trim();save();closeG();fillCls();rS()}}}
+function addOne(){const name=$('#ad').value.trim();if(!name)return toast('Ad Soyad yazın');
+ S.st.push({id:uid(),no:$('#an').value.trim(),name,cls:$('#ac').value.trim()});save();
+ $('#an').value=/^\d+$/.test($('#an').value)?+$('#an').value+1:'';$('#ad').value='';fillCls();rS();$('#ad').focus()}
+$('#add').onclick=addOne;['#an','#ad','#ac'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')addOne()});
 
-function getMode(){
-  try{var m=localStorage.getItem("tema");if(ORDER.indexOf(m)>-1){return m;}}catch(e){}
-  return "auto";
-}
-function applyMode(m){
-  var r=document.documentElement;
-  if(m==="auto"){r.removeAttribute("data-theme");}else{r.setAttribute("data-theme",m);}
-  var b=document.getElementById("themeBtn");
-  b.innerHTML=ICONS[m];
-  b.title=LABELS[m];
-  b.setAttribute("aria-label",LABELS[m]);
-}
-var mode=getMode();
-applyMode(mode);
-document.getElementById("themeBtn").addEventListener("click",function(){
-  mode=ORDER[(ORDER.indexOf(mode)+1)%ORDER.length];
-  try{localStorage.setItem("tema",mode);}catch(e){}
-  applyMode(mode);
-});
+/* İçe aktarma */
+$('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
+ try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
+  IM=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false}).filter(r=>r.some(x=>String(x).trim()));
+  if(!IM.length)return toast('Dosyada veri yok');openMap()}catch(err){toast('Dosya okunamadı')}};
+const colL=i=>String.fromCharCode(65+i%26);
+function openMap(){const h=IM[0],n=Math.max(...IM.slice(0,20).map(r=>r.length));
+ const opt='<option value="">— yok —</option>'+Array.from({length:n},(_,i)=>`<option value="${i}">${colL(i)}: ${esc(String(h[i]??'').slice(0,24))}</option>`).join('');
+ const g=(re,ex)=>{const i=h.findIndex(x=>re.test(norm(x))&&!(ex&&ex.test(norm(x))));return i<0?'':i};
+ const a=g(/^(ad|adi|isim)$/),nm=g(/soyad/)!==''&&a!==''?a:g(/ad|isim/,/soyad$/);
+ const m={name:nm===''?g(/ad|isim/):nm,sur:g(/^soyad|soyadi$/),no:g(/no|numara/),cls:g(/sinif/),sub:g(/sube/)};
+ for(const k in m){$('#m_'+k).innerHTML=opt;$('#m_'+k).value=m[k]}
+ $('#map').classList.add('on');pv()}
+$('#map').onchange=pv;
+function mapped(){const H=$('#hdr').checked,ix=k=>$('#m_'+k).value===''?-1:+$('#m_'+k).value,[a,b,n,c,d]=['name','sur','no','cls','sub'].map(ix);
+ return IM.slice(H?1:0).map(r=>{const v=i=>i<0?'':String(r[i]??'').trim(),sb=v(d).toLocaleUpperCase('tr');let cl=v(c);if(sb)cl=cl?cl+'/'+sb:sb;
+  return{id:uid(),no:v(n),name:[v(a),v(b)].filter(Boolean).join(' '),cls:cl}}).filter(s=>s.name)}
+function pv(){const L=mapped();$('#pv').innerHTML=`<b>${L.length}</b> öğrenci bulundu. Örnek: `+L.slice(0,3).map(s=>`${esc(s.no)} · ${esc(s.name)} · ${esc(s.cls)}`).join(' | ')}
+$('#doimp').onclick=()=>{const L=mapped();if(!L.length)return toast('Ad sütununu seçin');
+ if($('#mode').value==='rep')S.st=[];
+ const have=new Set(S.st.map(s=>s.no&&s.no+'|'+s.cls));let k=0;
+ L.forEach(s=>{if(s.no&&have.has(s.no+'|'+s.cls))return;S.st.push(s);k++});
+ sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı')};
 
-build();
+/* Excel'e aktar (yüzen simge) */
+const byNo=(a,b)=>{const x=parseFloat(a.no),y=parseFloat(b.no),nx=isNaN(x),ny=isNaN(y);if(nx!==ny)return nx?1:-1;return(nx?0:x-y)||String(a.no).localeCompare(b.no,'tr',{numeric:true})||a.name.localeCompare(b.name,'tr')};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){}
+ try{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');ta.remove();return !!ok}catch(e){return false}}
+function scoreTSV(ex,cls,withNo){return S.st.filter(s=>s.cls===cls).sort(byNo).map(s=>(withNo?[String(s.no||'')]:[]).concat(gs(ex,s.id).map(fmt)).join('\t')).join('\n')}
+function expDlg(){const g=$('#gd');
+ g.innerHTML=`<h3>Excel'e aktar</h3>
+ ${S.ex.length?`<div class="sec sa"><div class="st"><span class="sn1">1</span>Puanları kopyala <small>e-Okul için</small></div>
+ <p class="hint" style="margin:0 0 8px">Seçilen sınıfın sadece soru puanları kopyalanır: okul numarasına göre sıralı, ad/başlık/toplam yok, girilmeyen puan boş gelir.</p>
+ <div class="row"><select id="cpx" style="flex:1;min-width:0">${S.ex.map((e,i)=>`<option value="${i}">${esc(e.title)}</option>`).join('')}</select><select id="cpc"></select></div>
+ <label class="ck2"><input type="checkbox" id="cpn"> İlk sütuna okul numarasını da ekle</label>
+ <button class="pb a" id="cpgo">Puanları kopyala</button>
+ <textarea id="cpt" readonly rows="6" style="width:100%;margin-top:8px;font-size:13px" hidden></textarea></div>`:''}
+ <div class="sec sb"><div class="st"><span class="sn1">2</span>Excel dosyası indir <small>tüm bilgilerle</small></div>
+ <p class="hint" style="margin:0 0 6px">Öğrenci adı, numara, puanlar ve toplamla .xlsx dosyası oluşturur.</p>
+ ${S.ex.map((e,i)=>`<label class="ck2"><input type="checkbox" class="xe" data-i="${i}" checked> ${esc(e.title)}</label>`).join('')||'<p class="hint">Henüz yazılı yok.</p>'}
+ <label class="ck2"><input type="checkbox" id="xp" checked> Sınıf sayfaları da olsun</label>
+ <button class="pb b" id="xgo" style="margin-top:6px">Excel'i indir</button></div>
+ <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc3">Kapat</button></div>`;
+ $('#gm').classList.add('on');
+ const fillC=()=>{const ex=S.ex[+$('#cpx').value],C=ex?ex.cls.slice().sort(cmpC):[];$('#cpc').innerHTML=C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'};
+ if(S.ex.length){fillC();$('#cpn').checked=!!S.cpNo}
+ g.onchange=e=>{if(e.target.id==='cpx')fillC()};
+ g.onclick=async e=>{const id=e.target.id;
+  if(id==='xc3')closeG();
+  else if(id==='xgo'){const L=[...g.querySelectorAll('.xe:checked')].map(c=>S.ex[+c.dataset.i]);if(!L.length)return toast('Yazılı seçin');doExp(L,$('#xp').checked);closeG()}
+  else if(id==='cpgo'){const ex=S.ex[+$('#cpx').value],cls=$('#cpc').value,n=S.st.filter(s=>s.cls===cls).length;
+   if(!ex||!n)return toast('Bu sınıfta öğrenci yok');
+   const wn=$('#cpn').checked;S.cpNo=wn;save();const t=scoreTSV(ex,cls,wn),ta=$('#cpt');
+   if(await copyText(t)){ta.hidden=true;toast(`✓ ${lab(cls)}: ${n} öğrenci × ${ex.max.length} soru${wn?' (başta numara)':''} kopyalandı`,'ok')}
+   else{ta.hidden=false;ta.value=t;ta.focus();ta.select();toast('Otomatik kopyalanamadı. Metni seçip kopyalayın.',true)}}}}
+function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
+ const wb=XLSX.utils.book_new(),used=new Set(),multi=list.length>1;
+ const nm=(t,c)=>{const b=((multi?t.slice(0,16)+' ':'')+c).replace(/[\[\]:*?\/\\]/g,'-').slice(0,31).trim()||'Sayfa';let x=b,i=2;while(used.has(x))x=b.slice(0,28)+'_'+i++;used.add(x);return x};
+ list.forEach(ex=>{const L=exSt(ex),hd=['No','Ad Soyad','Sınıf',...ex.max.map((m,i)=>`S${i+1} (${m})`),'Toplam'],
+  row=s=>{const a=gs(ex,s.id);return[/^\d+$/.test(s.no)?+s.no:s.no,s.name,s.cls,...a.map(v=>v??''),T(a)]};
+  const add=(n,R)=>{const ws=XLSX.utils.aoa_to_sheet([hd,...R.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},...ex.max.map(()=>({wch:9})),{wch:9}];XLSX.utils.book_append_sheet(wb,ws,n)};
+  add(nm(ex.title,'Tümü'),L);if(per)ex.cls.slice().sort(cmpC).forEach(c=>add(nm(ex.title,lab(c)),L.filter(s=>s.cls===c)))});
+ XLSX.writeFile(wb,(multi?'yazililar':list[0].title).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
+(()=>{const f=$('#fab'),place=(x,y)=>{x=Math.max(0,Math.min(innerWidth-56,x));y=Math.max(0,Math.min(innerHeight-140,y));f.style.left=x+'px';f.style.top=y+'px';f.style.right=f.style.bottom='auto'};
+ if(S.fab)place(S.fab[0],S.fab[1]);let st=null;
+ f.onpointerdown=e=>{const r=f.getBoundingClientRect();st={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY,m:false};f.setPointerCapture(e.pointerId)};
+ f.onpointermove=e=>{if(!st)return;if(Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6)st.m=true;if(st.m)place(e.clientX-st.dx,e.clientY-st.dy)};
+ f.onpointerup=()=>{if(!st)return;const m=st.m;st=null;if(m){const r=f.getBoundingClientRect();S.fab=[r.left,r.top];save()}else expDlg()}})();
 
-var PWA={i192:"data:image/png;base64,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",i512:"data:image/png;base64,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",m512:"data:image/png;base64,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"};
-(function(){
-  try{
-    var man={
-      name:"Not Doldurucu Pro",
-      short_name:"Not Doldurucu",
-      description:"Excel'den kopyalanan notları sayfadaki kutulara toplu doldurur.",
-      start_url:location.href.split("#")[0],
-      display:"standalone",
-      background_color:"#10131b",
-      theme_color:"#2c7a7b",
-      icons:[
-        {src:PWA.i192,sizes:"192x192",type:"image/png",purpose:"any"},
-        {src:PWA.i512,sizes:"512x512",type:"image/png",purpose:"any"},
-        {src:PWA.m512,sizes:"512x512",type:"image/png",purpose:"maskable"}
-      ]
-    };
-    var l=document.createElement("link");
-    l.rel="manifest";
-    l.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:"application/manifest+json"}));
-    document.head.appendChild(l);
-  }catch(e){}
-})();
+/* Tema */
+const PAL=[['Varsayılan',null],['Mavi','#2563eb'],['Gök mavisi','#0284c7'],['Turkuaz','#0891b2'],['Yeşil','#16a34a'],['Çimen','#65a30d'],['Sarı','#eab308'],['Turuncu','#ea580c'],['Kırmızı','#dc2626'],['Gül','#e11d48'],['Pembe','#db2777'],['Mor','#7c3aed'],['İndigo','#4f46e5'],['Kahve','#92400e'],['Gri','#475569']];
+function applyTheme(){const t=S.theme||{mode:'auto',ac:null},r=document.documentElement,st=r.style;
+ r.dataset.t=t.mode==='auto'?'':t.mode;
+ document.querySelectorAll('#tm button').forEach(b=>b.classList.toggle('on',b.dataset.m===(t.mode||'auto')));
+ if(t.ac){const n=parseInt(t.ac.slice(1),16),L=(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255;
+  st.setProperty('--ac',t.ac);st.setProperty('--acs','color-mix(in srgb,'+t.ac+' 16%,var(--card))');st.setProperty('--onac',L>.62?'#111':'#fff')}
+ else['--ac','--acs','--onac'].forEach(k=>st.removeProperty(k))}
+function thDlg(){const t=S.theme||(S.theme={mode:'auto',ac:null}),g=$('#gd');
+ g.innerHTML=`<h3>Renk teması</h3>
+ <div class="chips">${PAL.map(([n,c],i)=>`<button class="sw${t.ac===c?' on':''}" data-i="${i}" title="${n}" aria-label="${n}" style="background:${c||'#0e6b63'}"></button>`).join('')}</div>
+ <label class="ck2">Kendi rengim <input type="color" id="thc" value="${t.ac||'#0e6b63'}" style="padding:0;width:46px;height:34px"></label>
+ <div class="row" style="justify-content:flex-end;margin:6px 0 0"><button class="b" id="thok">Tamam</button></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='thok')return closeG();
+  if(b.dataset.i)t.ac=PAL[+b.dataset.i][1];else if(b.classList.contains('sw'))t.ac=null;
+  save();applyTheme();thDlg()};
+ $('#thc').oninput=e=>{t.ac=e.target.value;applyTheme()};
+ $('#thc').onchange=()=>{save();thDlg()}}
+$('#thm').onclick=thDlg;
+$('#tm').onclick=e=>{const b=e.target.closest('button');if(!b)return;(S.theme||(S.theme={mode:'auto',ac:null})).mode=b.dataset.m;save();applyTheme()};
+/* Ayarlar: yedekleme ve sıfırlama */
+const KEYS=()=>Object.keys(localStorage).filter(k=>k.indexOf('hng')===0&&k!=='hng');
+function mkBackup(){const d={};KEYS().forEach(k=>d[k]=localStorage.getItem(k));d.hng2=JSON.stringify(S);
+ return JSON.stringify({app:'hizli-not-girisi',v:1,date:new Date().toISOString(),data:d})}
+function dl(name,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},600)}
+function doRestore(txt){let o,n;try{o=JSON.parse(txt)}catch(e){return toast('Yedek okunamadı')}
+ if(!o||o.app!=='hizli-not-girisi'||!o.data||!o.data.hng2)return toast('Bu bir Hızlı Not Girişi yedeği değil');
+ try{n=JSON.parse(o.data.hng2)}catch(e){return toast('Yedek bozuk')}
+ if(!Array.isArray(n.st)||!Array.isArray(n.ex))return toast('Yedek bozuk');
+ const dt=o.date?new Date(o.date).toLocaleString('tr'):'';
+ ask(`Yedek ${dt}\n${n.st.length} öğrenci, ${n.ex.length} yazılı.\n\nŞu anki tüm veriler bu yedekle DEĞİŞTİRİLECEK. Devam edilsin mi?`,()=>{
+ n.ex.forEach(e=>{e.sc=e.sc||{};e.cls=e.cls||[]});
+ KEYS().forEach(k=>localStorage.removeItem(k));
+ Object.keys(o.data).forEach(k=>{if(k.indexOf('hng')===0&&k!=='hng')try{localStorage.setItem(k,o.data[k])}catch(e){}});
+ S=n;sel.clear();cur=null;applyTheme();go('ex');closeG();toast('Yedek geri yüklendi')},{ok:'Geri yükle'})}
+const cleanSc=()=>{const ids=new Set(S.st.map(s=>s.id));S.ex.forEach(e=>Object.keys(e.sc).forEach(k=>{if(!ids.has(k))delete e.sc[k]}))};
+function afterReset(msg){save();sel.clear();if(cur&&!exById(cur))cur=null;go(view);toast(msg);setDlg('r')}
+function setDlg(tab){tab=tab||'b';const g=$('#gd');
+ const tabs=`<div class="chips"><button class="cc${tab==='b'?' on':''}" data-t="b">Yedekleme</button><button class="cc${tab==='r'?' on':''}" data-t="r">Sıfırlama</button></div>`;
+ let body;
+ if(tab==='b')body=`<p class="hint">Öğrenciler, yazılılar, girilen notlar, tema ve renk, Excel simgesinin yeri dahil uygulamadaki her şey tek dosyada yedeklenir. Şu an: ${S.st.length} öğrenci · ${S.ex.length} yazılı.</p>
+ <div class="row"><button class="b" data-a="dl">Yedeği indir</button><button class="g" data-a="cp">Panoya kopyala</button></div>
+ <hr><div class="hint" style="margin-bottom:6px">Geri yükle</div>
+ <div class="row"><button class="g" data-a="pick">Yedek dosyası seç</button></div>
+ <details><summary class="hint">Metin olarak yapıştır</summary><textarea id="bt" rows="4" style="width:100%;margin:8px 0" placeholder="Yedek metnini buraya yapıştırın"></textarea><button class="g" data-a="rs">Geri yükle</button></details>
+ <p class="hint">Geri yükleme şu anki tüm verilerin yerini alır.</p>`;
+ else body=`<p class="hint">Silinenler geri getirilemez. Önce <b>Yedekleme</b> sekmesinden yedek almanız önerilir.</p>
+ <div class="rl">
+ <button class="g d" data-r="scores">Tüm notları sıfırla<small>Yazılılar ve öğrenciler kalır</small></button>
+ <button class="g d" data-r="exams">Tüm yazılıları sil<small>Notlarıyla birlikte; öğrenciler kalır</small></button>
+ <button class="g d" data-r="students">Tüm öğrencileri sil<small>Yazılılar kalır; girilen notlar da silinir</small></button>
+ <div class="row" style="margin:0"><select id="rx" style="flex:1">${S.ex.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')||'<option value="">Yazılı yok</option>'}</select><button class="g d" data-r="exscores">Notlarını sıfırla</button><button class="g d" data-r="exdel">Yazılıyı sil</button></div>
+ <div class="row" style="margin:0"><select id="rc" style="flex:1">${classes().map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'}</select><button class="g d" data-r="cls">Sınıfı sil</button></div>
+ <button class="g d" data-r="theme">Tema ve renkleri sıfırla</button>
+ <button class="g d" data-r="fab">Excel simgesinin yerini sıfırla</button>
+ <button class="b" style="background:var(--er);color:#fff" data-r="all">Tüm uygulamayı sıfırla</button></div>`;
+ g.innerHTML=`<h3>Ayarlar</h3>${tabs}${body}<div class="row" style="justify-content:flex-end;margin:10px 0 0"><button class="g" data-a="x">Kapat</button></div>`;
+ $('#gm').classList.add('on');
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.t)return setDlg(d.t);
+  if(d.a==='x')return closeG();
+  if(d.a==='dl'){dl('hizli-not-girisi-yedek-'+$('#ver').textContent+'-'+new Date().toISOString().slice(0,10)+'.json',mkBackup());return toast('Yedek indirildi')}
+  if(d.a==='cp'){const t=mkBackup();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Yedek panoya kopyalandı'),()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Yedek panoya kopyalandı')}catch(x){toast('Kopyalanamadı')}ta.remove()});return}
+  if(d.a==='pick'){const f=document.createElement('input');f.type='file';f.accept='.json,application/json,text/plain';f.onchange=async()=>{if(f.files[0])doRestore(await f.files[0].text())};f.click();return}
+  if(d.a==='rs'){const t=$('#bt').value.trim();return t?doRestore(t):toast('Önce yedek metnini yapıştırın')}
+  const r=d.r;if(!r)return;
+  const ex=exById($('#rx')&&$('#rx').value),c=classes()[+($('#rc')?$('#rc').value:-1)];
+  if(r==='scores'){ask('Tüm yazılılardaki girilmiş notlar silinsin mi?\nYazılılar ve öğrenciler kalır.',()=>{S.ex.forEach(e=>e.sc={});afterReset('Tüm notlar sıfırlandı')})}
+  else if(r==='exams'){if(S.ex.length)ask(S.ex.length+' yazılı notlarıyla birlikte silinsin mi?\nÖğrenci listesi kalır.',()=>{S.ex=[];afterReset('Yazılılar silindi')})}
+  else if(r==='students'){if(S.st.length)ask(S.st.length+' öğrenci silinsin mi?\nGirilen notlar da silinir, yazılılar kalır.',()=>{S.st=[];cleanSc();afterReset('Öğrenciler silindi')})}
+  else if(r==='exscores'){if(!ex)return toast('Yazılı seçin');ask(`“${ex.title}” yazılısının notları silinsin mi?`,()=>{ex.sc={};afterReset('Notlar sıfırlandı')})}
+  else if(r==='exdel'){if(!ex)return toast('Yazılı seçin');ask(`“${ex.title}” yazılısı ve notları silinsin mi?`,()=>{S.ex=S.ex.filter(x=>x!==ex);afterReset('Yazılı silindi')})}
+  else if(r==='cls'){if(c===undefined)return toast('Sınıf seçin');const n=S.st.filter(s=>s.cls===c).length;
+   ask(`${lab(c)} sınıfındaki ${n} öğrenci silinsin mi?\nNotları da silinir.`,()=>{S.st=S.st.filter(s=>s.cls!==c);S.ex.forEach(e=>e.cls=e.cls.filter(x=>x!==c));cleanSc();afterReset('Sınıf silindi')})}
+  else if(r==='theme'){ask('Görünüm ve renk teması varsayılana dönsün mü?',()=>{S.theme=null;applyTheme();afterReset('Tema sıfırlandı')})}
+  else if(r==='fab'){const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';S.fab=null;afterReset('Simge yeri sıfırlandı')}
+  else if(r==='all'){ask('TÜM veriler (öğrenciler, yazılılar, notlar, tema) silinecek.\nOnaylamak için SIL yazın.',()=>{KEYS().forEach(k=>localStorage.removeItem(k));S={st:[],ex:[],fab:null,theme:null};cur=null;applyTheme();const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';afterReset('Uygulama sıfırlandı')},{need:'SIL',ok:'Tümünü sil'})}}}
+$('#set').onclick=()=>setDlg('b');
+
+applyTheme();
+$('#ss').value=S.sSt||'cls';$('#es').value=S.sEn||'cls';applyKp();
+const hh=()=>document.documentElement.style.setProperty('--hh',($('header').offsetHeight+26)+'px');hh();addEventListener('resize',hh);addEventListener('load',hh);
+
+/* Her yazı alanına dokununca içeriği seç */
+const NOSEL=['checkbox','radio','color','file','button','range'];
+const selectable=t=>t&&((t.tagName==='INPUT'&&!NOSEL.includes(t.type))||t.tagName==='TEXTAREA');
+document.addEventListener('focusin',e=>{const t=e.target;if(!selectable(t))return;t._fs=1;
+ const s=()=>{try{t.select();t.setSelectionRange&&t.setSelectionRange(0,t.value.length)}catch(x){}};s();setTimeout(s,0);setTimeout(s,60)});
+document.addEventListener('mouseup',e=>{if(selectable(e.target)&&e.target._fs){e.preventDefault();e.target._fs=0}});
+document.addEventListener('touchend',e=>{if(selectable(e.target))e.target._fs=0});
+
+function syncClr(){document.querySelectorAll('.clr').forEach(b=>{const i=$('#'+b.dataset.for);b.hidden=!(i&&i.value)})}
+document.addEventListener('input',e=>{if(e.target.type==='search')syncClr()});
+document.addEventListener('click',e=>{const b=e.target.closest('.clr');if(!b)return;const i=$('#'+b.dataset.for);i.value='';syncClr();i.dispatchEvent(new Event('input',{bubbles:true}));i.focus()});
+$('#mqs').addEventListener('scroll',()=>{const q=$('#mqs'),p=Math.round(q.scrollLeft/(q.clientWidth||1));document.querySelectorAll('#mdots i').forEach((d,i)=>d.classList.toggle('on',i===p))});
+go('ex');
 </script>
 </body>
 </html>
