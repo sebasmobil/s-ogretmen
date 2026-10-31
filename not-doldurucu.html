@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.7
+  Not Doldurucu Pro 1.0.10
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,7 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.7</title>
+<title>Not Doldurucu Pro 1.0.10</title>
 <style>
   :root{
     --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
@@ -78,7 +78,7 @@
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.7</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.10</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -111,13 +111,15 @@
   <ol>
     <li>Not sayfasını açın ve yer imine tıklayın. Sayfanın üstünde bir kutu çıkar.</li>
     <li>Excel'de sütunları seçip kopyalayın (başlık satırı olmadan) ve kutuya yapıştırın.</li>
-    <li>"Notları Doldur"a basın. A sütunu 1. kutuya, B sütunu 2. kutuya diye dolar.</li>
+    <li>"Önizle ve Raporla"ya basın. Kimin hangi notu alacağını gösteren bir rapor çıkar. Doğruysa "Onayla ve Doldur"a basın. Raporu isterseniz kopyalayabilirsiniz.</li>
   </ol>
   <ul>
+    <li><b>Numara kutusu işaretliyse (numara modu):</b> Excel'de ilk sütun öğrenci numarası, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.</li>
+    <li><b>Numara kutusu işaretli değilse (sıra modu):</b> Yalnızca notları kopyalayın. 1. satır listedeki 1. öğrenciye, 2. satır 2. öğrenciye yazılır. Satır sayısı öğrenci sayısıyla uyuşmalı.</li>
     <li>Sütun sayısı otomatik bulunur. Sağdaki tamamen boş sütunlar sayılmaz, ilgili kutulara dokunulmaz.</li>
     <li>Sizin sütunlarınız sayfadaki kutulardan fazlaysa fazla sütunlar atlanır ve size bildirilir.</li>
-    <li>Satır sayısı öğrenci sayısına eşit değilse hiçbir şey doldurmaz.</li>
-    <li>Yapıştırdığınız verideki boş hücreler, ilgili kutuyu boşaltır.</li>
+    <li>Rapor; notu girilenleri, notu girilmeyenleri, Excel'de olmayan öğrencileri ve sayfada bulunamayan numaraları ayrı ayrı listeler. Öğrenci adlarını e-Okul sayfasından kendisi okur.</li>
+    <li>Yapıştırdığınız verideki boş hücreler, ilgili kutuyu boşaltır. Raporda "Notu girilmedi" bölümünde görürsünüz.</li>
   </ul>
   <small>Kaydetmeden önce birkaç öğrenciyi kontrol edin.</small>
 </div>
@@ -125,7 +127,7 @@
 </div>
 
 <script>
-var VERSION="1.0.7";
+var VERSION="1.0.10";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
 function core(TID,LID,CLS,VER){
@@ -145,6 +147,165 @@ function core(TID,LID,CLS,VER){
     if(!L){return null;}
     return [].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
   };
+  var norm=function(t){
+    return String(t).replace(/\s+/g,"").replace(/^0+(?=\d)/,"");
+  };
+  var findCol=function(tr,nums){
+    var want={},i,c,k,nc=0,best={col:-1,hits:0,map:{}};
+    for(i=0;i<nums.length;i++){if(nums[i]!==""){want[nums[i]]=true;}}
+    for(i=0;i<tr.length;i++){nc=Math.max(nc,tr[i].cells.length);}
+    for(c=0;c<nc;c++){
+      var map={},bad={},hits=0;
+      for(i=0;i<tr.length;i++){
+        var cell=tr[i].cells[c];
+        if(!cell){continue;}
+        k=norm(cell.textContent);
+        if(!/^\d+$/.test(k)){continue;}
+        if(map[k]!==undefined){bad[k]=true;}else{map[k]=i;}
+      }
+      for(k in bad){delete map[k];}
+      for(k in map){if(want[k]){hits++;}}
+      if(hits>best.hits){best={col:c,hits:hits,map:map};}
+    }
+    return best;
+  };
+  var nameOf=function(row){
+    var c=row.cells,i,t,x;
+    for(i=0;i<c.length;i++){
+      x=c[i];
+      if(x.getElementsByClassName&&x.getElementsByClassName(CLS).length>0){continue;}
+      t=String(x.textContent).replace(/\s+/g," ").trim();
+      if(t.length<2||/^[\d\s.,\-\/]+$/.test(t)){continue;}
+      return t;
+    }
+    return "";
+  };
+  var looksLikeNumbers=function(r,st){
+    var nn=[],m=0,big=false,i,n;
+    if(!st){return false;}
+    for(i=0;i<r.length;i++){
+      n=norm(r[i].split("\t")[0]);
+      nn.push(n);
+      if(n!==""){m++;}
+    }
+    if(m<2){return false;}
+    var res=findCol(st,nn);
+    for(i=0;i<nn.length;i++){
+      if(nn[i]!==""&&res.map[nn[i]]!==undefined&&parseInt(nn[i],10)>100){big=true;}
+    }
+    return big&&res.hits>=2&&res.hits*2>=m;
+  };
+  var buildPlan=function(rows,tr,numMode){
+    var p={mode:numMode?"num":"sira",jobs:[],absent:[],missing:[],dup:[],K:0,M:Infinity,N:0,total:tr.length,err:null};
+    var i,j,v,job,idx,used={};
+    if(numMode){
+      var data=[],nums=[],cnt={};
+      for(i=0;i<rows.length;i++){
+        v=rows[i].split("\t");
+        nums.push(norm(v[0]));
+        data.push(v.slice(1));
+        if(nums[i]!==""){cnt[nums[i]]=(cnt[nums[i]]||0)+1;}
+      }
+      var res=findCol(tr,nums);
+      if(res.hits===0){p.err="Yapıştırılan numaralardan hiçbiri sayfadaki öğrenci numaralarıyla eşleşmedi.\nİlk satır: "+rows[0].slice(0,40)+"\nİlk sütunun öğrenci numarası olduğundan emin olun.";return p;}
+      for(i=0;i<rows.length;i++){
+        if(nums[i]===""){
+          if(data[i].join("").trim()!==""){p.missing.push("(numarasız "+(i+1)+". satır)");}
+          continue;
+        }
+        idx=res.map[nums[i]];
+        if(cnt[nums[i]]>1){
+          if(!p.dupSeen){p.dupSeen={};}
+          if(!p.dupSeen[nums[i]]){
+            p.dupSeen[nums[i]]=true;
+            p.dup.push({num:nums[i],name:idx!==undefined?nameOf(tr[idx]):""});
+            if(idx!==undefined){used[idx]=true;}
+          }
+          continue;
+        }
+        if(idx===undefined){p.missing.push(nums[i]);continue;}
+        used[idx]=true;
+        p.jobs.push({idx:idx,num:nums[i],name:nameOf(tr[idx]),vals:data[i],blank:data[i].join("").trim()===""});
+      }
+    }else{
+      if(rows.length>tr.length){p.err="Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk satır: "+rows[0].slice(0,40);return p;}
+      for(i=0;i<rows.length;i++){
+        v=rows[i].split("\t");
+        used[i]=true;
+        p.jobs.push({idx:i,num:(i+1)+".",name:nameOf(tr[i]),vals:v,blank:v.join("").trim()===""});
+      }
+    }
+    for(i=0;i<tr.length;i++){
+      if(!used[i]){p.absent.push({num:numMode?"":(i+1)+".",name:nameOf(tr[i]),idx:i});}
+    }
+    if(!p.jobs.length){p.err="Eşleşen öğrenci yok.";return p;}
+    for(i=0;i<p.jobs.length;i++){
+      job=p.jobs[i];
+      for(j=0;j<job.vals.length;j++){
+        if(job.vals[j].trim()!==""&&j+1>p.K){p.K=j+1;}
+      }
+      p.M=Math.min(p.M,tr[job.idx].getElementsByClassName(CLS).length);
+    }
+    if(p.K===0){p.err="Yapıştırılan verinin hepsi boş.";return p;}
+    p.N=Math.min(p.K,p.M);
+    return p;
+  };
+  var fmt=function(vals,n){
+    var o=[],j;
+    for(j=0;j<n;j++){o.push(((vals[j]||"").trim())||"-");}
+    return o.join(" | ");
+  };
+  var lab=function(x){
+    return (x.num?x.num+" ":"")+(x.name||"(ad okunamadı)");
+  };
+  var reportText=function(p,done){
+    var L=[],i,ent=[],emp=[];
+    for(i=0;i<p.jobs.length;i++){if(p.jobs[i].blank){emp.push(p.jobs[i]);}else{ent.push(p.jobs[i]);}}
+    L.push(done?"DOLDURULDU":"ÖNİZLEME (henüz doldurulmadı)");
+    L.push((p.mode==="num"?"Numaraya göre":"Sıraya göre")+" | Not sütunu: "+p.N+" | Sayfadaki öğrenci: "+p.total);
+    if(p.K>p.M){L.push("UYARI: "+p.K+" not sütunu yapıştırdınız, sayfada "+p.M+" kutu var. Fazla "+(p.K-p.M)+" sütun atlanacak.");}
+    L.push("");
+    L.push("NOTU GİRİLENLER ("+ent.length+")");
+    for(i=0;i<ent.length;i++){L.push(lab(ent[i])+": "+fmt(ent[i].vals,p.N));}
+    if(emp.length){
+      L.push("");
+      L.push("NOTU GİRİLMEDİ ("+emp.length+") - kutuları boş kalacak");
+      for(i=0;i<emp.length;i++){L.push(lab(emp[i]));}
+    }
+    if(p.absent.length){
+      L.push("");
+      L.push("EXCEL'DE YOK ("+p.absent.length+") - kutularına dokunulmayacak");
+      for(i=0;i<p.absent.length;i++){L.push(lab(p.absent[i]));}
+    }
+    if(p.missing.length){
+      L.push("");
+      L.push("SAYFADA BULUNAMAYAN NUMARALAR ("+p.missing.length+") - doldurulmayacak");
+      for(i=0;i<p.missing.length;i++){L.push(p.missing[i]);}
+    }
+    if(p.dup.length){
+      L.push("");
+      L.push("BİRDEN FAZLA GEÇEN NUMARALAR ("+p.dup.length+") - doldurulmayacak");
+      for(i=0;i<p.dup.length;i++){L.push(lab(p.dup[i]));}
+    }
+    return L.join("\n");
+  };
+  var copyText=function(t){
+    var ok=function(){alert("Rapor kopyalandı.");};
+    var fb=function(){
+      var x=document.createElement("textarea");
+      x.value=t;
+      x.style.position="fixed";
+      x.style.opacity="0";
+      document.body.appendChild(x);
+      x.select();
+      try{document.execCommand("copy");ok();}catch(e){alert("Kopyalanamadı. Raporu elle seçip kopyalayın.");}
+      document.body.removeChild(x);
+    };
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fb);return;}
+    }catch(e){}
+    fb();
+  };
   var d=document.createElement("div");
   d.id="notBox";
   d.style.padding="6px";
@@ -152,60 +313,128 @@ function core(TID,LID,CLS,VER){
   ta.rows=6;
   ta.style.width="80%";
   ta.placeholder="Excel'den kopyaladığınız sütunları buraya yapıştırın";
+  var lb=document.createElement("label");
+  lb.style.display="block";
+  lb.style.fontSize="13px";
+  lb.style.margin="4px 0";
+  var cb=document.createElement("input");
+  cb.type="checkbox";
+  try{cb.checked=localStorage.getItem("notDoldurNo")==="1";}catch(e){}
+  lb.appendChild(cb);
+  lb.appendChild(document.createTextNode(" İlk sütun öğrenci numarası (numaraya göre eşleştir)"));
+  var hint=document.createElement("div");
+  hint.style.fontSize="12px";
+  hint.style.margin="2px 0 6px";
   var info=document.createElement("div");
   info.style.fontSize="12px";
   info.style.margin="4px 0";
   var bt=document.createElement("button");
   bt.type="button";
-  bt.textContent="Notları Doldur";
+  bt.textContent="Önizle ve Raporla";
+  var rep=document.createElement("div");
+  rep.id="notRep";
+  rep.style.display="none";
+  rep.style.margin="8px 0";
+  var repText=document.createElement("div");
+  repText.style.whiteSpace="pre-wrap";
+  repText.style.fontSize="12px";
+  repText.style.maxHeight="260px";
+  repText.style.overflowY="auto";
+  repText.style.border="1px solid #999";
+  repText.style.padding="6px";
+  repText.style.background="#fff";
+  repText.style.color="#000";
+  var bOk=document.createElement("button");
+  bOk.type="button";
+  bOk.textContent="Onayla ve Doldur";
+  var bCopy=document.createElement("button");
+  bCopy.type="button";
+  bCopy.textContent="Raporu Kopyala";
+  var bClose=document.createElement("button");
+  bClose.type="button";
+  bClose.textContent="Kapat";
+  rep.appendChild(repText);
+  rep.appendChild(bOk);
+  rep.appendChild(bCopy);
+  rep.appendChild(bClose);
   d.appendChild(ta);
+  d.appendChild(lb);
+  d.appendChild(hint);
   d.appendChild(info);
   d.appendChild(bt);
+  d.appendChild(rep);
   T.insertBefore(d,T.childNodes[0]);
+  var curPlan=null,lastText="";
+  var hideRep=function(){rep.style.display="none";curPlan=null;};
   var upd=function(){
     var r=parseRows(ta.value),s=getStudents(),k=0,i,j,v;
-    for(i=0;i<r.length;i++){
-      v=r[i].split("\t");
-      for(j=0;j<v.length;j++){
-        if(v[j].trim()!==""&&j+1>k){k=j+1;}
+    hint.textContent=cb.checked?"Açık (numara modu): Excel'de ilk sütun öğrenci numarası, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.":"Kapalı (sıra modu): Excel'deki 1. satır listedeki 1. öğrenciye, 2. satır 2. öğrenciye yazılır. Yalnızca notları kopyalayın. Satır sayısı öğrenci sayısıyla uyuşmalı.";
+    if(cb.checked){
+      var nums=[];
+      for(i=0;i<r.length;i++){
+        v=r[i].split("\t");
+        nums.push(norm(v[0]));
+        for(j=1;j<v.length;j++){
+          if(v[j].trim()!==""&&j>k){k=j;}
+        }
       }
+      var res=s?findCol(s,nums):{hits:0};
+      info.textContent="Sürüm "+VER+" | Numara modu | Yapıştırılan: "+r.length+" satır, "+k+" not sütunu | Eşleşen numara: "+res.hits+" | Sayfadaki öğrenci: "+(s?s.length:"?")+(r.length>0&&res.hits===0?" | DİKKAT: Hiçbir numara eşleşmedi. İlk sütun öğrenci numarası mı?":"");
+    }else{
+      for(i=0;i<r.length;i++){
+        v=r[i].split("\t");
+        for(j=0;j<v.length;j++){
+          if(v[j].trim()!==""&&j+1>k){k=j+1;}
+        }
+      }
+      info.textContent="Sürüm "+VER+" | Sıra modu | Yapıştırılan: "+r.length+" satır, "+k+" sütun | Sayfadaki öğrenci: "+(s?s.length:"?")+(looksLikeNumbers(r,s)?" | DİKKAT: İlk sütun öğrenci numarası gibi görünüyor, numara kutusunu işaretleyin.":"");
     }
-    info.textContent="Sürüm "+VER+" | Yapıştırılan: "+r.length+" satır, "+k+" sütun | Sayfadaki öğrenci: "+(s?s.length:"?");
   };
-  ta.addEventListener("input",upd);
-  ta.addEventListener("change",upd);
+  ta.addEventListener("input",function(){hideRep();upd();});
+  ta.addEventListener("change",function(){hideRep();upd();});
+  cb.onchange=function(){
+    try{localStorage.setItem("notDoldurNo",cb.checked?"1":"0");}catch(e){}
+    hideRep();
+    upd();
+  };
   upd();
   bt.onclick=function(){
     var rows=parseRows(ta.value);
     if(!rows.length){alert("Önce Excel'den veri yapıştırın.");return;}
     var tr=getStudents();
     if(!tr){alert(LID+" bulunamadı");return;}
-    while(rows.length>tr.length&&rows[rows.length-1].trim()===""){rows.pop();}
-    if(rows.length>tr.length){alert("Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk satır: "+rows[0].slice(0,40));return;}
-    if(rows.length<tr.length&&!confirm("Yapıştırılan satır: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk "+rows.length+" öğrenci doldurulacak, kalan "+(tr.length-rows.length)+" öğrencinin kutularına dokunulmayacak.\nDevam edilsin mi?")){return;}
-    var data=[],i,j,K=0,M=Infinity,v;
-    for(i=0;i<rows.length;i++){
-      v=rows[i].split("\t");
-      data.push(v);
-      for(j=0;j<v.length;j++){
-        if(v[j].trim()!==""&&j+1>K){K=j+1;}
-      }
-      M=Math.min(M,tr[i].getElementsByClassName(CLS).length);
+    var nm=cb.checked;
+    if(!nm){
+      if(looksLikeNumbers(rows,tr)&&!confirm("İlk sütun öğrenci numarası gibi görünüyor ama numara kutusu işaretli değil.\nBu durumda numaralar da not olarak kutulara yazılır.\nYine de sırayla önizleme yapılsın mı?")){return;}
+      while(rows.length>tr.length&&rows[rows.length-1].trim()===""){rows.pop();}
     }
-    if(K===0){alert("Yapıştırılan verinin hepsi boş.");return;}
-    var N=Math.min(K,M);
-    for(i=0;i<rows.length;i++){
-      var f=tr[i].getElementsByClassName(CLS);
-      for(j=0;j<N;j++){
-        f[j].value=(data[i][j]||"").trim();
+    var p=buildPlan(rows,tr,nm);
+    if(p.err){hideRep();alert(p.err);return;}
+    curPlan=p;
+    lastText=reportText(p,false);
+    repText.textContent=lastText;
+    repText.scrollTop=0;
+    rep.style.display="block";
+    bOk.style.display="inline-block";
+  };
+  bOk.onclick=function(){
+    if(!curPlan){return;}
+    var p=curPlan,tr=getStudents(),i,j,f;
+    for(i=0;i<p.jobs.length;i++){
+      f=tr[p.jobs[i].idx].getElementsByClassName(CLS);
+      for(j=0;j<p.N;j++){
+        f[j].value=(p.jobs[i].vals[j]||"").trim();
         f[j].dispatchEvent(new Event("change",{bubbles:true}));
       }
     }
-    var msg="Dolduruldu: "+rows.length+" öğrenci, "+N+" sütun.";
-    if(K>M){msg+="\nUyarı: "+K+" sütun yapıştırdınız ama sayfada "+M+" kutu var. Fazla "+(K-M)+" sütun atlandı.";}
-    else if(K<M){msg+="\nSayfadaki diğer "+(M-K)+" kutuya dokunulmadı.";}
-    alert(msg);
+    lastText=reportText(p,true);
+    repText.textContent=lastText;
+    repText.scrollTop=0;
+    bOk.style.display="none";
+    curPlan=null;
   };
+  bCopy.onclick=function(){copyText(lastText);};
+  bClose.onclick=function(){hideRep();};
 }
 
 function build(){
