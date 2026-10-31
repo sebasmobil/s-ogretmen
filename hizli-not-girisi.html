@@ -15,8 +15,8 @@
 <style>
 :root{--bg:#f3f4f6;--el:#f3f4f6;--card:#fff;--ink:#111827;--mut:#6b7280;--ln:#e0e3e8;--ac:#0e6b63;--acs:#e0f2ef;--er:#c0392b;--onac:#fff;color-scheme:light dark}
 :root[data-t=light]{color-scheme:light}
-:root[data-t=dark]{--bg:#07090c;--card:#161b21;--el:#2b333d;--ink:#f2f4f5;--mut:#9aa6b2;--ln:#3a434e;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e;color-scheme:dark}
-@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#07090c;--card:#161b21;--el:#2b333d;--ink:#f2f4f5;--mut:#9aa6b2;--ln:#3a434e;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e}}
+:root[data-t=dark]{--bg:#161b21;--card:#1b222a;--el:#2b333d;--ink:#f2f4f5;--mut:#9aa6b2;--ln:#3a434e;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#161b21;--card:#1b222a;--el:#2b333d;--ink:#f2f4f5;--mut:#9aa6b2;--ln:#3a434e;--ac:#3fbfb0;--acs:#12302d;--er:#ff7b6b;--onac:#04211e}}
 html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 input,select,textarea{font-size:16px!important}
 *{box-sizing:border-box}[hidden]{display:none!important}
@@ -147,10 +147,18 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 @media(pointer:coarse){.kh{display:none}}
 @media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
+.chip.on{background:var(--ac);border-color:var(--ac);color:var(--onac)}.chip.on small{color:var(--onac)}
+.kp button:active,.kp button.pr{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.xs{margin-bottom:14px}.xs>b{display:block;margin-bottom:6px}
+.xe{display:flex;align-items:center;gap:8px}.xe input{width:90px;text-align:center}
+.mini{border-collapse:collapse;margin:6px 0 10px;font-size:13px;width:100%}
+.mini th,.mini td{border:1px solid var(--ln);padding:5px 8px;text-align:left;position:static;box-shadow:none;white-space:nowrap}
+.mini th{background:var(--acs);color:var(--ac)}.mini td.hl{background:var(--acs);color:var(--ac);font-weight:600}
+.hp-dots{display:flex;gap:6px;justify-content:center;margin:10px 0}.hp-dots i{width:8px;height:8px;border-radius:50%;background:var(--ln)}.hp-dots i.on{background:var(--ac)}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.11</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.13</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -178,9 +186,9 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 <section id="v-st">
   <div class="card">
     <div class="row">
-      <button class="b" onclick="$('#file').click()">Excel / CSV'den aktar</button>
+      <button class="b" id="impbtn">Excel / CSV'den aktar</button>
       <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
-      <span class="hint">Sütunları sonraki adımda eşleştireceksiniz.</span>
+      <button class="g" id="imphelp" style="font-size:13px;padding:5px 10px">ⓘ Nasıl hazırlanır?</button>
     </div>
     <div id="map" class="card" style="background:var(--bg)">
       <div class="mg">
@@ -297,31 +305,38 @@ $('#cards').onclick=e=>{const c=e.target.closest('.ec');if(!c)return;const ex=ex
 $('#newex').onclick=()=>exDlg();
 
 /* Yazılı oluştur / düzenle */
-function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd');
+function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd'),PRE=[3,4,5,6,7,8,9,10];
+ let eq=ex.max.every(v=>v===ex.max[0]),cu=!PRE.includes(ex.max.length);
  g.innerHTML=`<h3>${old?'Yazılıyı düzenle':'Yeni yazılı'}</h3>
- <input id="xt" placeholder="Yazılı adı (ör. Fen Bilimleri 1. Dönem 2. Yazılı)" value="${esc(ex.title)}" style="width:100%;margin-bottom:10px">
- <div class="row"><label>Soru sayısı <input id="xn" type="number" min="1" max="40" value="${ex.max.length}" style="width:70px"></label>
- <label>Hepsi <input id="xa" type="number" min="0" style="width:64px"></label><button class="g" id="xap">Uygula</button></div>
- <div class="mx" id="xm"></div>
- <p class="hint">Toplam: <b id="xtot"></b> puan</p>
- <div class="hint">Uygulanacağı sınıflar (istediklerinize dokunun)</div>
- <div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
- <div class="row"><button class="g" id="xall">Tümü</button><button class="g" id="xnone">Hiçbiri</button></div>
+ <div class="xs"><b>1 · Yazılının adı</b><input id="xt" placeholder="ör. Fen Bilimleri 1. Dönem 2. Yazılı" value="${esc(ex.title)}" style="width:100%"></div>
+ <div class="xs"><b>2 · Kaç soru var?</b><div class="chips" id="xq"></div><label class="xe" id="xnw" hidden>Soru sayısı <input id="xn" type="number" min="1" max="40"></label></div>
+ <div class="xs"><b>3 · Soru puanları</b><div class="chips" id="xmd"></div><div id="xpt"></div><p class="hint" id="xtot" style="margin:6px 0 0"></p></div>
+ <div class="xs"><b>4 · Hangi sınıflara uygulanacak?</b><div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
+ <div class="row" style="margin:0"><button class="g" id="xall">Tümü</button><button class="g" id="xnone">Hiçbiri</button></div></div>
  <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc2">İptal</button><button class="b" id="xs">Kaydet</button></div>`;
- const pm=()=>{$('#xm').innerHTML=ex.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('');$('#xtot').textContent=sum(ex.max)};
- pm();$('#gm').classList.add('on');
- g.oninput=e=>{const t=e.target;if(t.id==='xt')ex.title=t.value;else if(t.dataset.i!==undefined){ex.max[+t.dataset.i]=parseFloat(String(t.value).replace(',','.'))||0;$('#xtot').textContent=sum(ex.max)}};
- g.onchange=e=>{if(e.target.id==='xn'){const n=Math.max(1,Math.min(40,+e.target.value||1));while(ex.max.length<n)ex.max.push(ex.max[ex.max.length-1]||10);ex.max.length=n;e.target.value=n;pm()}};
- g.onclick=e=>{const t=e.target;
-  if(t.classList.contains('cc')){const c=CL[+t.dataset.i],k=ex.cls.indexOf(c);k<0?ex.cls.push(c):ex.cls.splice(k,1);t.classList.toggle('on')}
-  else if(t.id==='xall'||t.id==='xnone'){ex.cls=t.id==='xall'?CL.slice():[];g.querySelectorAll('.cc').forEach(b=>b.classList.toggle('on',t.id==='xall'))}
-  else if(t.id==='xap'){const v=parseFloat(String($('#xa').value).replace(',','.'));if(!isNaN(v)){ex.max=ex.max.map(()=>v);pm()}}
+ const tot=()=>{$('#xtot').innerHTML=`Toplam: <b>${sum(ex.max)}</b> puan`+(eq?` (${ex.max.length} soru × ${fmt(ex.max[0])})`:'')};
+ const dQ=()=>{const n=ex.max.length;
+  $('#xq').innerHTML=PRE.map(k=>`<button class="cc${!cu&&n===k?' on':''}" data-n="${k}">${k}</button>`).join('')+`<button class="cc${cu?' on':''}" data-n="c">Özel</button>`;
+  $('#xnw').hidden=!cu;$('#xn').value=n};
+ const dM=()=>{$('#xmd').innerHTML=`<button class="cc${eq?' on':''}" data-md="eq">Hepsi aynı puan</button><button class="cc${!eq?' on':''}" data-md="ind">Her soru farklı</button>`};
+ const dP=()=>{$('#xpt').innerHTML=eq?`<label class="xe">Her sorunun puanı <input id="xe" type="number" min="0" step="any" value="${ex.max[0]}"></label>`:`<div class="mx">${ex.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('')}</div>`;tot()};
+ const draw=()=>{dQ();dM();dP()};
+ const setN=n=>{n=Math.max(1,Math.min(40,n||1));const T0=sum(ex.max),v0=ex.max[0];while(ex.max.length<n)ex.max.push(ex.max[ex.max.length-1]||10);ex.max.length=n;if(eq){const v=Math.round(T0/n*100)/100;ex.max=ex.max.map(()=>Math.abs(v*n-T0)<1e-6?v:v0)}};
+ const num=v=>parseFloat(String(v).replace(',','.'))||0;
+ draw();$('#gm').classList.add('on');
+ g.oninput=e=>{const t=e.target;if(t.id==='xt')ex.title=t.value;else if(t.id==='xe'){ex.max=ex.max.map(()=>num(t.value));tot()}else if(t.dataset.i!==undefined&&t.type==='number'){ex.max[+t.dataset.i]=num(t.value);tot()}};
+ g.onchange=e=>{if(e.target.id==='xn'){setN(+e.target.value);e.target.value=ex.max.length;dP()}};
+ g.onclick=e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.n!==undefined){if(d.n==='c'){cu=true;draw();$('#xn').focus()}else{cu=false;setN(+d.n);draw()}}
+  else if(d.md){const v=ex.max[0];if(d.md==='eq'){eq=true;ex.max=ex.max.map(()=>v)}else eq=false;draw()}
+  else if(d.i!==undefined&&t.classList.contains('cc')){const c=CL[+d.i],k=ex.cls.indexOf(c);k<0?ex.cls.push(c):ex.cls.splice(k,1);t.classList.toggle('on')}
+  else if(t.id==='xall'||t.id==='xnone'){ex.cls=t.id==='xall'?CL.slice():[];g.querySelectorAll('.cc[data-i]').forEach(b=>b.classList.toggle('on',t.id==='xall'))}
   else if(t.id==='xc2')closeG();
   else if(t.id==='xs'){ex.title=ex.title.trim()||'Adsız yazılı';if(old)S.ex[S.ex.indexOf(old)]=ex;else S.ex.push(ex);Object.keys(ex.sc).forEach(k=>gs(ex,k,true));save();closeG();cur?rE():rC()}}}
 
 /* Not girişi: öğrenci listesi */
 function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
- return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n===a.length?'✓ '+sum(a):n?n+'/'+a.length:''}</span></button>`}
+ return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n?`${n}/${a.length} (${sum(a)})`:''}</span></button>`}
 function rE(){const ex=exById(cur);$('#etit').textContent=ex.title;ecl=ex.cls.slice().sort(cmpC);
  $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('');
  const f=S.fE||{},ix=f.c==null?-1:ecl.indexOf(f.c);$('#ecf').value=ix<0?'':String(ix);$('#emiss').checked=!!f.m;$('#es').value=S.sEn||'cls';syncClr();rL()}
@@ -445,6 +460,23 @@ $('#doimp').onclick=()=>{const L=mapped();if(!L.length)return toast('Ad sütunun
  L.forEach(s=>{if(s.no&&have.has(s.no+'|'+s.cls))return;S.st.push(s);k++});
  sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı')};
 
+function impHelp(){const g=$('#gd');let i=0;
+ const ST=[
+  ['1 · Hangi dosya olur?','<p>Excel (<b>.xlsx</b>, <b>.xls</b>) veya <b>.csv</b> dosyası seçebilirsiniz.</p><p>Öğrenci listesi dosyadaki <b>ilk sayfada</b> olmalıdır. Okulunuzun sınıf listesini Excel olarak kaydedip doğrudan kullanabilirsiniz.</p>'],
+  ['2 · Sütunlar nasıl olmalı?','T1<ul><li><b>Ad Soyad</b> zorunlu. Ad ve soyad ayrı sütunlarda da olabilir.</li><li><b>Okul no, sınıf, şube</b> isteğe bağlı.</li><li>Sütunların sırası önemli değil, bir sonraki adımda siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa <b>6/A</b> olarak birleştirilir. Tek sütunda “6/A” yazıyorsa aynen alınır.</li></ul>'],
+  ['3 · Başlık satırı olmalı mı?','<p><b>Başlıklı (önerilir):</b> en üst satırda sütun adları var.</p>T2<p><b>Başlıksız:</b> ilk satır doğrudan öğrenci.</p>T3<p>Başlık şart değildir, ama olursa sütunlar otomatik tanınır. Başlık yoksa eşleştirme ekranında <b>“İlk satır başlık”</b> kutusunun işaretini kaldırın.</p>'],
+  ['4 · Sonra ne olacak?','<ul><li>Dosyayı seçince <b>sütun eşleştirme</b> ekranı açılır. Örnek öğrencileri ve kaç öğrenci bulunduğunu görürsünüz.</li><li><b>“İçe aktar”</b> diyene kadar hiçbir şey değişmez.</li><li>Aynı numaralı ve sınıflı öğrenci ikinci kez eklenmez.</li><li>Bu bilgiye istediğiniz zaman <b>ⓘ Nasıl hazırlanır?</b> düğmesinden ulaşırsınız.</li></ul>']
+ ].map(s=>[s[0],s[1].replace('T1',`__T1__`).replace('T2',`__T2__`).replace('T3',`__T3__`)]);
+ const TB={__T1__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th><th>Şube</th></tr><tr><td>101</td><td>Ali Veli</td><td>6</td><td>A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6</td><td>A</td></tr></table>',__T2__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th></tr><tr><td>101</td><td>Ali Veli</td><td>6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>',__T3__:'<table class="mini"><tr><td class="hl">101</td><td class="hl">Ali Veli</td><td class="hl">6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>'};
+ const draw=()=>{const t=ST[i][0],last=i===ST.length-1;let b=ST[i][1];for(const k in TB)b=b.replace(k,TB[k]);
+  g.innerHTML=`<h3>${t}</h3><div>${b}</div><div class="hp-dots">${ST.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>${last?`<label class="ck2"><input type="checkbox" id="hpn"> Bir daha gösterme</label>`:''}<div class="row" style="justify-content:space-between;margin:6px 0 0"><button class="g" data-h="x">Vazgeç</button><span><button class="g" data-h="b" ${i?'':'disabled'}>‹ Geri</button> <button class="b" data-h="n">${last?'Tamam, anladım':'İleri ›'}</button></span></div>`};
+ g.onclick=e=>{const b=e.target.closest('button');if(!b||!b.dataset.h)return;const a=b.dataset.h;
+  if(a==='x')closeG();else if(a==='b'){i--;draw()}
+  else if(i<ST.length-1){i++;draw()}
+  else{if($('#hpn').checked){S.noImpHelp=true;save()}closeG();$('#file').click()}};
+ draw();$('#gm').classList.add('on')}
+$('#impbtn').onclick=()=>S.noImpHelp?$('#file').click():impHelp();
+$('#imphelp').onclick=impHelp;
 /* Excel'e aktar (yüzen simge) */
 const byNo=(a,b)=>{const x=parseFloat(a.no),y=parseFloat(b.no),nx=isNaN(x),ny=isNaN(y);if(nx!==ny)return nx?1:-1;return(nx?0:x-y)||String(a.no).localeCompare(b.no,'tr',{numeric:true})||a.name.localeCompare(b.name,'tr')};
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){}
@@ -589,7 +621,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('.clr');if(!b)ret
 $('#mqs').addEventListener('scroll',()=>{const q=$('#mqs'),p=Math.round(q.scrollLeft/(q.clientWidth||1));document.querySelectorAll('#mdots i').forEach((d,i)=>d.classList.toggle('on',i===p))});
 /* PWA: manifest (simge gömülü) */
 (()=>{try{const I=[['192x192','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'],['512x512','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']].map(([s,d])=>({src:'data:image/png;base64,'+d,sizes:s,type:'image/png',purpose:'any maskable'}));
-const m={name:'Hızlı Not Girişi',short_name:'Not Girişi',lang:'tr',start_url:location.href.split('#')[0],scope:location.href.split('#')[0].replace(/[^/]*$/,''),display:'standalone',background_color:'#111827',theme_color:'#111827',icons:I};
+const m={name:'Hızlı Not Girişi',short_name:'Not Girişi',lang:'tr',start_url:location.href.split('#')[0],scope:location.href.split('#')[0],display:'standalone',background_color:'#111827',theme_color:'#111827',icons:I};
 const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));document.head.appendChild(l)}catch(e){}})();
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('gesturechange',e=>e.preventDefault());
