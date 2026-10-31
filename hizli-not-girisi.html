@@ -155,10 +155,16 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 .mini th,.mini td{border:1px solid var(--ln);padding:5px 8px;text-align:left;position:static;box-shadow:none;white-space:nowrap}
 .mini th{background:var(--acs);color:var(--ac)}.mini td.hl{background:var(--acs);color:var(--ac);font-weight:600}
 .hp-dots{display:flex;gap:6px;justify-content:center;margin:10px 0}.hp-dots i{width:8px;height:8px;border-radius:50%;background:var(--ln)}.hp-dots i.on{background:var(--ac)}
+#eo{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}
+#eo[hidden]{display:none}
+.eow{flex:1;max-width:900px;display:flex;flex-direction:column;background:var(--card);border-radius:16px;overflow:hidden}
+#eof{flex:1;border:0;width:100%;min-height:0;background:#fff}
+.eox{display:flex;justify-content:center;padding:8px;border-top:1px solid var(--ln)}
+#eoback{width:46px;height:46px;border-radius:50%;border:0;background:#e5484d;color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.13</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.14</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -229,6 +235,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
+<div id="eo" hidden><div class="eow"><iframe id="eof" title="e-Okul aktarma" allow="clipboard-read; clipboard-write; fullscreen"></iframe><div class="eox"><button id="eoback" aria-label="Kapat" title="Kapat">✕</button></div></div></div>
 <div id="cm" class="ov"><div class="dlg" id="cd"></div></div>
 <div id="sm" class="ov"><div class="dlg sd">
   <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px"><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span><button class="g d" id="mrst" style="font-size:12px;padding:3px 9px;border-radius:14px">↺ Notları sıfırla</button></div></div><b class="tot" id="mtot"></b></div>
@@ -625,6 +632,10 @@ const m={name:'Hızlı Not Girişi',short_name:'Not Girişi',lang:'tr',start_url
 const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));document.head.appendChild(l)}catch(e){}})();
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('gesturechange',e=>e.preventDefault());
+function openEokul(){const f=$('#eof');if(!f.getAttribute('src'))f.src='https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html';$('#eo').hidden=false}
+document.querySelector('nav a').addEventListener('click',e=>{e.preventDefault();openEokul()});
+$('#eoback').onclick=()=>{$('#eo').hidden=true};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#eo').hidden)$('#eo').hidden=true});
 go('ex');
 </script>
 </body>
