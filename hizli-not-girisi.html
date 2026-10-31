@@ -90,6 +90,23 @@ td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
 hr{border:0;border-top:1px solid var(--ln);margin:12px 0}
 textarea{background:var(--bg);border:1px solid var(--ln);border-radius:7px;padding:8px;color:var(--ink);font:inherit}
 #mclose{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#e5484d;color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}#mclose:active{filter:brightness(.9)}
+.ctl{position:sticky;top:var(--hh,57px);z-index:4;background:var(--bg);padding:8px 0 0;margin-top:-8px}
+.sd>.mdisp{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0;min-height:90px}
+.mdisp b{font-size:78px;line-height:1}.mdisp small{font-size:24px}
+.sd>.kp{flex:none;width:var(--kw,88%);grid-template-rows:none;grid-auto-rows:var(--kh,54px)}
+.kp button{height:100%;min-height:0;font-size:clamp(20px,calc(var(--kh,54px)*.5),32px)}
+.ka{margin-top:8px;margin-bottom:0}
+.ka button{display:flex;align-items:center;justify-content:center;gap:6px;height:44px;font-size:14px}
+.bb{display:flex;gap:8px;margin-top:8px}
+.bb button{height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);font-size:26px;font-weight:700;line-height:1;cursor:pointer;padding:0}
+.bb #bp,.bb #bn{flex:1}.bb .sz{flex:none;padding:0 12px;font-size:14px}
+.bb .kz{flex:none;padding:0 18px;font-size:16px;background:#fbe3a0;border-color:#fbe3a0;color:#5b4500}
+.bb button.pr,.bb button:active{filter:brightness(.88)}
+.tot{flex:none;background:var(--acs);color:var(--ac);border-radius:12px;padding:3px 12px;font-size:30px;line-height:1.15;font-variant-numeric:tabular-nums}
+.tot small{font-size:15px;opacity:.85}
+.chip{min-width:58px;height:66px;font-size:19px}
+.chip small{font-size:20px;font-weight:800;color:var(--ink);min-height:24px}
+.chip.f{border-width:2px}.chip.on small{color:#6b1b44}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 @media(pointer:coarse){.kh{display:none}}
 @media(max-width:760px){main{padding:10px}input,select{font-size:16px}header{padding:8px 10px;gap:6px 8px}h1{font-size:16px}.wrap{max-height:none}}
@@ -111,11 +128,10 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
     <div id="cards"></div>
   </div>
   <div id="exe" hidden>
-    <div class="row"><button class="g" id="back">‹ Yazılılar</button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
-    <div class="row">
-      <input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" style="flex:1;min-width:180px" autocomplete="off">
-      <select id="ecf"></select>
-      <label class="hint"><input type="checkbox" id="emiss"> Hiç not girilmemişler</label>
+    <div class="ctl">
+      <div class="row"><button class="g" id="back">‹ Yazılılar</button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
+      <div class="row"><input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" style="flex:1;min-width:140px" autocomplete="off"><select id="ecf"></select></div>
+      <div class="row"><select id="es"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select><label class="hint"><input type="checkbox" id="emiss"> Hiç not girilmemişler</label><button class="g d" id="erst" style="margin-left:auto">Notları sıfırla</button></div>
     </div>
     <div id="el"></div>
   </div>
@@ -154,7 +170,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
   <div class="row">
     <input id="q2" type="search" placeholder="Öğrenci ara…" style="flex:1;min-width:150px">
     <select id="cf2"></select>
-    <button class="g" id="srt">Sırala</button>
+    <select id="ss"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select>
     <button class="g d" id="dsel" disabled>Seçilenleri sil</button>
     <button class="g d" id="dall">Tümünü sil</button>
   </div>
@@ -171,18 +187,18 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
 <div id="sm" class="ov"><div class="dlg sd">
-  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span></div><button id="mclose" aria-label="Kapat" title="Kapat">✕</button></div>
+  <div class="mnav"><div class="mwho"><b id="mnm"></b><span class="hint" id="mmeta"></span><span class="hint" style="font-size:12px">✓ Otomatik kaydedilir</span></div><b class="tot" id="mtot"></b><button id="mclose" aria-label="Kapat" title="Kapat">✕</button></div>
   <div id="mqs"></div>
-  <div class="mdisp"><span id="mql"></span><b id="mval"></b><small id="mmax"></small></div>
-  <div class="ka" id="ka"><button class="r" data-a="nul">Boş geç</button><button class="bl" data-a="one">Bu soru tam</button><button class="gr" data-a="all">Hepsi tam</button></div>
+  <div class="mdisp"><span id="mql"></span><div><b id="mval"></b><small id="mmax"></small></div></div>
   <div class="kp" id="kp">
     <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
     <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
     <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
     <button data-k=",">,</button><button data-k="0">0</button><button data-k="del" aria-label="Sil">⌫</button>
   </div>
-  <button class="okb nx" id="ok"></button>
-  <p class="hint kh" style="margin:8px 0 0">Klavye: rakamlar · Enter = Tamam · M = bu soru tam · T = hepsi tam · ←→ soru · Esc = kapat</p>
+  <div class="ka" id="ka"><button class="r" data-a="nul"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></svg>Boş geç</button><button class="bl" data-a="one"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Bu soru tam</button><button class="gr" data-a="all"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12.8l4.2 4.2L14 8.2"/><path d="M10.2 16.6l.4.4L21.8 7.6"/></svg>Hepsi tam</button></div>
+  <div class="bb"><button class="sz" id="bsz">⌨ Orta</button><button id="bp" aria-label="Önceki soru">‹</button><button id="bn" aria-label="Sonraki soru">›</button><button class="kz" id="bk">Kapat</button></div>
+  <p class="hint kh" style="margin-top:8px;margin-bottom:0">Klavye: rakamlar · Enter = sonraki soru · M = bu soru tam · T = hepsi tam · ←→ soru · Esc = kapat</p>
 </div></div>
 
 <div id="fab" hidden title="Excel'e aktar"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></div>
@@ -268,8 +284,10 @@ function rE(){const ex=exById(cur);$('#etit').textContent=ex.title;ecl=ex.cls.sl
  $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('');rL()}
 function rL(){const ex=exById(cur),q=norm($('#eq').value),v=$('#ecf').value,ms=$('#emiss').checked;
  const L=exSt(ex).filter(s=>(v===''||s.cls===ecl[+v])&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))&&(!ms||gs(ex,s.id).every(v=>v==null)));
- $('#el').innerHTML=L.map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Öğrenci bulunamadı.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
+ $('#el').innerHTML=sortList(L,S.sEn||'cls').map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Öğrenci bulunamadı.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
 function prog(){const ex=exById(cur),L=exSt(ex);$('#epg').textContent=`${L.filter(s=>done(ex,s)).length}/${L.length} tamamlandı`}
+$('#es').onchange=e=>{S.sEn=e.target.value;save();rL()};
+$('#erst').onclick=()=>{const ex=exById(cur);if(confirm(`“${ex.title}” yazılısında girilen tüm notlar silinsin mi?\nÖğrenci listesi kalır.`)){ex.sc={};save();rL();toast('Notlar sıfırlandı')}};
 $('#eq').oninput=rL;$('#ecf').onchange=rL;$('#emiss').onchange=rL;
 $('#eq').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('#el .sr');if(b)b.click()}};
 $('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id)};
@@ -278,10 +296,10 @@ $('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id
 let xe,ms,arr,mc=0,mb='',fresh=true;
 function openScore(sid){xe=exById(cur);ms=stById(sid);arr=gs(xe,sid,true);const i=arr.findIndex(v=>v==null);mc=i<0?0:i;mb='';fresh=true;$('#sm').classList.add('on');mR()}
 function mR(){const n=arr.length;$('#mnm').textContent=ms.name;
- $('#mmeta').textContent=[ms.no,ms.cls].filter(Boolean).join(' · ')+` · Toplam ${T(arr)||0}/${sum(xe.max)}`;
+ $('#mmeta').textContent=[ms.no,ms.cls].filter(Boolean).join(' · ');$('#mtot').innerHTML=`${T(arr)||0}<small>/${sum(xe.max)}</small>`;
  $('#mqs').innerHTML=arr.map((v,k)=>`<button class="chip${k===mc?' on':''}${v!=null?' f':''}" data-i="${k}">${k+1}<small>${fmt(v)}</small></button>`).join('');
  $('#mql').textContent='Soru '+(mc+1);$('#mval').textContent=(!fresh&&mb!=='')?mb:(arr[mc]==null?'–':fmt(arr[mc]));$('#mmax').textContent='/ '+fmt(xe.max[mc]);
- $('#ok').textContent=mc===n-1?'Kapat':'Tamam ›';$('#ok').className='okb '+(mc===n-1?'sv':'nx');
+ 
  const on=$('#mqs .on');if(on)on.scrollIntoView({block:'nearest',inline:'center'})}
 function closeScore(){if(!$('#sm').classList.contains('on'))return;$('#sm').classList.remove('on');save();
  const r=document.querySelector(`#el [data-id="${ms.id}"]`);if(r){if($('#emiss').checked&&arr.some(v=>v!=null))r.remove();else r.outerHTML=rowH(xe,ms)}prog();
@@ -302,10 +320,15 @@ function mKey(k){const max=xe.max[mc],was=fresh;
  fin?mAdv():mR()}
 $('#kp').onclick=e=>{const b=e.target.closest('button');if(b){vib();mKey(b.dataset.k)}};
 $('#ka').onclick=e=>{const b=e.target.closest('button');if(!b)return;vib();({one:actOne,nul:actNul,all:actAll})[b.dataset.a]()};
-$('#ok').onclick=()=>{vib();mAdv()};
+$('#bn').onclick=()=>{vib();mAdv()};
+$('#bp').onclick=()=>{vib();fresh=true;mb='';mc=Math.max(0,mc-1);mR()};
+$('#bk').onclick=closeScore;
+const KZ=[[44,76,'Küçük'],[54,88,'Orta'],[68,100,'Büyük']];
+function applyKp(){const z=KZ[S.kp??1],s=$('#sm').style;s.setProperty('--kh',z[0]+'px');s.setProperty('--kw',z[1]+'%');$('#bsz').textContent='⌨ '+z[2]}
+$('#bsz').onclick=()=>{S.kp=((S.kp??1)+1)%3;save();applyKp()};
 $('#mclose').onclick=closeScore;
 $('#mqs').onclick=e=>{const b=e.target.closest('.chip');if(b){mc=+b.dataset.i;fresh=true;mb='';mR()}};
-$('#sm').addEventListener('pointerdown',e=>{const b=e.target.closest('.kp button,.ka button,.okb');if(b){b.classList.add('pr');setTimeout(()=>b.classList.remove('pr'),220)}});
+$('#sm').addEventListener('pointerdown',e=>{const b=e.target.closest('.kp button,.ka button,.bb button');if(b){b.classList.add('pr');setTimeout(()=>b.classList.remove('pr'),220)}});
 document.addEventListener('keydown',e=>{if(!$('#sm').classList.contains('on')||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
  if(/^\d$/.test(k)||k===','||k==='.'){e.preventDefault();mKey(k==='.'?',':k)}
  else if(k==='Backspace'){e.preventDefault();mKey('del')}
@@ -318,7 +341,9 @@ document.addEventListener('keydown',e=>{if(!$('#sm').classList.contains('on')||e
 /* Öğrenciler */
 let sel=new Set(),last=-1,IM=[];
 function fillCls(){const el=$('#cf2'),v=el.value,C=classes();el.innerHTML='<option value="">Tüm sınıflar</option>'+C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('');el.value=C.includes(v)?v:''}
-const visS=()=>{const q=norm($('#q2').value),c=$('#cf2').value;return S.st.filter(s=>(!c||s.cls===c)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))};
+function sortList(L,k){const c=(a,b)=>cmpC(a.cls,b.cls),n=(a,b)=>cmpC(a.no,b.no),m=(a,b)=>a.name.localeCompare(b.name,'tr'),f=k==='name'?[m,c,n]:k==='no'?[n,c,m]:[c,n,m];
+ return L.slice().sort((a,b)=>f[0](a,b)||f[1](a,b)||f[2](a,b))}
+const visS=()=>{const q=norm($('#q2').value),c=$('#cf2').value;return sortList(S.st.filter(s=>(!c||s.cls===c)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))),S.sSt||'cls')};
 function rS(){const L=visS();
  $('#sb').innerHTML=L.length?L.map(s=>`<tr data-id="${s.id}"><td><input type="checkbox" class="ck" ${sel.has(s.id)?'checked':''}></td><td>${esc(s.no)}</td><td class="nm">${esc(s.name)}</td><td>${esc(s.cls)}</td><td class="ac2"><button class="g ep" title="Düzenle">✎</button><button class="g d x" title="Sil">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="hint" style="padding:18px">Öğrenci yok. Excel’den aktarın veya yukarıdan ekleyin.</td></tr>';
  $('#dsel').disabled=!sel.size;$('#dsel').textContent=sel.size?`Seçilenleri sil (${sel.size})`:'Seçilenleri sil'}
@@ -332,7 +357,7 @@ $('#ca').onchange=e=>{visS().forEach(s=>e.target.checked?sel.add(s.id):sel.delet
 $('#dsel').onclick=()=>{if(confirm(sel.size+' öğrenci silinsin mi?')){S.st=S.st.filter(s=>!sel.has(s.id));sel.clear();save();fillCls();rS()}};
 $('#dall').onclick=()=>{if(S.st.length&&confirm('Tüm öğrenciler silinsin mi?')){S.st=[];sel.clear();save();fillCls();rS()}};
 const sortS=()=>S.st.sort((a,b)=>cmpC(a.cls,b.cls)||cmpC(a.no,b.no)||a.name.localeCompare(b.name,'tr'));
-$('#srt').onclick=()=>{sortS();save();rS()};
+$('#ss').onchange=e=>{S.sSt=e.target.value;save();rS()};
 function stDlg(id){const s=stById(id),g=$('#gd');
  g.innerHTML=`<h3>Öğrenciyi düzenle</h3>
  <label class="hint">Ad Soyad<input id="sn" value="${esc(s.name)}" style="width:100%;margin-bottom:8px"></label>
@@ -477,6 +502,8 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
 $('#set').onclick=()=>setDlg('b');
 
 applyTheme();
+$('#ss').value=S.sSt||'cls';$('#es').value=S.sEn||'cls';applyKp();
+const hh=()=>document.documentElement.style.setProperty('--hh',$('header').offsetHeight+'px');hh();addEventListener('resize',hh);addEventListener('load',hh);
 
 /* Her yazı alanına dokununca içeriği seç */
 const NOSEL=['checkbox','radio','color','file','button','range'];
