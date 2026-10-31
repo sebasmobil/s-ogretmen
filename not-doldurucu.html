@@ -1,33 +1,75 @@
 <!doctype html>
+<!-- Not Doldurucu Pro 1.0.1 | (c) sebasmobil 2026 | AGPL v3.0 -->
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Not Doldurucu</title>
+<meta name="color-scheme" content="light dark">
+<title>Not Doldurucu Pro 1.0.1</title>
 <style>
-  body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;color:#222;background:#f6f7f9}
+  :root{
+    --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
+    --bar:#e9ecf3;--bar-text:#4a5068;--bar-line:#d3d8e4;
+    --input:#fff;--input-border:#99a;--btn:#2b6cb0;--btn-hover:#245a94;--ok:#2f855a;
+    color-scheme:light;
+  }
+  :root[data-theme="dark"]{
+    --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
+    --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
+    --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
+    color-scheme:dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme]){
+      --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
+      --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
+      --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
+      color-scheme:dark;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;color:var(--text);background:var(--bg)}
+  .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 16px;background:var(--bar);color:var(--bar-text);border-bottom:1px solid var(--bar-line);font-size:15px}
+  .bar .info{grid-column:2;text-align:center}
+  .bar .tools{grid-column:3;justify-self:end}
+  #themeBtn{background:transparent;border:0;padding:4px 6px;cursor:pointer;line-height:0;border-radius:8px}
+  #themeBtn:hover{background:rgba(128,128,128,.2)}
+  .wrap{max-width:720px;margin:24px auto;padding:0 16px}
   h1{font-size:22px;margin-bottom:4px}
-  .card{background:#fff;border:1px solid #dde;border-radius:10px;padding:16px;margin:14px 0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin:14px 0}
   label{font-weight:600;display:block;margin-bottom:6px}
-  input[type=number]{font-size:22px;width:100px;padding:6px;border:1px solid #99a;border-radius:6px}
-  input[type=text]{padding:5px;border:1px solid #99a;border-radius:6px;width:150px}
-  textarea{width:100%;height:130px;font-family:monospace;font-size:12px;box-sizing:border-box}
-  button{font-size:15px;padding:9px 16px;border:0;border-radius:6px;background:#2b6cb0;color:#fff;cursor:pointer}
-  button:hover{background:#245a94}
-  a.bm{display:inline-block;padding:10px 16px;background:#2f855a;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;cursor:grab}
-  small,.hint{color:#555}
-  ol li{margin:6px 0}
-  details{margin-top:10px}
-  #ok{color:#2f855a;font-weight:600;margin-left:10px}
+  input[type=text]{padding:5px;border:1px solid var(--input-border);border-radius:6px;width:150px;background:var(--input);color:var(--text)}
+  textarea{width:100%;height:130px;font-family:monospace;font-size:12px;background:var(--input);color:var(--text);border:1px solid var(--input-border);border-radius:6px}
+  button.main{font-size:15px;padding:9px 16px;border:0;border-radius:6px;background:var(--btn);color:#fff;cursor:pointer}
+  button.main:hover{background:var(--btn-hover)}
+  a.bm{display:inline-block;padding:10px 16px;background:var(--ok);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;cursor:grab}
+  small,.hint{color:var(--muted)}
+  ol li,ul li{margin:6px 0}
+  details{margin-top:6px}
+  #ok{color:var(--ok);font-weight:600;margin-left:10px}
 </style>
 </head>
 <body>
+
+<div class="bar">
+  <div class="info"><span id="ver">Pro 1.0.1</span> | &copy;sebasmobil 2026 | AGPL v3.0</div>
+  <div class="tools"><button id="themeBtn" type="button" aria-label="Tema"></button></div>
+</div>
+
+<div class="wrap">
 <h1>Not Doldurucu</h1>
-<div class="hint">Kaç sütunluk veri gireceksiniz? Sayıyı yazın, kod otomatik güncellenir.</div>
+<div class="hint">Sütun sayısı girmenize gerek yok. Yapıştırdığınız veriye bakıp kendisi bulur. Yer imini bir kez oluşturmanız yeterli.</div>
 
 <div class="card">
-  <label for="n">Kaç sütunlu veri girmek istiyorsunuz?</label>
-  <input type="number" id="n" min="1" max="100" value="5">
+  <label>1. Seçenek: Yer imi çubuğuna sürükleyin</label>
+  <a class="bm" id="bm" href="#">Notları Doldur</a>
+  <p><small>Bu yeşil düğmeyi tarayıcının yer imi çubuğuna sürükleyip bırakın.</small></p>
+</div>
+
+<div class="card">
+  <label>2. Seçenek: Kodu kopyalayıp yer imi adresine yapıştırın</label>
+  <textarea id="code" readonly></textarea>
+  <p><button class="main" id="copy">Kodu Kopyala</button><span id="ok"></span></p>
   <details>
     <summary>Gelişmiş ayarlar (sayfa farklıysa)</summary>
     <p>
@@ -39,30 +81,27 @@
 </div>
 
 <div class="card">
-  <label>1. Seçenek: Yer imi çubuğuna sürükleyin</label>
-  <a class="bm" id="bm" href="#">Notları Doldur</a>
-  <p><small>Bu yeşil düğmeyi tarayıcının yer imi çubuğuna sürükleyip bırakın.</small></p>
-</div>
-
-<div class="card">
-  <label>2. Seçenek: Kodu kopyalayıp yer imi adresine yapıştırın</label>
-  <textarea id="code" readonly></textarea>
-  <p><button id="copy">Kodu Kopyala</button><span id="ok"></span></p>
-</div>
-
-<div class="card">
-  <label>Nasıl kullanılır?</label>
+  <label>Nasıl çalışır?</label>
   <ol>
-    <li>Yer imini oluşturun (sürükleyin ya da yeni yer iminin adres kısmına kodu yapıştırın).</li>
-    <li>Not sayfasını açın ve bu yer imine tıklayın. Sayfanın üstünde bir kutu çıkar.</li>
-    <li>Excel'de ilgili <b id="nn">5</b> sütunu seçip kopyalayın (başlık satırı olmadan) ve kutuya yapıştırın.</li>
+    <li>Not sayfasını açın ve yer imine tıklayın. Sayfanın üstünde bir kutu çıkar.</li>
+    <li>Excel'de sütunları seçip kopyalayın (başlık satırı olmadan) ve kutuya yapıştırın.</li>
     <li>"Notları Doldur"a basın. A sütunu 1. kutuya, B sütunu 2. kutuya diye dolar.</li>
   </ol>
-  <small>Satır sayısı öğrenci sayısına eşit değilse ya da sütun sayısı uyuşmazsa hiçbir şey doldurmaz ve nedenini söyler. Kaydetmeden önce birkaç öğrenciyi kontrol edin.</small>
+  <ul>
+    <li>Sütun sayısı otomatik bulunur. Sağdaki tamamen boş sütunlar sayılmaz, ilgili kutulara dokunulmaz.</li>
+    <li>Sizin sütunlarınız sayfadaki kutulardan fazlaysa fazla sütunlar atlanır ve size bildirilir.</li>
+    <li>Satır sayısı öğrenci sayısına eşit değilse hiçbir şey doldurmaz.</li>
+    <li>Yapıştırdığınız verideki boş hücreler, ilgili kutuyu boşaltır.</li>
+  </ul>
+  <small>Kaydetmeden önce birkaç öğrenciyi kontrol edin.</small>
+</div>
 </div>
 
 <script>
-function core(N,TID,LID,CLS){
+var VERSION="1.0.1";
+document.getElementById("ver").textContent="Pro "+VERSION;
+
+function core(TID,LID,CLS){
   var T=document.getElementById(TID);
   if(!T){alert(TID+" bulunamadı");return;}
   if(document.getElementById("notBox")){return;}
@@ -72,10 +111,10 @@ function core(N,TID,LID,CLS){
   var ta=document.createElement("textarea");
   ta.rows=6;
   ta.style.width="80%";
-  ta.placeholder=N+" sütunu Excel'den kopyalayıp buraya yapıştırın";
+  ta.placeholder="Excel'den kopyaladığınız sütunları buraya yapıştırın";
   var b=document.createElement("button");
   b.type="button";
-  b.textContent="Notları Doldur ("+N+" sütun)";
+  b.textContent="Notları Doldur";
   d.appendChild(ta);
   d.appendChild(document.createElement("br"));
   d.appendChild(b);
@@ -83,45 +122,48 @@ function core(N,TID,LID,CLS){
   b.onclick=function(){
     var rows=ta.value.replace(/\r/g,"").split("\n");
     while(rows.length&&rows[rows.length-1].trim()===""){rows.pop();}
+    if(!rows.length){alert("Önce Excel'den veri yapıştırın.");return;}
     var L=document.getElementById(LID);
     if(!L){alert(LID+" bulunamadı");return;}
     var tr=[].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
     if(rows.length!==tr.length){alert("Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length);return;}
-    var i,j,v,f;
+    var data=[],i,j,K=0,M=Infinity,v;
     for(i=0;i<rows.length;i++){
       v=rows[i].split("\t");
-      f=tr[i].getElementsByClassName(CLS);
-      if(v.length!==N){alert((i+1)+". satırda "+v.length+" sütun var, "+N+" olmalı.");return;}
-      if(f.length<N){alert((i+1)+". öğrenci satırında yalnızca "+f.length+" kutu var, "+N+" gerekiyor.");return;}
+      data.push(v);
+      for(j=0;j<v.length;j++){
+        if(v[j].trim()!==""&&j+1>K){K=j+1;}
+      }
+      M=Math.min(M,tr[i].getElementsByClassName(CLS).length);
     }
+    if(K===0){alert("Yapıştırılan verinin hepsi boş.");return;}
+    var N=Math.min(K,M);
     for(i=0;i<rows.length;i++){
-      v=rows[i].split("\t");
-      f=tr[i].getElementsByClassName(CLS);
+      var f=tr[i].getElementsByClassName(CLS);
       for(j=0;j<N;j++){
-        f[j].value=v[j].trim();
+        f[j].value=(data[i][j]||"").trim();
         f[j].dispatchEvent(new Event("change",{bubbles:true}));
       }
     }
-    alert("Dolduruldu: "+rows.length+" öğrenci, "+N+" sütun.");
+    var msg="Dolduruldu: "+rows.length+" öğrenci, "+N+" sütun.";
+    if(K>M){msg+="\nUyarı: "+K+" sütun yapıştırdınız ama sayfada "+M+" kutu var. Fazla "+(K-M)+" sütun atlandı.";}
+    else if(K<M){msg+="\nSayfadaki diğer "+(M-K)+" kutuya dokunulmadı.";}
+    alert(msg);
   };
 }
 
 function build(){
-  var n=parseInt(document.getElementById("n").value,10);
-  if(!n||n<1){n=1;}
   var tid=document.getElementById("tid").value.trim();
   var lid=document.getElementById("lid").value.trim();
   var cls=document.getElementById("cls").value.trim();
   var body=core.toString().replace(/\s*\n\s*/g," ");
-  var code="("+body+")("+n+","+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+");";
+  var code="("+body+")("+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+");";
   document.getElementById("code").value="javascript:"+code;
   document.getElementById("bm").href="javascript:"+encodeURIComponent(code);
-  document.getElementById("bm").textContent="Notları Doldur ("+n+" sütun)";
-  document.getElementById("nn").textContent=n;
   document.getElementById("ok").textContent="";
 }
 
-["n","tid","lid","cls"].forEach(function(id){
+["tid","lid","cls"].forEach(function(id){
   document.getElementById(id).addEventListener("input",build);
 });
 
@@ -139,6 +181,35 @@ document.getElementById("copy").addEventListener("click",function(){
   }else{
     document.execCommand("copy");done();
   }
+});
+
+var RAYS='<g stroke="#f6c343" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.4" y2="6.4"/><line x1="17.6" y1="17.6" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.4" y2="17.6"/><line x1="17.6" y1="6.4" x2="19.4" y2="4.6"/></g>';
+var ICONS={
+  auto:'<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3A9 9 0 0 1 12 21Z" fill="#f6c343"/><path d="M12 3A9 9 0 0 0 12 21Z" fill="#4a5068"/><circle cx="12" cy="12" r="9" fill="none" stroke="#f6c343" stroke-width="1.8"/></svg>',
+  light:'<svg viewBox="0 0 24 24" width="24" height="24">'+RAYS+'<circle cx="12" cy="12" r="5" fill="#f6c343"/></svg>',
+  dark:'<svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="#f6c343"/></svg>'
+};
+var LABELS={auto:"Tema: Otomatik (sistemi takip eder)",light:"Tema: Aydınlık",dark:"Tema: Karanlık"};
+var ORDER=["auto","light","dark"];
+
+function getMode(){
+  try{var m=localStorage.getItem("tema");if(ORDER.indexOf(m)>-1){return m;}}catch(e){}
+  return "auto";
+}
+function applyMode(m){
+  var r=document.documentElement;
+  if(m==="auto"){r.removeAttribute("data-theme");}else{r.setAttribute("data-theme",m);}
+  var b=document.getElementById("themeBtn");
+  b.innerHTML=ICONS[m];
+  b.title=LABELS[m];
+  b.setAttribute("aria-label",LABELS[m]);
+}
+var mode=getMode();
+applyMode(mode);
+document.getElementById("themeBtn").addEventListener("click",function(){
+  mode=ORDER[(ORDER.indexOf(mode)+1)%ORDER.length];
+  try{localStorage.setItem("tema",mode);}catch(e){}
+  applyMode(mode);
 });
 
 build();
