@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.5
+  Not Doldurucu Pro 1.0.7
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,7 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.5</title>
+<title>Not Doldurucu Pro 1.0.7</title>
 <style>
   :root{
     --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
@@ -78,7 +78,7 @@
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.5</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.7</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -125,14 +125,26 @@
 </div>
 
 <script>
-var VERSION="1.0.5";
+var VERSION="1.0.7";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
-function core(TID,LID,CLS){
+function core(TID,LID,CLS,VER){
   /* Not Doldurucu Pro | (c) sebasmobil 2026 | AGPL v3.0 | https://www.gnu.org/licenses/agpl-3.0.html */
   var T=document.getElementById(TID);
   if(!T){alert(TID+" bulunamadı");return;}
   if(document.getElementById("notBox")){return;}
+  var parseRows=function(t){
+    t=t.replace(/\r\n?/g,"\n");
+    if(t.trim()===""){return [];}
+    var r=t.split("\n");
+    if(r.length>1&&r[r.length-1]===""){r.pop();}
+    return r;
+  };
+  var getStudents=function(){
+    var L=document.getElementById(LID);
+    if(!L){return null;}
+    return [].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
+  };
   var d=document.createElement("div");
   d.id="notBox";
   d.style.padding="6px";
@@ -140,21 +152,37 @@ function core(TID,LID,CLS){
   ta.rows=6;
   ta.style.width="80%";
   ta.placeholder="Excel'den kopyaladığınız sütunları buraya yapıştırın";
-  var b=document.createElement("button");
-  b.type="button";
-  b.textContent="Notları Doldur";
+  var info=document.createElement("div");
+  info.style.fontSize="12px";
+  info.style.margin="4px 0";
+  var bt=document.createElement("button");
+  bt.type="button";
+  bt.textContent="Notları Doldur";
   d.appendChild(ta);
-  d.appendChild(document.createElement("br"));
-  d.appendChild(b);
+  d.appendChild(info);
+  d.appendChild(bt);
   T.insertBefore(d,T.childNodes[0]);
-  b.onclick=function(){
-    var rows=ta.value.replace(/\r/g,"").split("\n");
-    while(rows.length&&rows[rows.length-1].trim()===""){rows.pop();}
+  var upd=function(){
+    var r=parseRows(ta.value),s=getStudents(),k=0,i,j,v;
+    for(i=0;i<r.length;i++){
+      v=r[i].split("\t");
+      for(j=0;j<v.length;j++){
+        if(v[j].trim()!==""&&j+1>k){k=j+1;}
+      }
+    }
+    info.textContent="Sürüm "+VER+" | Yapıştırılan: "+r.length+" satır, "+k+" sütun | Sayfadaki öğrenci: "+(s?s.length:"?");
+  };
+  ta.addEventListener("input",upd);
+  ta.addEventListener("change",upd);
+  upd();
+  bt.onclick=function(){
+    var rows=parseRows(ta.value);
     if(!rows.length){alert("Önce Excel'den veri yapıştırın.");return;}
-    var L=document.getElementById(LID);
-    if(!L){alert(LID+" bulunamadı");return;}
-    var tr=[].filter.call(L.rows,function(r){return r.getElementsByClassName(CLS).length>0;});
-    if(rows.length!==tr.length){alert("Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length);return;}
+    var tr=getStudents();
+    if(!tr){alert(LID+" bulunamadı");return;}
+    while(rows.length>tr.length&&rows[rows.length-1].trim()===""){rows.pop();}
+    if(rows.length>tr.length){alert("Satır sayısı uyuşmuyor!\nYapıştırılan: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk satır: "+rows[0].slice(0,40));return;}
+    if(rows.length<tr.length&&!confirm("Yapıştırılan satır: "+rows.length+"\nSayfadaki öğrenci: "+tr.length+"\nİlk "+rows.length+" öğrenci doldurulacak, kalan "+(tr.length-rows.length)+" öğrencinin kutularına dokunulmayacak.\nDevam edilsin mi?")){return;}
     var data=[],i,j,K=0,M=Infinity,v;
     for(i=0;i<rows.length;i++){
       v=rows[i].split("\t");
@@ -185,7 +213,7 @@ function build(){
   var lid=document.getElementById("lid").value.trim();
   var cls=document.getElementById("cls").value.trim();
   var body=core.toString().replace(/\s*\n\s*/g," ");
-  var code="("+body+")("+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+");";
+  var code="("+body+")("+JSON.stringify(tid)+","+JSON.stringify(lid)+","+JSON.stringify(cls)+","+JSON.stringify(VERSION)+");";
   document.getElementById("code").value="javascript:"+code;
   document.getElementById("bm").href="javascript:"+encodeURIComponent(code);
   document.getElementById("ok").textContent="";
