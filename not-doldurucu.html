@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.18
+  Not Doldurucu Pro 1.0.20
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,7 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.18</title>
+<title>Not Doldurucu Pro 1.0.20</title>
 <style>
   :root{
     --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
@@ -102,12 +102,16 @@
   .pulse{animation:pls 1.2s ease-in-out infinite}
   @keyframes pls{50%{opacity:.3}}
   @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+  .kodcard{height:auto;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}
+  #kodbody{padding:16px;font-size:17px;line-height:1.55;overflow-y:auto}
+  .kodcard .tutnever{padding-top:0}
+  #kodok{background:var(--btn);color:#fff}
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.18</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.20</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="helpBtn" type="button" title="Kurulum tanıtımını göster" aria-label="Kurulum tanıtımını göster">?</button><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -143,7 +147,7 @@
     <li>"Önizle ve Raporla"ya basın. Kimin hangi notu alacağını gösteren bir rapor çıkar. Doğruysa "Onayla ve Doldur"a basın. Raporu isterseniz kopyalayabilirsiniz.</li>
   </ol>
   <ul>
-    <li>Notlarınızı <b>Hızlı Not Girişi</b> uygulamasından kopyalayabilirsiniz: yeşil Excel simgesi, <b>Puanları kopyala</b> (okul numarası kutusu işaretli olsun).</li>
+    <li>Notlarınızı <b>Hızlı Not Girişi</b> uygulamasından kopyalayabilirsiniz: yeşil Excel simgesi, <b>Puanları kopyala</b>.</li>
     <li><b>Excel'de ilk sütun her zaman öğrenci numarası</b>, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.</li>
     <li>Sütun sayısı otomatik bulunur. Sağdaki tamamen boş sütunlar sayılmaz, ilgili kutulara dokunulmaz.</li>
     <li>Sizin sütunlarınız sayfadaki kutulardan fazlaysa fazla sütunlar atlanır ve size bildirilir.</li>
@@ -156,7 +160,7 @@
 </div>
 
 <script>
-var VERSION="1.0.18";
+var VERSION="1.0.20";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
 function core(TID,LID,CLS,VER){
@@ -525,6 +529,8 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
 </script>
 <script id="tutjs">
 (function(){
+  /* YER IMI KODU SON DEGISIKLIK KAYDI: yer imi kodu (core) her degistiginde ver, date ve note guncellenir. */
+  var KOD={ver:"1.0.18",date:"2026-11-01",note:"e-Okul sayfasında açılan kart turuncu ve ayırt edilebilir hâle getirildi."};
   var C={ink:"#1b2030",mut:"#718096",line:"#cbd2e0",blue:"#2b6cb0",green:"#2f855a",hl:"#e8590c",gold:"#f6c343",orange:"#ed8936",navy:"#1f2a4a",bg:"#eef2f8"};
   var FONT='font-family="system-ui,Segoe UI,Arial,sans-serif"';
   function R(x,y,w,h,f,s,r,sw){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r||0)+'" fill="'+(f||"none")+'"'+(s?' stroke="'+s+'" stroke-width="'+(sw||1.5)+'"':'')+'/>';}
@@ -690,12 +696,11 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   ILL.hng2=function(){
     var s=R(10,6,300,188,"#fff",C.line,14);
     s+=Tx(24,26,"Excel'e aktar",13,C.ink,700);
-    s+=R(18,34,284,112,"#eef3fd","#9db8ea",10,1.5)+Tx(30,54,"Puanları kopyala",12,C.ink,700)+Tx(140,54,"e-Okul için",9,C.mut);
-    s+=R(26,62,150,22,"#f3f5fa",C.line,6,1)+Tx(34,77,"Örnek Yazılı",10.5,C.ink)+R(184,62,60,22,"#f3f5fa",C.line,6,1)+Tx(192,77,"6/A",10.5,C.ink);
-    s+=R(28,92,14,14,C.blue,0,3)+Pa("M31 99 l3 3 l5 -6","none","#fff",2)+Tx(48,103,"İlk sütuna okul numarasını da ekle",10.5,C.ink);
-    s+=R(26,112,268,26,"#b7cdf1",0,8)+Tx(160,129,"Puanları kopyala",11.5,"#1b3a6b",700,"middle");
-    s+=HL(24,60,224,26,6)+Bd(258,66,"1")+HL(24,89,276,20,6)+Bd(306,86,"2")+HL(24,110,272,30,8)+Bd(306,126,"3");
-    s+='<g opacity=".45">'+R(18,152,284,34,"#e9f5ee","#a7d3b8",10,1.5)+Tx(30,168,"Excel dosyası indir",11,C.ink,700)+Tx(30,180,"Bu bölüm gerekmiyor",9,C.mut)+'</g>';
+    s+=R(18,36,284,92,"#eef3fd","#9db8ea",10,1.5)+Tx(30,58,"Puanları kopyala",12,C.ink,700)+Tx(140,58,"e-Okul için",9,C.mut);
+    s+=R(26,68,150,24,"#f3f5fa",C.line,6,1)+Tx(34,84,"Örnek Yazılı",10.5,C.ink)+R(184,68,60,24,"#f3f5fa",C.line,6,1)+Tx(192,84,"6/A",10.5,C.ink);
+    s+=R(26,98,268,24,"#b7cdf1",0,8)+Tx(160,114,"Puanları kopyala",11.5,"#1b3a6b",700,"middle");
+    s+=HL(24,66,224,28,6)+Bd(258,72,"1")+HL(24,96,272,28,8)+Bd(306,110,"2");
+    s+='<g opacity=".45">'+R(18,142,284,38,"#e9f5ee","#a7d3b8",10,1.5)+Tx(30,159,"Excel dosyası indir",11,C.ink,700)+Tx(30,172,"Bu bölüm gerekmiyor",9,C.mut)+'</g>';
     return SV(s,"Puanları kopyala penceresi");
   };
 
@@ -804,7 +809,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     }
     A.push({t:"Kurulum tamam!",ill:ILL.done("Yer iminiz hazır"),p:"Bu kurulumu <b>bir daha yapmanız gerekmez</b>. Şimdi nasıl kullanılacağını gösterelim."});
     A.push({t:"Notları kopyalayın (1/2)",ill:ILL.hng1,p:"<b>Hızlı Not Girişi</b> uygulamasında not girdiyseniz, notları oradan tek dokunuşla kopyalayabilirsiniz. Sağdaki yeşil <b>Excel</b> simgesine dokunun.<br><br>Notlarınız Excel'deyse sonraki iki adımı geçmek için <b>İleri</b>'ye basın."});
-    A.push({t:"Notları kopyalayın (2/2)",ill:ILL.hng2,p:"<b>Puanları kopyala</b> bölümünde yazılıyı ve sınıfı seçin. <b>İlk sütuna okul numarasını da ekle</b> kutusu <b>işaretli</b> olsun. Sonra <b>Puanları kopyala</b> düğmesine dokunun.<br><br>Puanlar öğrenci numarasıyla birlikte kopyalanır. Bu uygulamanın istediği düzen tam olarak budur. Girilmeyen puanlar boş gelir, raporda <b>Notu girilmedi</b> bölümünde görürsünüz."});
+    A.push({t:"Notları kopyalayın (2/2)",ill:ILL.hng2,p:"<b>Puanları kopyala</b> bölümünde yazılıyı ve sınıfı seçin. Sonra <b>Puanları kopyala</b> düğmesine dokunun.<br><br>Puanlar öğrenci numarasıyla birlikte kopyalanır. Bu uygulamanın istediği düzen tam olarak budur. Girilmeyen puanlar boş gelir, raporda <b>Notu girilmedi</b> bölümünde görürsünüz."});
     A.push({t:"Excel kullanıyorsanız hazırlayın",ill:ILL.excel,p:"<b>İlk sütuna öğrenci numarasını</b>, yanındaki sütunlara notları yazın. <b>Başlık satırı olmasın</b>. Bu bölümü seçip <b>kopyalayın</b> (bilgisayarda Ctrl + C, telefonda seçip Kopyala)."});
     A.push({t:"e-Okul'da listeyi açın",ill:ILL.eokulList,p:"e-Okul'a girin. Soldaki menüden <b>Hızlı Ders Notu Girişi</b>'ni açın. Sınıfı ve dersi seçin, notları gireceğiniz alanları işaretleyin ve turuncu <b>Listele</b> düğmesine basın. Öğrenci listesi ekrana gelmeli."});
     if(dev==="ios"){
@@ -867,6 +872,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   function close(){
     ov.style.display="none";
     document.body.style.overflow="";
+    if(noticePending){noticePending=false;openNotice();}
   }
   body.addEventListener("click",function(e){
     var el=e.target,b;
@@ -888,7 +894,32 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   never.addEventListener("change",function(){store("notTanitimGizle",never.checked?"1":"0");});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ov.style.display!=="none"){close();}});
   document.getElementById("helpBtn").addEventListener("click",open);
+  var AYLAR=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  function trDate(x){var p=x.split("-");return parseInt(p[2],10)+" "+AYLAR[parseInt(p[1],10)-1]+" "+p[0];}
+  var kov=document.createElement("div");
+  kov.className="tut";
+  kov.id="kodnot";
+  kov.style.display="none";
+  kov.style.zIndex="10000";
+  kov.innerHTML='<div class="tutcard kodcard" role="alertdialog" aria-modal="true" aria-label="Yer imi güncellemesi"><div class="tuttop"><b>Yer imi kodu güncellendi</b></div><div id="kodbody"></div><label class="tutnever"><input type="checkbox" id="kodnever"> Bir daha gösterme</label><div class="tutnav"><button type="button" id="kodok">Tamam</button></div></div>';
+  document.body.appendChild(kov);
+  var kodok=document.getElementById("kodok"),kodnever=document.getElementById("kodnever"),noticePending=store("notKodUyari")!==KOD.ver;
+  function openNotice(){
+    document.getElementById("kodbody").innerHTML="<b>Yer imi kodu "+trDate(KOD.date)+" tarihinde değişti</b> (sürüm "+KOD.ver+"). "+KOD.note+"<br><br>Yer iminizi bu tarihten önce oluşturduysanız <b>yer iminizi güncelleyin</b>: eski yer imini silin ve yenisini ekleyin. Nasıl yapılacağını görmek için üstteki <b>?</b> düğmesine basın.<br><br>e-Okul'daki kartın sağ üstünde <b>v"+KOD.ver+"</b>'den eski bir sürüm yazıyorsa yer iminiz eskidir.";
+    kodnever.checked=false;
+    kov.style.display="flex";
+    document.body.style.overflow="hidden";
+    kodok.focus();
+  }
+  function closeNotice(){
+    kov.style.display="none";
+    document.body.style.overflow=(ov.style.display!=="none")?"hidden":"";
+  }
+  kodok.addEventListener("click",closeNotice);
+  kodnever.addEventListener("change",function(){store("notKodUyari",kodnever.checked?KOD.ver:"");});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&kov.style.display!=="none"){closeNotice();}});
   if(store("notTanitimGizle")!=="1"){open();}
+  else if(noticePending){noticePending=false;openNotice();}
 })();
 </script>
 </body>
