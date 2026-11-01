@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.14
+  Not Doldurucu Pro 1.0.16
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,7 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.14</title>
+<title>Not Doldurucu Pro 1.0.16</title>
 <style>
   :root{
     --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
@@ -107,7 +107,7 @@
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.14</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.16</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="helpBtn" type="button" title="Kurulum tanıtımını göster" aria-label="Kurulum tanıtımını göster">?</button><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -143,6 +143,7 @@
     <li>"Önizle ve Raporla"ya basın. Kimin hangi notu alacağını gösteren bir rapor çıkar. Doğruysa "Onayla ve Doldur"a basın. Raporu isterseniz kopyalayabilirsiniz.</li>
   </ol>
   <ul>
+    <li>Notlarınızı <b>Hızlı Not Girişi</b> uygulamasından kopyalayabilirsiniz: yeşil Excel simgesi, <b>Puanları kopyala</b> (okul numarası kutusu işaretli olsun).</li>
     <li><b>Excel'de ilk sütun her zaman öğrenci numarası</b>, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.</li>
     <li>Sütun sayısı otomatik bulunur. Sağdaki tamamen boş sütunlar sayılmaz, ilgili kutulara dokunulmaz.</li>
     <li>Sizin sütunlarınız sayfadaki kutulardan fazlaysa fazla sütunlar atlanır ve size bildirilir.</li>
@@ -155,7 +156,7 @@
 </div>
 
 <script>
-var VERSION="1.0.14";
+var VERSION="1.0.16";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
 function core(TID,LID,CLS,VER){
@@ -533,7 +534,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   var ILL={};
 
   ILL.intro=function(){
-    var s="",r,c,v,rows=[["162","85","90"],["166","70","100"],["180","60","95"],["182","","50"]];
+    var s="",r,c,v,rows=[["101","85","90"],["102","70","100"],["103","60","95"],["104","","50"]];
     s+=Tx(73,30,"Excel",14,C.green,700,"middle");
     for(r=0;r<4;r++){for(c=0;c<3;c++){v=rows[r][c];s+=R(14+c*40,40+r*28,38,26,c===0?"#e6f4ea":"#fff",C.line,0,1)+Tx(33+c*40,57+r*28,v,11,C.ink,400,"middle");}}
     s+=Ar(136,92,180,92,true);
@@ -660,8 +661,34 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     return SV(s,"Yer imi çubuğundaki Notları Doldur düğmesi");
   };
 
+  var RED="#d6354b";
+  ILL.hng1=function(){
+    var s=R(10,8,300,184,"#fff",C.line,14);
+    s+=Tx(24,30,"Hızlı Not Girişi",13,C.ink,700);
+    s+=R(200,14,28,24,"#f3f5fa",C.line,7,1)+Ci(214,26,6,RED)+R(232,14,28,24,"#fff",C.line,7,1)+Ci(246,26,6,"none",C.ink)+R(264,14,28,24,"#fff",C.line,7,1)+Ci(278,26,6,"none",C.ink);
+    s+=Tx(24,64,"Yazılılar",14,C.ink,700)+R(190,48,104,24,RED,0,8)+Tx(242,64,"+ Yeni yazılı",10.5,"#fff",700,"middle");
+    s+=R(20,82,274,48,"#fff",C.line,10,1)+Tx(30,100,"Örnek Yazılı",12,C.ink,700)+Tx(30,114,"6/A, 6/B · 7 soru · 100 puan",9.5,C.mut);
+    s+=R(30,121,254,5,"#e9ecf3",0,3)+R(30,121,36,5,RED,0,3);
+    s+=Ln(10,170,310,170,C.line,1)+Tx(52,187,"Yazılılar",10,RED,700,"middle")+Tx(160,187,"Öğrenciler",10,C.mut,700,"middle")+Tx(262,187,"e-Okul aktarma",10,C.mut,700,"middle");
+    s+=R(254,134,42,34,"#1e6b3f",0,8)+R(272,140,18,22,"#6fcf97",0,3)+Tx(266,157,"X",16,"#fff",700,"middle");
+    s+=HL(250,130,50,42,10)+Bd(300,132,"1");
+    s+=Ar(196,152,246,152)+Tx(130,156,"Yeşil Excel simgesi",11,C.hl,700,"middle");
+    return SV(s,"Hızlı Not Girişi uygulamasında yeşil Excel simgesi");
+  };
+  ILL.hng2=function(){
+    var s=R(10,6,300,188,"#fff",C.line,14);
+    s+=Tx(24,26,"Excel'e aktar",13,C.ink,700);
+    s+=R(18,34,284,112,"#eef3fd","#9db8ea",10,1.5)+Tx(30,54,"Puanları kopyala",12,C.ink,700)+Tx(140,54,"e-Okul için",9,C.mut);
+    s+=R(26,62,150,22,"#f3f5fa",C.line,6,1)+Tx(34,77,"Örnek Yazılı",10.5,C.ink)+R(184,62,60,22,"#f3f5fa",C.line,6,1)+Tx(192,77,"6/A",10.5,C.ink);
+    s+=R(28,92,14,14,C.blue,0,3)+Pa("M31 99 l3 3 l5 -6","none","#fff",2)+Tx(48,103,"İlk sütuna okul numarasını da ekle",10.5,C.ink);
+    s+=R(26,112,268,26,"#b7cdf1",0,8)+Tx(160,129,"Puanları kopyala",11.5,"#1b3a6b",700,"middle");
+    s+=HL(24,60,224,26,6)+Bd(258,66,"1")+HL(24,89,276,20,6)+Bd(306,86,"2")+HL(24,110,272,30,8)+Bd(306,126,"3");
+    s+='<g opacity=".45">'+R(18,152,284,34,"#e9f5ee","#a7d3b8",10,1.5)+Tx(30,168,"Excel dosyası indir",11,C.ink,700)+Tx(30,180,"Bu bölüm gerekmiyor",9,C.mut)+'</g>';
+    return SV(s,"Puanları kopyala penceresi");
+  };
+
   ILL.excel=function(){
-    var s="",r,c,L=["A","B","C","D"],d=[["162","85","90","70"],["166","70","80","100"],["180","60","95","50"],["182","90","70","85"],["204","100","60","95"]];
+    var s="",r,c,L=["A","B","C","D"],d=[["101","85","90","70"],["102","70","80","100"],["103","60","95","50"],["104","90","70","85"],["105","100","60","95"]];
     for(c=0;c<4;c++){s+=Tx(70+c*60,26,L[c],11,C.mut,700,"middle");}
     for(r=0;r<5;r++){s+=Tx(30,52+r*24,String(r+1),10,C.mut,400,"middle");}
     s+=R(40,34,60,120,"rgba(47,133,90,.18)",0,0);
@@ -682,7 +709,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     s+=R(20,64,150,40,"#f7f9fc",C.line,4,1)+Tx(30,78,"Sınav Puanları",9,C.ink,700)+R(34,86,9,9,"#fff",C.mut,2,1)+Tx(46,94,"1. Sınav",8,C.mut)+R(100,86,9,9,"#fff",C.mut,2,1)+Tx(112,94,"2. Sınav",8,C.mut);
     s+=R(200,72,70,24,C.orange,0,5)+Tx(235,88,"Listele",11,"#fff",700,"middle")+HL(196,68,78,32,7)+Bd(284,70,"1");
     s+=R(10,132,300,16,"#dfe5f0",0,0)+Tx(16,144,"Sınıf Listesi",9,C.ink,700);
-    for(r=0;r<2;r++){s+=Tx(18,166+r*20,String(162+r*4),9,C.ink)+R(50,158+r*20,90,8,C.line,0,3)+R(200,155+r*20,26,14,"#fff",C.mut,3,1)+R(232,155+r*20,26,14,"#fff",C.mut,3,1)+R(264,155+r*20,26,14,"#fff",C.mut,3,1);}
+    for(r=0;r<2;r++){s+=Tx(18,166+r*20,String(101+r),9,C.ink)+R(50,158+r*20,90,8,C.line,0,3)+R(200,155+r*20,26,14,"#fff",C.mut,3,1)+R(232,155+r*20,26,14,"#fff",C.mut,3,1)+R(264,155+r*20,26,14,"#fff",C.mut,3,1);}
     return SV(s,"e-Okul Hızlı Not Girişi sayfası ve Listele düğmesi");
   };
 
@@ -690,19 +717,19 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     var s="",r;
     s+=R(10,8,300,18,C.navy,0,5)+Tx(18,21,"Sınıf Listesi - Ders Notu Girişi",9.5,"#fff",600);
     s+=R(14,34,292,92,"#fff",C.line,6,1);
-    s+=R(22,42,276,36,"#fff","#999",3,1)+Tx(30,58,"162   85   90   70",10,C.mut)+Tx(30,71,"166   70   80   100",10,C.mut);
+    s+=R(22,42,276,36,"#fff","#999",3,1)+Tx(30,58,"101   85   90   70",10,C.mut)+Tx(30,71,"102   70   80   100",10,C.mut);
     s+=R(22,88,112,28,C.blue,0,6)+Tx(78,106,"Önizle ve Raporla",10,"#fff",700,"middle");
     s+=HL(12,32,296,96,8)+Bd(300,34,"1");
     s+=Tx(160,148,"Kutu, listenin hemen üstünde açılır",11,C.hl,700,"middle");
-    for(r=0;r<2;r++){s+=Tx(18,172+r*18,String(162+r*4),9,C.ink)+R(50,165+r*18,90,8,C.line,0,3)+R(200,162+r*18,26,12,"#fff",C.mut,3,1)+R(232,162+r*18,26,12,"#fff",C.mut,3,1)+R(264,162+r*18,26,12,"#fff",C.mut,3,1);}
+    for(r=0;r<2;r++){s+=Tx(18,172+r*18,String(101+r),9,C.ink)+R(50,165+r*18,90,8,C.line,0,3)+R(200,162+r*18,26,12,"#fff",C.mut,3,1)+R(232,162+r*18,26,12,"#fff",C.mut,3,1)+R(264,162+r*18,26,12,"#fff",C.mut,3,1);}
     return SV(s,"Sayfanın üstünde açılan Notları Doldur kutusu");
   };
 
   ILL.report=function(){
     var s=R(10,10,300,180,"#fff",C.line,10);
     s+=Tx(20,28,"ÖNİZLEME (henüz doldurulmadı)",10,C.ink,700);
-    s+=Tx(20,48,"NOTU GİRİLENLER (22)",10,C.green,700)+Tx(20,62,"162 RABİA BEĞİÇ: 85 | 90 | 70",10)+Tx(20,76,"166 MUHAMMED ALİ AKÇAKAYA: 70 | 80 | 100",10);
-    s+=Tx(20,96,"NOTU GİRİLMEDİ (1)",10,C.hl,700)+Tx(20,110,"180 BİRCAN VİYAN YILDIRIM",10);
+    s+=Tx(20,48,"NOTU GİRİLENLER (22)",10,C.green,700)+Tx(20,62,"101 ALİ YILMAZ: 85 | 90 | 70",10)+Tx(20,76,"102 AYŞE KAYA: 70 | 80 | 100",10);
+    s+=Tx(20,96,"NOTU GİRİLMEDİ (1)",10,C.hl,700)+Tx(20,110,"103 MEHMET DEMİR",10);
     s+=R(18,128,104,30,C.green,0,8)+Tx(70,147,"Onayla ve Doldur",10.5,"#fff",700,"middle")+HL(15,125,110,36,9);
     s+=R(128,128,92,30,"#3182ce",0,8)+Tx(174,147,"Raporu Kopyala",10.5,"#fff",700,"middle");
     s+=R(226,128,60,30,"#718096",0,8)+Tx(256,147,"Kapat",10.5,"#fff",700,"middle");
@@ -764,7 +791,9 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
       A.push({t:"2. Yeşil düğmeyi sürükleyin",ill:ILL.deskDrag,x:"drag",p:"Aşağıdaki yeşil düğmenin üzerine fareyle basın ve <b>basılı tutarak</b> yukarıdaki yer imi şeridine <b>sürükleyip bırakın</b>.<br><b>Sadece tıklamayın</b>, sürükleyin."});
     }
     A.push({t:"Kurulum tamam!",ill:ILL.done("Yer iminiz hazır"),p:"Bu kurulumu <b>bir daha yapmanız gerekmez</b>. Şimdi nasıl kullanılacağını gösterelim."});
-    A.push({t:"Excel'de notları hazırlayın",ill:ILL.excel,p:"<b>İlk sütuna öğrenci numarasını</b>, yanındaki sütunlara notları yazın. <b>Başlık satırı olmasın</b>. Bu bölümü seçip <b>kopyalayın</b> (bilgisayarda Ctrl + C, telefonda seçip Kopyala)."});
+    A.push({t:"Notları kopyalayın (1/2)",ill:ILL.hng1,p:"<b>Hızlı Not Girişi</b> uygulamasında not girdiyseniz, notları oradan tek dokunuşla kopyalayabilirsiniz. Sağdaki yeşil <b>Excel</b> simgesine dokunun.<br><br>Notlarınız Excel'deyse sonraki iki adımı geçmek için <b>İleri</b>'ye basın."});
+    A.push({t:"Notları kopyalayın (2/2)",ill:ILL.hng2,p:"<b>Puanları kopyala</b> bölümünde yazılıyı ve sınıfı seçin. <b>İlk sütuna okul numarasını da ekle</b> kutusu <b>işaretli</b> olsun. Sonra <b>Puanları kopyala</b> düğmesine dokunun.<br><br>Puanlar öğrenci numarasıyla birlikte kopyalanır. Bu uygulamanın istediği düzen tam olarak budur. Girilmeyen puanlar boş gelir, raporda <b>Notu girilmedi</b> bölümünde görürsünüz."});
+    A.push({t:"Excel kullanıyorsanız hazırlayın",ill:ILL.excel,p:"<b>İlk sütuna öğrenci numarasını</b>, yanındaki sütunlara notları yazın. <b>Başlık satırı olmasın</b>. Bu bölümü seçip <b>kopyalayın</b> (bilgisayarda Ctrl + C, telefonda seçip Kopyala)."});
     A.push({t:"e-Okul'da listeyi açın",ill:ILL.eokulList,p:"e-Okul'a girin. Soldaki menüden <b>Hızlı Ders Notu Girişi</b>'ni açın. Sınıfı ve dersi seçin, notları gireceğiniz alanları işaretleyin ve turuncu <b>Listele</b> düğmesine basın. Öğrenci listesi ekrana gelmeli."});
     if(dev==="ios"){
       A.push({t:"Yer imine dokunun",ill:function(){return ILL.iosBooks(true);},p:"e-Okul'da öğrenci listesi açıkken, alt çubukta <b>açık kitap</b> simgesine, sonra listedeki <b>Notları Doldur</b>'a dokunun."});
