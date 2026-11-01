@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.16
+  Not Doldurucu Pro 1.0.18
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,7 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.16</title>
+<title>Not Doldurucu Pro 1.0.18</title>
 <style>
   :root{
     --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
@@ -107,7 +107,7 @@
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.16</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.18</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="helpBtn" type="button" title="Kurulum tanıtımını göster" aria-label="Kurulum tanıtımını göster">?</button><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -156,7 +156,7 @@
 </div>
 
 <script>
-var VERSION="1.0.16";
+var VERSION="1.0.18";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
 function core(TID,LID,CLS,VER){
@@ -311,68 +311,80 @@ function core(TID,LID,CLS,VER){
   };
   var d=document.createElement("div");
   d.id="notBox";
-  d.style.padding="6px";
+  if(d.style.setProperty){d.style.setProperty("background","transparent","important");d.style.setProperty("display","block","important");d.style.setProperty("margin","10px 0","important");d.style.setProperty("padding","0","important");d.style.setProperty("border","0","important");}
+  var root=d.attachShadow?d.attachShadow({mode:"open"}):d;
+  var css=document.createElement("style");
+  css.textContent=[
+    ':host{all:initial;display:block;margin:10px 0}',
+    '.card{box-sizing:border-box;max-width:780px;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2b1a12;background:#fcf3ee;border:3px solid #d97757;border-radius:14px;overflow:hidden}',
+    '.head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#c96442;color:#fff;padding:9px 12px;font-weight:700;font-size:15px}',
+    '.ver{margin-left:auto;font-weight:400;font-size:11px;opacity:.92}',
+    '.body{padding:10px 12px 12px}',
+    'textarea{box-sizing:border-box;width:100%;min-height:110px;font:16px/1.35 ui-monospace,Menlo,Consolas,monospace;padding:8px;border:1px solid #e6b8a6;border-radius:8px;background:#fff;color:#2b1a12;margin:0}',
+    '.hint,.info{font-size:12px;color:#6b4a3d;margin:6px 0}',
+    'button{font:600 14px system-ui,-apple-system,"Segoe UI",Arial,sans-serif;border:0;border-radius:8px;padding:10px 14px;margin:6px 6px 0 0;color:#fff;cursor:pointer;-webkit-appearance:none;appearance:none}',
+    '.pv{background:#c96442}.ok{background:#2f855a}.cp{background:#8f4a33}.cl{background:#7a6a62}',
+    '.rep{margin:10px 0 0}',
+    '.rt{white-space:pre-wrap;font-size:12px;line-height:1.45;max-height:260px;overflow-y:auto;border:1px solid #e6b8a6;border-radius:8px;padding:8px;background:#fff;color:#2b1a12}',
+    '@media (prefers-color-scheme:dark){.card{background:#2a1d18;color:#f1e6e0;border-color:#e08a66}.head{background:#c96442}textarea,.rt{background:#1c120e;color:#f1e6e0;border-color:#5a3a2e}.hint,.info{color:#cdb5aa}.pv{background:#d97757}.cp{background:#b5654a}.cl{background:#8a7a72}}'
+  ].join("");
+  var card=document.createElement("div");
+  card.className="card";
+  var head=document.createElement("div");
+  head.className="head";
+  var ttl=document.createElement("span");
+  ttl.textContent="Not Doldurucu Pro";
+  var verEl=document.createElement("span");
+  verEl.className="ver";
+  verEl.textContent="v"+VER+" | sebasmobil | AGPL v3.0";
+  head.appendChild(ttl);
+  head.appendChild(verEl);
+  var body=document.createElement("div");
+  body.className="body";
   var ta=document.createElement("textarea");
   ta.rows=6;
-  ta.style.width="80%";
   ta.placeholder="Excel'den kopyaladığınız sütunları buraya yapıştırın (ilk sütun öğrenci numarası)";
   var hint=document.createElement("div");
-  hint.style.fontSize="12px";
-  hint.style.margin="4px 0 6px";
+  hint.className="hint";
   hint.textContent="Excel'de ilk sütun öğrenci numarası, sonraki sütunlar notlar olmalı. Notlar numaraya göre eşleşir, satır sayısı ve sıra önemli değil.";
   var info=document.createElement("div");
-  info.style.fontSize="12px";
-  info.style.margin="4px 0";
+  info.className="info";
+  info.id="notInfo";
   var bt=document.createElement("button");
   bt.type="button";
+  bt.className="pv";
   bt.textContent="Önizle ve Raporla";
   var rep=document.createElement("div");
   rep.id="notRep";
+  rep.className="rep";
   rep.style.display="none";
-  rep.style.margin="8px 0";
   var repText=document.createElement("div");
-  repText.style.whiteSpace="pre-wrap";
-  repText.style.fontSize="12px";
-  repText.style.maxHeight="260px";
-  repText.style.overflowY="auto";
-  repText.style.border="1px solid #999";
-  repText.style.padding="6px";
-  repText.style.background="#fff";
-  repText.style.color="#000";
+  repText.className="rt";
   var bOk=document.createElement("button");
   bOk.type="button";
+  bOk.className="ok";
   bOk.textContent="Onayla ve Doldur";
   var bCopy=document.createElement("button");
   bCopy.type="button";
+  bCopy.className="cp";
   bCopy.textContent="Raporu Kopyala";
   var bClose=document.createElement("button");
   bClose.type="button";
+  bClose.className="cl";
   bClose.textContent="Kapat";
-  var paint=function(b,bg){
-    b.style.background=bg;
-    b.style.color="#fff";
-    b.style.border="0";
-    b.style.borderRadius="6px";
-    b.style.padding="9px 14px";
-    b.style.margin="6px 6px 0 0";
-    b.style.fontSize="14px";
-    b.style.fontWeight="600";
-    b.style.cursor="pointer";
-    b.style.webkitAppearance="none";
-  };
-  paint(bt,"#2b6cb0");
-  paint(bOk,"#2f855a");
-  paint(bCopy,"#3182ce");
-  paint(bClose,"#718096");
   rep.appendChild(repText);
   rep.appendChild(bOk);
   rep.appendChild(bCopy);
   rep.appendChild(bClose);
-  d.appendChild(ta);
-  d.appendChild(hint);
-  d.appendChild(info);
-  d.appendChild(bt);
-  d.appendChild(rep);
+  body.appendChild(ta);
+  body.appendChild(hint);
+  body.appendChild(info);
+  body.appendChild(bt);
+  body.appendChild(rep);
+  card.appendChild(head);
+  card.appendChild(body);
+  root.appendChild(css);
+  root.appendChild(card);
   T.insertBefore(d,T.childNodes[0]);
   var curPlan=null,lastText="";
   var hideRep=function(){rep.style.display="none";curPlan=null;};
@@ -520,8 +532,8 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   function Ci(x,y,r,f,s){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||"none")+'"'+(s?' stroke="'+s+'" stroke-width="2"':'')+'/>';}
   function Ln(x1,y1,x2,y2,c,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(c||C.ink)+'" stroke-width="'+(w||2)+'" stroke-linecap="round"/>';}
   function Pa(d,f,s,w){return '<path d="'+d+'" fill="'+(f||"none")+'"'+(s?' stroke="'+s+'" stroke-width="'+(w||2)+'" stroke-linecap="round" stroke-linejoin="round"':'')+'/>';}
-  function HL(x,y,w,h,r){return '<rect class="pulse" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r||8)+'" fill="none" stroke="'+C.hl+'" stroke-width="3"/>';}
-  function Bd(x,y,n){return Ci(x,y,10,C.hl)+Tx(x,y+4.5,n,13,"#fff",700,"middle");}
+  function HL(x,y,w,h,r,col){return '<rect class="pulse" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r||8)+'" fill="none" stroke="'+(col||C.hl)+'" stroke-width="3"/>';}
+  function Bd(x,y,n,col){return Ci(x,y,10,col||C.hl)+Tx(x,y+4.5,n,13,"#fff",700,"middle");}
   function Ar(x1,y1,x2,y2,blue){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(blue?C.blue:C.hl)+'" stroke-width="3" stroke-linecap="round" marker-end="url(#'+(blue?"ab":"ah")+')"/>';}
   function star(cx,cy,r,f,s){var p=[],i,a,rr;for(i=0;i<10;i++){a=-Math.PI/2+i*Math.PI/5;rr=i%2?r*0.42:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1));}return '<polygon points="'+p.join(" ")+'" fill="'+(f||"none")+'"'+(s?' stroke="'+s+'" stroke-width="1.8" stroke-linejoin="round"':'')+'/>';}
   function SV(inner,label){
@@ -716,13 +728,13 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   ILL.pageBox=function(){
     var s="",r;
     s+=R(10,8,300,18,C.navy,0,5)+Tx(18,21,"Sınıf Listesi - Ders Notu Girişi",9.5,"#fff",600);
-    s+=R(14,34,292,92,"#fff",C.line,6,1);
-    s+=R(22,42,276,36,"#fff","#999",3,1)+Tx(30,58,"101   85   90   70",10,C.mut)+Tx(30,71,"102   70   80   100",10,C.mut);
-    s+=R(22,88,112,28,C.blue,0,6)+Tx(78,106,"Önizle ve Raporla",10,"#fff",700,"middle");
-    s+=HL(12,32,296,96,8)+Bd(300,34,"1");
-    s+=Tx(160,148,"Kutu, listenin hemen üstünde açılır",11,C.hl,700,"middle");
+    s+=R(14,34,292,92,"#fcf3ee","#d97757",8,3)+R(14,34,292,18,"#c96442",0,6)+Tx(24,47,"Not Doldurucu Pro",9.5,"#fff",700);
+    s+=R(22,58,276,30,"#fff","#e6b8a6",4,1)+Tx(30,72,"101   85   90   70",10,C.mut)+Tx(30,83,"102   70   80   100",10,C.mut);
+    s+=R(22,94,112,26,"#c96442",0,6)+Tx(78,111,"Önizle ve Raporla",10,"#fff",700,"middle");
+    s+=HL(10,30,300,100,10,"#6b46c1")+Bd(300,32,"1","#6b46c1");
+    s+=Tx(160,148,"Turuncu kart, listenin hemen üstünde açılır",11,"#6b46c1",700,"middle");
     for(r=0;r<2;r++){s+=Tx(18,172+r*18,String(101+r),9,C.ink)+R(50,165+r*18,90,8,C.line,0,3)+R(200,162+r*18,26,12,"#fff",C.mut,3,1)+R(232,162+r*18,26,12,"#fff",C.mut,3,1)+R(264,162+r*18,26,12,"#fff",C.mut,3,1);}
-    return SV(s,"Sayfanın üstünde açılan Notları Doldur kutusu");
+    return SV(s,"Sayfanın üstünde açılan turuncu Not Doldurucu kartı");
   };
 
   ILL.report=function(){
@@ -731,7 +743,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     s+=Tx(20,48,"NOTU GİRİLENLER (22)",10,C.green,700)+Tx(20,62,"101 ALİ YILMAZ: 85 | 90 | 70",10)+Tx(20,76,"102 AYŞE KAYA: 70 | 80 | 100",10);
     s+=Tx(20,96,"NOTU GİRİLMEDİ (1)",10,C.hl,700)+Tx(20,110,"103 MEHMET DEMİR",10);
     s+=R(18,128,104,30,C.green,0,8)+Tx(70,147,"Onayla ve Doldur",10.5,"#fff",700,"middle")+HL(15,125,110,36,9);
-    s+=R(128,128,92,30,"#3182ce",0,8)+Tx(174,147,"Raporu Kopyala",10.5,"#fff",700,"middle");
+    s+=R(128,128,92,30,"#8f4a33",0,8)+Tx(174,147,"Raporu Kopyala",10.5,"#fff",700,"middle");
     s+=R(226,128,60,30,"#718096",0,8)+Tx(256,147,"Kapat",10.5,"#fff",700,"middle");
     s+=Tx(160,180,"Önce raporu okuyun, sonra yeşil düğme",11,C.mut,400,"middle");
     return SV(s,"Önizleme raporu ve Onayla ve Doldur düğmesi");
@@ -802,7 +814,7 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     }else{
       A.push({t:"Yer imine tıklayın",ill:ILL.deskUse,p:"e-Okul'da öğrenci listesi açıkken yer imi şeridindeki <b>Notları Doldur</b>'a tıklayın."});
     }
-    A.push({t:"Notları yapıştırın",ill:ILL.pageBox,p:"Öğrenci listesinin <b>hemen üstünde</b> bir kutu açılır. Kutuya dokunup Excel'den kopyaladığınız notları <b>Yapıştır</b>'la yapıştırın. Sonra mavi <b>Önizle ve Raporla</b> düğmesine basın."});
+    A.push({t:"Notları yapıştırın",ill:ILL.pageBox,p:"Öğrenci listesinin <b>hemen üstünde</b> turuncu çerçeveli bir kart açılır. Kutuya dokunup Excel'den kopyaladığınız notları <b>Yapıştır</b>'la yapıştırın. Sonra turuncu <b>Önizle ve Raporla</b> düğmesine basın."});
     A.push({t:"Raporu kontrol edin",ill:ILL.report,p:"Rapor, <b>kimin hangi notu alacağını</b> gösterir. Numara ya da adlar yanlış veya eksikse doldurmayın. Her şey doğruysa yeşil <b>Onayla ve Doldur</b>'a basın."});
     A.push({t:"Son adım: Kaydedin",ill:ILL.save,p:"Notlar kutulara yazıldı ama <b>e-Okul'a henüz kaydedilmedi</b>. e-Okul'un kendi <b>Kaydet</b> (disket) düğmesine basın. e-Okul güvenlik kodu isterse onu da yazın."});
     A.push({t:"Hazırsınız!",ill:ILL.done("Hepsi bu kadar"),p:"Bundan sonra yapacaklarınız: Excel'den kopyalayın, yer imine dokunun, yapıştırın, önizleyin, onaylayın, e-Okul'da kaydedin.<br><br>Bu tanıtımı sağ üstteki <b>?</b> düğmesinden istediğiniz zaman tekrar açabilirsiniz."});
