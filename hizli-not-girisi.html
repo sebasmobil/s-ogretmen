@@ -187,10 +187,16 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 .bb2{display:flex;gap:5px;margin-top:5px}.bb2 span{flex:1;text-align:center;padding:7px 2px;border:1px solid var(--ln);background:var(--el);border-radius:8px;font-size:12px;font-weight:700}.bb2 .kz{background:#fbe3a0;color:#5b4500;border-color:#fbe3a0}
 .xrow{display:flex;align-items:center;gap:10px}.xrow svg{width:44px;height:44px;flex:none}
 .fl3{display:flex;align-items:stretch;gap:4px;font-size:11px;text-align:center}.fl3 div{flex:1;border:1px solid var(--ln);background:var(--card);border-radius:8px;padding:6px 3px}.fl3>b{align-self:center;color:var(--mut)}
+#tc{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+#tc[hidden]{display:none}
+.tcw{width:100%;max-width:520px;max-height:100%;background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px;display:flex;flex-direction:column}
+.tct{overflow:auto;-webkit-overflow-scrolling:touch;min-height:0;flex:1;margin:8px 0}
+.tct ul{padding-left:18px;margin:6px 0}.tct li{margin:7px 0}
+#toast,#toast.warn{z-index:120}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.17</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.18</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -224,9 +230,9 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
     </div>
     <div id="map" class="card" style="background:var(--bg)">
       <div class="mg">
-        <label>Ad (veya Ad Soyad)<select id="m_name"></select></label>
+        <label>Ad (veya Ad Soyad) · zorunlu<select id="m_name"></select></label>
         <label>Soyad (ayrıysa)<select id="m_sur"></select></label>
-        <label>Okul numarası<select id="m_no"></select></label>
+        <label>Okul numarası · zorunlu<select id="m_no"></select></label>
         <label>Sınıf (veya Sınıf/Şube)<select id="m_cls"></select></label>
         <label>Şube (ayrıysa, sınıfla birleşir)<select id="m_sub"></select></label>
       </div>
@@ -261,6 +267,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:10px}
 
 <div id="gm" class="ov"><div class="dlg" id="gd"></div></div>
 
+<div id="tc" hidden><div class="tcw" id="tcw"></div></div>
 <div id="eo" hidden><div class="eow"><iframe id="eof" title="e-Okul aktarma" allow="clipboard-read; clipboard-write; fullscreen"></iframe><div class="eox"><button id="eoback" aria-label="Kapat" title="Kapat">✕</button></div></div></div>
 <div id="cm" class="ov"><div class="dlg" id="cd"></div></div>
 <div id="sm" class="ov"><div class="dlg sd">
@@ -462,8 +469,8 @@ function stDlg(id){const s=stById(id),g=$('#gd');
  g.onclick=e=>{const i=e.target.id;
   if(i==='sc2')closeG();
   else if(i==='sdel'){ask(s.name+' silinsin mi?',()=>{S.st=S.st.filter(x=>x!==s);save();closeG();fillCls();rS()})}
-  else if(i==='ssv'){const n=$('#sn').value.trim();if(!n)return toast('Ad Soyad boş olamaz');s.name=n;s.no=$('#sno').value.trim();s.cls=$('#scl').value.trim();save();closeG();fillCls();rS()}}}
-function addOne(){const name=$('#ad').value.trim();if(!name)return toast('Ad Soyad yazın');
+  else if(i==='ssv'){const n=$('#sn').value.trim();if(!n)return toast('Ad Soyad boş olamaz');if(!$('#sno').value.trim())return toast('Okul numarası boş olamaz');s.name=n;s.no=$('#sno').value.trim();s.cls=$('#scl').value.trim();save();closeG();fillCls();rS()}}}
+function addOne(){const name=$('#ad').value.trim();if(!name)return toast('Ad Soyad yazın');if(!$('#an').value.trim())return toast('Okul numarasını yazın');
  S.st.push({id:uid(),no:$('#an').value.trim(),name,cls:$('#ac').value.trim()});save();
  $('#an').value=/^\d+$/.test($('#an').value)?+$('#an').value+1:'';$('#ad').value='';fillCls();rS();$('#ad').focus()}
 $('#add').onclick=addOne;['#an','#ad','#ac'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')addOne()});
@@ -479,31 +486,34 @@ function openMap(){const h=IM[0],n=Math.max(...IM.slice(0,20).map(r=>r.length));
  const opt='<option value="">— yok —</option>'+Array.from({length:n},(_,i)=>`<option value="${i}">${colL(i)}: ${esc(String(h[i]??'').slice(0,24))}</option>`).join('');
  const g=(re,ex)=>{const i=h.findIndex(x=>re.test(norm(x))&&!(ex&&ex.test(norm(x))));return i<0?'':i};
  const a=g(/^(ad|adi|isim)$/),nm=g(/soyad/)!==''&&a!==''?a:g(/ad|isim/,/soyad$/);
- const m={name:nm===''?g(/ad|isim/):nm,sur:g(/^soyad|soyadi$/),no:g(/no|numara/),cls:g(/sinif/),sub:g(/sube/)};
+ const m={name:nm===''?g(/ad|isim/):nm,sur:g(/^soyad(i)?$/),no:g(/no|numara/),cls:g(/sinif/),sub:g(/sube/)};
+ if(m.sub===m.cls)m.sub='';if(m.sur===m.name)m.sur='';if(m.no===m.name)m.no='';
  for(const k in m){$('#m_'+k).innerHTML=opt;$('#m_'+k).value=m[k]}
  $('#map').classList.add('on');pv()}
 $('#map').onchange=pv;
 function mapped(){const H=$('#hdr').checked,ix=k=>$('#m_'+k).value===''?-1:+$('#m_'+k).value,[a,b,n,c,d]=['name','sur','no','cls','sub'].map(ix);
  return IM.slice(H?1:0).map(r=>{const v=i=>i<0?'':String(r[i]??'').trim(),sb=v(d).toLocaleUpperCase('tr');let cl=v(c);if(sb)cl=cl?cl+'/'+sb:sb;
   return{id:uid(),no:v(n),name:[v(a),v(b)].filter(Boolean).join(' '),cls:cl}}).filter(s=>s.name)}
-function pv(){const L=mapped();$('#pv').innerHTML=`<b>${L.length}</b> öğrenci bulundu. Örnek: `+L.slice(0,3).map(s=>`${esc(s.no)} · ${esc(s.name)} · ${esc(s.cls)}`).join(' | ')}
-$('#doimp').onclick=()=>{const L=mapped();if(!L.length)return toast('Ad sütununu seçin');
+function pv(){const all=mapped(),L=all.filter(s=>s.no),miss=all.length-L.length,noCol=$('#m_no').value==='';
+ $('#pv').innerHTML=(noCol?'<b style="color:var(--er)">Okul numarası sütununu seçmelisiniz.</b> Uygulama okul numarasına göre çalışır.':`<b>${L.length}</b> öğrenci aktarılacak. Örnek: `+L.slice(0,3).map(s=>`${esc(s.no)} · ${esc(s.name)} · ${esc(s.cls)}`).join(' | ')+(miss?` <b style="color:var(--er)">· numarası olmayan ${miss} satır atlanacak</b>`:''))}
+$('#doimp').onclick=()=>{if($('#m_no').value==='')return toast('Okul numarası sütununu seçin');const all=mapped(),L=all.filter(s=>s.no),skipped=all.length-L.length;if(!L.length)return toast('Aktarılacak öğrenci yok (ad ve okul numarası gerekli)');
  if($('#mode').value==='rep')S.st=[];
  const have=new Set(S.st.map(s=>s.no&&s.no+'|'+s.cls));let k=0;
  L.forEach(s=>{if(s.no&&have.has(s.no+'|'+s.cls))return;S.st.push(s);k++});
- sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı')};
+ sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı'+(skipped?` · numarasız ${skipped} satır atlandı`:''))};
 
 function tour(){const g=$('#gd');let i=0;
  const ST=[
  ['Hoş geldiniz','<p>Bu uygulama, <b>yazılı sonuçlarını çok hızlı girmeniz</b> ve tek dokunuşla <b>e-Okul için kopyalamanız</b> (ya da Excel’e aktarmanız) için yapıldı.</p><div class="tv"><div class="flow"><div><i>1</i>Öğrenciler</div><b>›</b><div><i>2</i>Yazılı</div><b>›</b><div><i>3</i>Not gir</div><b>›</b><div><i>4</i>Kopyala</div><b>›</b><div><i>5</i>e-Okul</div></div></div><p>Asıl amaç: notları burada hızlıca girip, <b>Not Doldurucu</b> ile e-Okul’a <b>toplu</b> aktarmak. Birkaç adımda nasıl yapıldığını gösterelim.</p><p class="hint">Bu tanıtımda görünen isimler rastgele örneklerdir, kayıtlı öğrencilerinizle ilgisi yoktur.</p>'],
- ['1 · Öğrencilerinizi ekleyin','<p>Alttaki <b>Öğrenciler</b> sekmesinden sınıf listenizi Excel veya CSV ile <b>toplu</b> aktarın ya da tek tek ekleyin.</p><div class="tv"><div class="mr"><b>Elif Yıldız</b><span>101 · 6/A</span><em>✎</em></div><div class="mr"><b>Mert Demir</b><span>102 · 6/A</span><em>✎</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em>✎</em></div></div><ul><li>Aktarırken sütunları siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa otomatik <b>6/A</b> olur.</li><li>İsterseniz öğrenciyi ✎ ile düzenler, 🗑 ile silersiniz.</li></ul>'],
+ ['1 · Öğrencilerinizi ekleyin','<p>Alttaki <b>Öğrenciler</b> sekmesinden sınıf listenizi Excel veya CSV ile <b>toplu</b> aktarın ya da tek tek ekleyin.</p><div class="tv"><div class="mr"><b>Elif Yıldız</b><span>101 · 6/A</span><em>✎</em></div><div class="mr"><b>Mert Demir</b><span>102 · 6/A</span><em>✎</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em>✎</em></div></div><ul><li><b>Okul numarası zorunludur</b>: uygulama okul numarasına göre çalışır.</li><li>Aktarırken sütunları siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa otomatik <b>6/A</b> olur.</li><li>İsterseniz öğrenciyi ✎ ile düzenler, 🗑 ile silersiniz.</li></ul>'],
  ['2 · Yazılıyı oluşturun','<p><b>Yazılılar</b> sekmesinde <b>+ Yeni yazılı</b> düğmesine basın.</p><div class="tv"><div class="mf"><span>Yazılı adı</span><u>Fen Bilimleri 1. Yazılı</u></div><div class="mc"><span>Kaç soru?</span><i>3</i><i>4</i><i class="on">5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>Özel</i></div><div class="mc"><span>Soru puanları</span><i class="on">Hepsi aynı: 20</i><i>Her soru farklı</i></div><div class="mc"><span>Hangi sınıflar?</span><i class="on">6/A</i><i class="on">6/B</i><i>6/C</i></div></div><p>Soru sayısını, puanları ve yazılının uygulanacağı sınıfları seçin. İstediğiniz kadar yazılı oluşturabilirsiniz; her birinin notları ayrı tutulur.</p>'],
  ['3 · Not girmeye başlayın','<p>Yazılının kartındaki <b>Not gir</b> düğmesine basın. Öğrenci listesi açılır.</p><div class="tv"><div class="ms">Öğrenci ara…</div><div class="mr done"><b>Elif Yıldız</b><span>101 · 6/A</span><em>5/5 (88)</em></div><div class="mr part"><b>Mert Demir</b><span>102 · 6/A</span><em>3/5 (45)</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em></em></div></div><ul><li>Öğrenciyi <b>aratın</b> (tüm sınıflarda aranır) veya listeden seçin.</li><li><b>Yeşil</b> çizgi tamamlananı, <b>turuncu</b> yarım kalanı gösterir. <b>5/5 (88)</b> = 5 sorudan 5’i girildi, toplam 88.</li><li><b>Hiç not girilmemişler</b> kutusuyla yalnız boş olanları görürsünüz.</li></ul>'],
  ['4 · Hızlı not penceresi','<p>Öğrenciye dokununca not penceresi açılır. İlk boş sorudan başlar.</p><div class="tv kwin"><div class="kh"><b>Elif Yıldız</b><span class="tot">70<small>/100</small></span></div><div class="kq"><i class="f">S1<b>20</b></i><i class="f">S2<b>18</b></i><i class="on">S3<b>&nbsp;</b></i><i>S4<b>&nbsp;</b></i><i>S5<b>&nbsp;</b></i></div><div class="kv">17<small>/20</small></div><div class="kk"><i>7</i><i>8</i><i>9</i><i>4</i><i>5</i><i>6</i><i>1</i><i>2</i><i>3</i><i>,</i><i>0</i><i>⌫</i></div></div><ul><li>Rakamlarla puanı yazın. <b>20 puanlık soruda 5</b> yazınca kendiliğinden sonraki soruya geçer; <b>10</b> gibi iki haneli puanlarda yazdıktan sonra <b>›</b> ile geçin.</li><li>Her puan <b>anında kaydedilir</b>; kaydet düğmesi yoktur.</li><li>Soru kutucuklarına dokunup istediğiniz soruya atlayabilirsiniz. 12’den fazla soruda yana kaydırın.</li></ul>'],
  ['5 · Pencerenin düğmeleri','<div class="tv"><div class="ka2"><span class="r">Boş geç</span><span class="bl">Bu soru tam</span><span class="gr">Hepsi tam</span></div><div class="bb2"><span class="kz">Kapat</span><span>‹</span><span>›</span><span>⌨ Orta</span></div></div><ul><li><b>Boş geç</b>: soruyu boş bırakıp sonrakine geçer.</li><li><b>Bu soru tam</b>: o sorunun tam puanını yazar.</li><li><b>Hepsi tam</b>: öğrencinin tüm sorularına tam puan yazar.</li><li><b>‹ ›</b>: önceki / sonraki soru.</li><li><b>⌨ Orta</b>: klavye boyutunu değiştirir (küçük, orta, büyük).</li><li><b>Kapat</b>: pencereyi kapatır.</li><li><b>↺ Notları sıfırla</b> (pencerenin üstünde): yanlış girdiyseniz o öğrencinin notlarını siler.</li></ul>'],
  ['6 · Puanları e-Okul için kopyalayın','<div class="tv"><div class="xrow"><svg viewBox="0 0 48 48"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><div><b>Excel simgesine</b> dokunun<br><span class="hint">Yazılılar sayfasında, istediğiniz yere sürükleyebilirsiniz</span></div></div></div><p>Açılan pencerede <b>① Puanları kopyala</b> bölümünden yazılıyı ve sınıfı seçip düğmeye basın. Panoya şu biçimde kopyalanır:</p><div class="tv"><table class="mini"><tr><td class="hl">101</td><td>20</td><td>18</td><td>17</td><td>20</td><td>13</td></tr><tr><td class="hl">102</td><td>15</td><td></td><td>10</td><td></td><td></td></tr><tr><td class="hl">103</td><td></td><td></td><td></td><td></td><td></td></tr></table></div><ul><li><b>İlk sütun okul numarası</b>, sonra soru puanları. Okul numarasına göre sıralıdır.</li><li>Ad, başlık ve toplam yoktur. Girilmeyen puan <b>boş hücre</b> olur.</li></ul>'],
  ['7 · e-Okul’a toplu aktarın','<div class="tv"><div class="fl3"><div><b style="color:var(--ink)">Bu uygulama</b><br>Puanları kopyala</div><b>›</b><div><b style="color:var(--ink)">Not Doldurucu</b><br>alttaki “e-Okul aktarma”</div><b>›</b><div><b style="color:var(--ink)">e-Okul</b><br>not sayfası</div></div></div><ol style="padding-left:18px;margin:6px 0"><li>Alttaki <b>e-Okul aktarma</b> düğmesiyle Not Doldurucu’yu açın ve yer imini <b>bir kez</b> oluşturun.</li><li>e-Okul’da not sayfasını açıp yer imine dokunun; sayfada çıkan kutuya kopyaladığınız puanları <b>yapıştırın</b>.</li></ol><p>Sınıfın puanlarını öğrenci öğrenci yazmak yerine <b>tek seferde toplu</b> kopyala-yapıştır ile aktarırsınız. İşte bu uygulamayla Not Doldurucu birlikte çok hız kazandırır.</p>'],
- ['8 · Excel, yedek ve diğerleri','<ul><li><b>Excel dosyası:</b> Excel simgesi → <b>② Excel dosyası indir</b>. Ad, numara, puanlar ve toplamla; sınıf sayfaları ayrı olur.</li><li><b>Yedekleme:</b> Üstteki dişli simgesi (Ayarlar) ile tüm verilerinizi yedekleyip geri yükleyebilirsiniz. Aynı yerden notları, yazılıları veya öğrencileri ayrı ayrı sıfırlarsınız.</li><li><b>Görünüm:</b> Güneş / ay / yarım daire simgesi açık, koyu ve otomatik temayı değiştirir. Palet simgesiyle renk teması seçersiniz.</li></ul><p><b>Hazırsınız!</b> Bu tanıtıma istediğiniz zaman <b>Ayarlar → Yardım</b> bölümünden ulaşabilirsiniz.</p>']
+ ['8 · iPhone ana ekranına ekleyin','<p>Uygulamayı telefonunuza bir uygulama gibi yerleştirebilirsiniz:</p><div class="tv"><div class="fl3"><div><b style="color:var(--ink)">1</b><br>Safari’de uygulamanın adresini açın</div><b>›</b><div><b style="color:var(--ink)">2</b><br>Paylaş simgesine dokunun<br><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></div><b>›</b><div><b style="color:var(--ink)">3</b><br>“Ana Ekrana Ekle”, sonra “Ekle”</div></div></div><ul><li>Ana ekranda yıldırımlı uygulama simgesi oluşur; adres çubuğu olmadan <b>tam ekran</b> açılır.</li><li>Her seferinde ana ekrandaki simgeden açın. <b>Safari’deki kullanımla ana ekrandaki kısayolun verileri ayrı tutulabilir</b>; birinden diğerine geçerken Ayarlar → Yedekleme ile yedek alıp geri yükleyin.</li><li>Uygulamayı ana ekrandan kaldırmak veya Safari verilerini silmek <b>kayıtlarınızı siler</b>. Düzenli yedek alın.</li></ul>'],
+ ['9 · Excel, yedek ve diğerleri','<ul><li><b>Excel dosyası:</b> Excel simgesi → <b>② Excel dosyası indir</b>. Ad, numara, puanlar ve toplamla; sınıf sayfaları ayrı olur.</li><li><b>Yedekleme:</b> Üstteki dişli simgesi (Ayarlar) ile tüm verilerinizi yedekleyip geri yükleyebilirsiniz. Aynı yerden notları, yazılıları veya öğrencileri ayrı ayrı sıfırlarsınız.</li><li><b>Görünüm:</b> Güneş / ay / yarım daire simgesi açık, koyu ve otomatik temayı değiştirir. Palet simgesiyle renk teması seçersiniz.</li></ul><p><b>Hazırsınız!</b> Bu tanıtıma istediğiniz zaman <b>Ayarlar → Yardım</b> bölümünden ulaşabilirsiniz.</p>']
  ];
  const draw=()=>{const last=i===ST.length-1;
   g.innerHTML=`<h3 style="margin:0 0 6px">${ST[i][0]}</h3><div class="tbody">${ST[i][1]}</div><div class="hp-dots">${ST.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><label class="ck2"><input type="checkbox" id="tnm" ${S.noTour?'checked':''}> Bir daha gösterme</label><div class="row" style="justify-content:space-between;margin:6px 0 0"><button class="g" data-t="s">Tanıtımı geç</button><span><button class="g" data-t="b" ${i?'':'disabled'}>‹ Geri</button> <button class="b" data-t="n">${last?'Başla':'İleri ›'}</button></span></div>`};
@@ -511,12 +521,32 @@ function tour(){const g=$('#gd');let i=0;
  g.onclick=e=>{const b=e.target.closest('button');if(!b||!b.dataset.t)return;const a=b.dataset.t;
   if(a==='s')closeG();else if(a==='b'){i--;draw()}else if(i>=ST.length-1)closeG();else{i++;draw()}};
  draw();$('#gm').classList.add('on')}
+/* Açılış onayı: çevrimdışı çalışma ve veri kaybı bilgilendirmesi */
+const TERMS_HTML=`<p>Bu uygulamayı kullanmadan önce lütfen aşağıdaki bilgileri okuyun.</p><ul>
+<li><b>Hesap ve kayıt yoktur.</b> Üyelik, giriş veya çevrimiçi kayıt yoktur. Öğrenci listeleri, yazılılar ve notlar <b>hiçbir sunucuya gönderilmez</b>, internette saklanmaz.</li>
+<li><b>Veriler yalnızca bu cihazdaki tarayıcının hafızasında tutulur.</b> Not girişi, kopyalama ve yedekleme bu cihazda yapılır.</li>
+<li>İnternet yalnızca şunlar için gerekir: Excel/CSV okuma-yazma bileşeni ve “e-Okul aktarma” sayfası. Bunlar kayıtlı verilerinizi göndermez.</li>
+<li><b>Veri kaybı riski:</b> tarayıcı verilerini, önbelleği veya geçmişi silmek, uygulamayı ana ekrandan kaldırmak, tarayıcıyı veya telefonu sıfırlamak ya da değiştirmek, depolama alanının dolması gibi durumlarda kayıtlarınız <b>silinebilir ve geri getirilemez</b>.</li>
+<li>Veriler, siz veya cihazınız/tarayıcınız silmediği sürece bu cihazda saklanmak üzere tasarlanmıştır; ancak <b>veri kaybı olmayacağına dair garanti verilmez</b>. Böyle bir kayıptan <b>sebasmobil / uygulama geliştiricisi sorumlu tutulamaz</b>. Uygulama AGPL v3.0 lisansıyla, olduğu gibi ve herhangi bir garanti olmaksızın sunulur.</li>
+<li><b>Düzenli yedek alın</b> (Ayarlar → Yedekleme) ve yedeği cihaz dışında bir yerde de saklayın.</li>
+<li>Notları e-Okul’a aktarmadan önce kontrol etmek sizin sorumluluğunuzdadır.</li></ul>`;
+function lockApp(v){document.querySelectorAll('header,main,nav,#vb,#fab').forEach(e=>{e.inert=v})}
+function terms(){const m=$('#tc'),w=$('#tcw');m.hidden=false;lockApp(true);
+ const show=st=>{
+  if(st==='t')w.innerHTML=`<h3 style="margin:0">Kullanım bilgilendirmesi ve onay</h3><div class="tct">${TERMS_HTML}</div><div class="row" style="justify-content:space-between;margin:8px 0 0"><button class="g d" data-c="no">Reddediyorum</button><button class="b" data-c="yes">Okudum, onaylıyorum</button></div>`;
+  else if(st==='c')w.innerHTML=`<h3 style="margin:0">Emin misiniz?</h3><div class="tct"><p>Bilgilendirmeyi <b>okuduğunuzu</b> ve tarayıcı verileri silindiğinde ya da uygulama ana ekrandan kaldırıldığında <b>verilerinizin kaybolabileceğini</b> kabul ettiğinizi onaylıyorsunuz.</p><p class="hint">Onayladıktan sonra bu uyarı bir daha gösterilmez.</p></div><div class="row" style="justify-content:space-between;margin:8px 0 0"><button class="g" data-c="back">Geri dön</button><button class="b" data-c="ok">Evet, eminim</button></div>`;
+  else w.innerHTML=`<h3 style="margin:0">Uygulama kullanılamaz</h3><div class="tct"><p>Bilgilendirmeyi reddettiğiniz için uygulama <b>kullanılamaz</b>. Kullanmak istiyorsanız bilgilendirmeyi okuyup onaylamanız gerekir.</p><p class="hint">Uygulama her açıldığında onay istemeye devam eder.</p></div><div class="row" style="justify-content:flex-end;margin:8px 0 0"><button class="b" data-c="again">Bilgilendirmeye dön</button></div>`};
+ w.onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=b.dataset.c;
+  if(c==='yes')show('c');else if(c==='no')show('d');else if(c==='back'||c==='again')show('t');
+  else if(c==='ok'){S.terms={ok:true,at:new Date().toISOString()};save();m.hidden=true;lockApp(false);if(!S.noTour)setTimeout(tour,300)}};
+ show('t')}
+function termsRead(){const g=$('#gd');g.innerHTML=`<h3 style="margin:0 0 6px">Kullanım bilgilendirmesi</h3><div class="tbody">${TERMS_HTML}</div><div class="row" style="justify-content:flex-end;margin:10px 0 0"><button class="g" id="trx">Kapat</button></div>`;g.onclick=e=>{if(e.target.id==='trx')closeG()};$('#gm').classList.add('on')}
 function impHelp(){const g=$('#gd');let i=0;
  const ST=[
   ['1 · Hangi dosya olur?','<p>Excel (<b>.xlsx</b>, <b>.xls</b>) veya <b>.csv</b> dosyası seçebilirsiniz.</p><p>Öğrenci listesi dosyadaki <b>ilk sayfada</b> olmalıdır. Okulunuzun sınıf listesini Excel olarak kaydedip doğrudan kullanabilirsiniz.</p>'],
-  ['2 · Sütunlar nasıl olmalı?','T1<ul><li><b>Ad Soyad</b> zorunlu. Ad ve soyad ayrı sütunlarda da olabilir.</li><li><b>Okul no, sınıf, şube</b> isteğe bağlı.</li><li>Sütunların sırası önemli değil, bir sonraki adımda siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa <b>6/A</b> olarak birleştirilir. Tek sütunda “6/A” yazıyorsa aynen alınır.</li></ul>'],
+  ['2 · Sütunlar nasıl olmalı?','T1<ul><li><b>Ad Soyad</b> ve <b>Okul No</b> zorunludur. Ad ve soyad ayrı sütunlarda da olabilir.</li><li>Uygulama <b>okul numarasına göre</b> çalışır: puanlar e-Okul’a okul numarasıyla kopyalanır, sıralama da numaraya göre yapılır. <b>Numarası olmayan satırlar aktarılmaz.</b></li><li><b>Sınıf</b> ve <b>şube</b> önerilir (yazılıyı sınıfa göre seçersiniz).</li><li>Sütunların sırası önemli değil, bir sonraki adımda siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa <b>6/A</b> olarak birleştirilir. Tek sütunda “6/A” yazıyorsa aynen alınır.</li></ul>'],
   ['3 · Başlık satırı olmalı mı?','<p><b>Başlıklı (önerilir):</b> en üst satırda sütun adları var.</p>T2<p><b>Başlıksız:</b> ilk satır doğrudan öğrenci.</p>T3<p>Başlık şart değildir, ama olursa sütunlar otomatik tanınır. Başlık yoksa eşleştirme ekranında <b>“İlk satır başlık”</b> kutusunun işaretini kaldırın.</p>'],
-  ['4 · Sonra ne olacak?','<ul><li>Dosyayı seçince <b>sütun eşleştirme</b> ekranı açılır. Örnek öğrencileri ve kaç öğrenci bulunduğunu görürsünüz.</li><li><b>“İçe aktar”</b> diyene kadar hiçbir şey değişmez.</li><li>Aynı numaralı ve sınıflı öğrenci ikinci kez eklenmez.</li><li>Bu bilgiye istediğiniz zaman <b>ⓘ Nasıl hazırlanır?</b> düğmesinden ulaşırsınız.</li></ul>']
+  ['4 · Sonra ne olacak?','<ul><li>Dosyayı seçince <b>sütun eşleştirme</b> ekranı açılır. Örnek öğrencileri ve kaç öğrenci bulunduğunu görürsünüz.</li><li>Okul numarası sütunu seçilmeden aktarma yapılmaz.</li><li><b>“İçe aktar”</b> diyene kadar hiçbir şey değişmez.</li><li>Aynı numaralı ve sınıflı öğrenci ikinci kez eklenmez.</li><li>Bu bilgiye istediğiniz zaman <b>ⓘ Nasıl hazırlanır?</b> düğmesinden ulaşırsınız.</li></ul>']
  ].map(s=>[s[0],s[1].replace('T1',`__T1__`).replace('T2',`__T2__`).replace('T3',`__T3__`)]);
  const TB={__T1__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th><th>Şube</th></tr><tr><td>101</td><td>Ali Veli</td><td>6</td><td>A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6</td><td>A</td></tr></table>',__T2__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th></tr><tr><td>101</td><td>Ali Veli</td><td>6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>',__T3__:'<table class="mini"><tr><td class="hl">101</td><td class="hl">Ali Veli</td><td class="hl">6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>'};
  const draw=()=>{const t=ST[i][0],last=i===ST.length-1;let b=ST[i][1];for(const k in TB)b=b.replace(k,TB[k]);
@@ -606,7 +636,7 @@ function doRestore(txt){let o,n;try{o=JSON.parse(txt)}catch(e){return toast('Yed
  if(!Array.isArray(n.st)||!Array.isArray(n.ex))return toast('Yedek bozuk');
  const dt=o.date?new Date(o.date).toLocaleString('tr'):'';
  ask(`Yedek ${dt}\n${n.st.length} öğrenci, ${n.ex.length} yazılı.\n\nŞu anki tüm veriler bu yedekle DEĞİŞTİRİLECEK. Devam edilsin mi?`,()=>{
- n.ex.forEach(e=>{e.sc=e.sc||{};e.cls=e.cls||[]});
+ n.ex.forEach(e=>{e.sc=e.sc||{};e.cls=e.cls||[]});n.terms=S.terms||n.terms;
  KEYS().forEach(k=>localStorage.removeItem(k));
  Object.keys(o.data).forEach(k=>{if(k.indexOf('hng')===0&&k!=='hng')try{localStorage.setItem(k,o.data[k])}catch(e){}});
  S=n;sel.clear();cur=null;applyTheme();go('ex');closeG();toast('Yedek geri yüklendi')},{ok:'Geri yükle'})}
@@ -622,7 +652,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
  <details><summary class="hint">Metin olarak yapıştır</summary><textarea id="bt" rows="4" style="width:100%;margin:8px 0" placeholder="Yedek metnini buraya yapıştırın"></textarea><button class="g" data-a="rs">Geri yükle</button></details>
  <p class="hint">Geri yükleme şu anki tüm verilerin yerini alır.</p>`;
  else if(tab==='h')body=`<p class="hint">Uygulamanın ne işe yaradığını ve nasıl kullanıldığını istediğiniz zaman tekrar izleyebilirsiniz.</p>
- <div class="rl"><button class="b" data-a="tour">Uygulama tanıtımını göster</button><button class="g" data-a="imph">Öğrenci aktarma rehberini göster</button></div>
+ <div class="rl"><button class="b" data-a="tour">Uygulama tanıtımını göster</button><button class="g" data-a="imph">Öğrenci aktarma rehberini göster</button><button class="g" data-a="terms">Kullanım bilgilendirmesini oku</button></div>
  <hr><label class="ck2"><input type="checkbox" id="stour" ${S.noTour?'':'checked'}> Uygulama açılırken tanıtımı göster</label>
  <label class="ck2"><input type="checkbox" id="simp" ${S.noImpHelp?'':'checked'}> Öğrenci aktarırken rehberi göster</label>`;
  else body=`<p class="hint">Silinenler geri getirilemez. Önce <b>Yedekleme</b> sekmesinden yedek almanız önerilir.</p>
@@ -643,6 +673,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
   if(d.a==='x')return closeG();
   if(d.a==='tour'){closeG();return tour()}
   if(d.a==='imph'){closeG();return impHelp()}
+  if(d.a==='terms'){closeG();return termsRead()}
   if(d.a==='dl'){dl('hizli-not-girisi-yedek-'+$('#ver').textContent+'-'+new Date().toISOString().slice(0,10)+'.json',mkBackup());return toast('Yedek indirildi')}
   if(d.a==='cp'){const t=mkBackup();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Yedek panoya kopyalandı'),()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Yedek panoya kopyalandı')}catch(x){toast('Kopyalanamadı')}ta.remove()});return}
   if(d.a==='pick'){const f=document.createElement('input');f.type='file';f.accept='.json,application/json,text/plain';f.onchange=async()=>{if(f.files[0])doRestore(await f.files[0].text())};f.click();return}
@@ -687,7 +718,7 @@ function openEokul(){const f=$('#eof');if(!f.getAttribute('src'))f.src='https://
 document.querySelector('nav a').addEventListener('click',e=>{e.preventDefault();openEokul()});
 $('#eoback').onclick=()=>{$('#eo').hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#eo').hidden)$('#eo').hidden=true});
-if(!S.noTour)setTimeout(tour,450);
+if(!S.terms||!S.terms.ok)terms();else if(!S.noTour)setTimeout(tour,450);
 go('ex');
 </script>
 </body>
