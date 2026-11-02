@@ -89,7 +89,7 @@ td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
 .okb{width:100%;margin-top:8px;height:48px;border:0;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer}
 .okb.nx{background:#f7b6d6;color:#6b1b44}.okb.sv{background:#fbe3a0;color:#5b4500}
 .okb:active,.okb.pr{filter:brightness(.9)}
-#fab{position:fixed;right:14px;bottom:232px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#fab{position:fixed;right:14px;bottom:162px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
 #toast.warn,#toast.ok{background:#e5384a;color:#fff;font-size:19px;font-weight:700;padding:14px 22px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;width:max-content;max-width:90vw;z-index:60}
 #toast.ok{background:#16a34a}
@@ -200,8 +200,6 @@ nav button:not(.on),nav a{color:var(--ink);opacity:.8}
 body.lk{position:fixed;left:0;right:0;width:100%}
 .dlg,.tbody,.tct,#pl{overscroll-behavior:contain}
 .tbody,.tct{touch-action:pan-y}
-#wa{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
-#wa svg{width:56px;height:56px;display:block}
 #back{width:40px;height:40px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none}
 #back:active{filter:brightness(.9)}
 #etit{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -212,7 +210,7 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .r2{flex-wrap:nowrap}.r2>select{flex:1;min-width:0}.r2>.sbx{min-width:0;flex:1.6}
 .r2>#ecf{flex:1}
 .sr{padding:8px 12px}
-#ml{position:fixed;right:14px;bottom:162px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#ml{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 #ml svg{width:56px;height:56px;display:block}
 .r3{flex-wrap:nowrap}.r3>#impbtn{flex:1;min-width:0;padding:8px 6px}.r3>#addbtn{flex:none}
 #imphelp{width:40px;height:38px;padding:0;font-size:18px;flex:none}
@@ -222,10 +220,13 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .srow .sm b{font-size:15px;line-height:1.2}.srow .sm span{font-size:12px}
 .srow .ck{width:22px;height:22px}
 .srow button{padding:3px 9px;height:34px;font-size:15px}
+#sh{position:fixed;z-index:110;height:58px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--card) 78%)}
+#sh[hidden]{display:none}
+#shb{pointer-events:auto;margin-bottom:6px;border:0;border-radius:16px;padding:5px 14px;background:var(--ac);color:var(--onac);font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.24</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.25</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -299,8 +300,8 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </div></div>
 
 <div id="fab" hidden title="Excel'e aktar"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></div>
-<div id="wa" role="button" tabindex="0" title="WhatsApp: @serkansarix" aria-label="WhatsApp ile yazın"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#25d366"/><path d="M24 11.5a12.5 12.5 0 0 0-10.7 19L12 36.5l6.2-1.6A12.5 12.5 0 1 0 24 11.5z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M19.6 18.2c.5-.5 1.1-.4 1.4.2l1 2.2c.2.4.1.8-.2 1.1l-.7.8c.9 1.8 2.3 3.2 4.2 4.1l.8-.8c.3-.3.8-.4 1.1-.2l2.2 1c.6.3.7.9.2 1.5-1 1.2-2.4 1.6-3.8 1.1-4.6-1.6-7.1-4.6-8-8-.3-1.4.2-2.5 1.2-3z" fill="#fff"/></svg></div>
 <div id="ml" role="button" tabindex="0" title="E-posta: sebasmobil@proton.me" aria-label="E-posta ile yazın"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#3b82f6"/><rect x="12" y="15.5" width="24" height="17" rx="3" fill="none" stroke="#fff" stroke-width="2.6"/><path d="M13 18l11 8.5L35 18" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div id="sh" hidden><button id="shb" type="button">↓ Aşağı kaydırın</button></div>
 <div id="toast"></div>
 
 <script>
@@ -343,7 +344,7 @@ function go(v){view=v;document.querySelectorAll('nav button').forEach(b=>b.class
  $('#v-ex').classList.toggle('on',v==='ex');$('#v-st').classList.toggle('on',v==='st');
  $('#exl').hidden=!!cur;$('#exe').hidden=!cur;
  if(v==='ex'){cur?rE():rC()}else{fillCls();rS()}
- {const sh=!(v==='ex'&&!cur);$('#fab').hidden=sh;$('#wa').hidden=sh;$('#ml').hidden=sh}}
+ {const sh=!(v==='ex'&&!cur);$('#fab').hidden=sh;$('#ml').hidden=sh}}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.dataset.v)});
 $('#back').onclick=()=>{cur=null;go('ex')};
 
@@ -546,7 +547,7 @@ function tour(){const g=$('#gd');let i=0;
  ['6 · Puanları e-Okul için kopyalayın','<div class="tv"><div class="xrow"><svg viewBox="0 0 48 48"><rect x="3" y="3" width="42" height="42" rx="9" fill="#1d6f42"/><rect x="21" y="9" width="18" height="30" rx="2" fill="#33c481"/><path d="M9 14h20v20H9z" fill="#14532d"/><path d="M14 19l10 10M24 19L14 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><div><b>Excel simgesine</b> dokunun<br><span class="hint">Yazılılar sayfasında, istediğiniz yere sürükleyebilirsiniz</span></div></div></div><p>Açılan pencerede <b>① Puanları kopyala</b> bölümünden yazılıyı ve sınıfı seçip düğmeye basın. Panoya şu biçimde kopyalanır:</p><div class="tv"><table class="mini"><tr><td class="hl">101</td><td>20</td><td>18</td><td>17</td><td>20</td><td>13</td></tr><tr><td class="hl">102</td><td>15</td><td></td><td>10</td><td></td><td></td></tr><tr><td class="hl">103</td><td></td><td></td><td></td><td></td><td></td></tr></table></div><ul><li><b>İlk sütun okul numarası</b>, sonra soru puanları. Okul numarasına göre sıralıdır.</li><li>Ad, başlık ve toplam yoktur. Girilmeyen puan <b>boş hücre</b> olur.</li></ul>'],
  ['7 · e-Okul’a toplu aktarın','<div class="tv"><div class="fl3"><div><b style="color:var(--ink)">Bu uygulama</b><br>Puanları kopyala</div><b>›</b><div><b style="color:var(--ink)">Not Doldurucu</b><br>alttaki “e-Okul aktarma”</div><b>›</b><div><b style="color:var(--ink)">e-Okul</b><br>not sayfası</div></div></div><ol style="padding-left:18px;margin:6px 0"><li>Alttaki <b>e-Okul aktarma</b> düğmesiyle Not Doldurucu’yu açın ve yer imini <b>bir kez</b> oluşturun.</li><li>e-Okul’da not sayfasını açıp yer imine dokunun; sayfada çıkan kutuya kopyaladığınız puanları <b>yapıştırın</b>.</li></ol><p>Sınıfın puanlarını öğrenci öğrenci yazmak yerine <b>tek seferde toplu</b> kopyala-yapıştır ile aktarırsınız. İşte bu uygulamayla Not Doldurucu birlikte çok hız kazandırır.</p>'],
  ['8 · iPhone ana ekranına ekleyin','<p>Uygulamayı telefonunuza bir uygulama gibi yerleştirebilirsiniz:</p><div class="tv"><div class="fl3"><div><b style="color:var(--ink)">1</b><br>Safari’de uygulamanın adresini açın</div><b>›</b><div><b style="color:var(--ink)">2</b><br>Paylaş simgesine dokunun<br><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></div><b>›</b><div><b style="color:var(--ink)">3</b><br>“Ana Ekrana Ekle”, sonra “Ekle”</div></div></div><ul><li>Ana ekranda yıldırımlı uygulama simgesi oluşur; adres çubuğu olmadan <b>tam ekran</b> açılır.</li><li>Her seferinde ana ekrandaki simgeden açın. <b>Safari’deki kullanımla ana ekrandaki kısayolun verileri ayrı tutulabilir</b>; birinden diğerine geçerken Ayarlar → Yedekleme ile yedek alıp geri yükleyin.</li><li>Uygulamayı ana ekrandan kaldırmak veya Safari verilerini silmek <b>kayıtlarınızı siler</b>. Düzenli yedek alın.</li></ul>'],
- ['9 · Excel, yedek ve diğerleri','<ul><li><b>Excel dosyası:</b> Excel simgesi → <b>② Excel dosyası indir</b>. Ad, numara, puanlar ve toplamla; sınıf sayfaları ayrı olur.</li><li><b>Yedekleme:</b> Üstteki dişli simgesi (Ayarlar) ile tüm verilerinizi yedekleyip geri yükleyebilirsiniz. Aynı yerden notları, yazılıları veya öğrencileri ayrı ayrı sıfırlarsınız.</li><li><b>WhatsApp ve e-posta simgeleri</b> (Yazılılar sayfasında): geliştiriciye WhatsApp’tan (@serkansarix) veya e-postayla (sebasmobil@proton.me) yazabilirsiniz. Dokununca önce onay sorulur. Simgeleri sürükleyebilirsiniz.</li><li><b>Görünüm:</b> Güneş / ay / yarım daire simgesi açık, koyu ve otomatik temayı değiştirir. Palet simgesiyle renk teması seçersiniz.</li></ul><p><b>Hazırsınız!</b> Bu tanıtıma istediğiniz zaman <b>Ayarlar → Yardım</b> bölümünden ulaşabilirsiniz.</p>']
+ ['9 · Excel, yedek ve diğerleri','<ul><li><b>Excel dosyası:</b> Excel simgesi → <b>② Excel dosyası indir</b>. Ad, numara, puanlar ve toplamla; sınıf sayfaları ayrı olur.</li><li><b>Yedekleme:</b> Üstteki dişli simgesi (Ayarlar) ile tüm verilerinizi yedekleyip geri yükleyebilirsiniz. Aynı yerden notları, yazılıları veya öğrencileri ayrı ayrı sıfırlarsınız.</li><li><b>E-posta simgesi</b> (Yazılılar sayfasında): geliştiriciye e-postayla (sebasmobil@proton.me) yazabilirsiniz. Dokununca önce onay sorulur. Simgeyi sürükleyebilirsiniz.</li><li><b>Görünüm:</b> Güneş / ay / yarım daire simgesi açık, koyu ve otomatik temayı değiştirir. Palet simgesiyle renk teması seçersiniz.</li></ul><p><b>Hazırsınız!</b> Bu tanıtıma istediğiniz zaman <b>Ayarlar → Yardım</b> bölümünden ulaşabilirsiniz.</p>']
  ];
  const draw=()=>{const last=i===ST.length-1;
   g.innerHTML=`<h3 style="margin:0 0 6px">${ST[i][0]}</h3><div class="tbody">${ST[i][1]}</div><div class="hp-dots">${ST.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><label class="ck2"><input type="checkbox" id="tnm" ${S.noTour?'checked':''}> Bir daha gösterme</label><div class="row" style="justify-content:space-between;margin:6px 0 0"><button class="g" data-t="s">Tanıtımı geç</button><span><button class="g" data-t="b" ${i?'':'disabled'}>‹ Geri</button> <button class="b" data-t="n">${last?'Başla':'İleri ›'}</button></span></div>`};
@@ -558,7 +559,7 @@ function tour(){const g=$('#gd');let i=0;
 const TERMS_HTML=`<p>Bu uygulamayı kullanmadan önce lütfen aşağıdaki bilgileri okuyun.</p><ul>
 <li><b>Hesap ve kayıt yoktur.</b> Üyelik, giriş veya çevrimiçi kayıt yoktur. Öğrenci listeleri, yazılılar ve notlar <b>hiçbir sunucuya gönderilmez</b>, internette saklanmaz.</li>
 <li><b>Veriler yalnızca bu cihazdaki tarayıcının hafızasında tutulur.</b> Not girişi, kopyalama ve yedekleme bu cihazda yapılır.</li>
-<li>İnternet yalnızca şunlar için gerekir: Excel/CSV okuma-yazma bileşeni, “e-Okul aktarma” sayfası ve WhatsApp veya e-posta simgeleriyle açılan iletişim. Bunlar kayıtlı verilerinizi göndermez.</li>
+<li>İnternet yalnızca şunlar için gerekir: Excel/CSV okuma-yazma bileşeni, “e-Okul aktarma” sayfası ve e-posta simgesiyle açılan e-posta uygulaması. Bunlar kayıtlı verilerinizi göndermez.</li>
 <li><b>Veri kaybı riski:</b> tarayıcı verilerini, önbelleği veya geçmişi silmek, uygulamayı ana ekrandan kaldırmak, tarayıcıyı veya telefonu sıfırlamak ya da değiştirmek, depolama alanının dolması gibi durumlarda kayıtlarınız <b>silinebilir ve geri getirilemez</b>.</li>
 <li>Veriler, siz veya cihazınız/tarayıcınız silmediği sürece bu cihazda saklanmak üzere tasarlanmıştır; ancak <b>veri kaybı olmayacağına dair garanti verilmez</b>. Böyle bir kayıptan <b>sebasmobil / uygulama geliştiricisi sorumlu tutulamaz</b>. Uygulama AGPL v3.0 lisansıyla, olduğu gibi ve herhangi bir garanti olmaksızın sunulur.</li>
 <li><b>Düzenli yedek alın</b> (Ayarlar → Yedekleme) ve yedeği cihaz dışında bir yerde de saklayın.</li>
@@ -588,7 +589,7 @@ function impHelp(){const g=$('#gd');let i=0;
  ].map(s=>[s[0],s[1].replace('T1',`__T1__`).replace('T2',`__T2__`).replace('T3',`__T3__`)]);
  const TB={__T1__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th><th>Şube</th></tr><tr><td>101</td><td>Ali Veli</td><td>6</td><td>A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6</td><td>A</td></tr></table>',__T2__:'<table class="mini"><tr><th>Okul No</th><th>Adı Soyadı</th><th>Sınıf</th></tr><tr><td>101</td><td>Ali Veli</td><td>6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>',__T3__:'<table class="mini"><tr><td class="hl">101</td><td class="hl">Ali Veli</td><td class="hl">6/A</td></tr><tr><td>102</td><td>Ayşe Kaya</td><td>6/A</td></tr></table>'};
  const draw=()=>{const t=ST[i][0],last=i===ST.length-1;let b=ST[i][1];for(const k in TB)b=b.replace(k,TB[k]);
-  g.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;margin:0 0 6px"><h3 style="margin:0">${t}</h3><button class="g" data-h="x" aria-label="Kapat">✕</button></div><div>${b}</div><div class="hp-dots">${ST.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><label class="ck2"><input type="checkbox" id="hpn" ${S.noImpHelp?'checked':''}> Bir daha gösterme</label><div class="row" style="justify-content:space-between;margin:6px 0 0"><button class="g" data-h="s">Tanıtımı geç ›</button><span><button class="g" data-h="b" ${i?'':'disabled'}>‹ Geri</button> <button class="b" data-h="n">${last?'Tamam, anladım':'İleri ›'}</button></span></div>`};
+  g.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;margin:0 0 6px"><h3 style="margin:0">${t}</h3><button class="g" data-h="x" aria-label="Kapat">✕</button></div><div class="tbody">${b}</div><div class="hp-dots">${ST.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><label class="ck2"><input type="checkbox" id="hpn" ${S.noImpHelp?'checked':''}> Bir daha gösterme</label><div class="row" style="justify-content:space-between;margin:6px 0 0"><button class="g" data-h="s">Tanıtımı geç ›</button><span><button class="g" data-h="b" ${i?'':'disabled'}>‹ Geri</button> <button class="b" data-h="n">${last?'Tamam, anladım':'İleri ›'}</button></span></div>`};
  g.onchange=e=>{if(e.target.id==='hpn'){S.noImpHelp=e.target.checked;save()}};
  g.onclick=e=>{const b=e.target.closest('button');if(!b||!b.dataset.h)return;const a=b.dataset.h;
   if(a==='x')closeG();else if(a==='b'){i--;draw()}
@@ -680,7 +681,7 @@ function doRestore(txt){let o,n;try{o=JSON.parse(txt)}catch(e){return toast('Yed
  S=n;sel.clear();cur=null;applyTheme();go('ex');closeG();toast('Yedek geri yüklendi')},{ok:'Geri yükle'})}
 const cleanSc=()=>{const ids=new Set(S.st.map(s=>s.id));S.ex.forEach(e=>Object.keys(e.sc).forEach(k=>{if(!ids.has(k))delete e.sc[k]}))};
 function afterReset(msg){save();sel.clear();if(cur&&!exById(cur))cur=null;go(view);toast(msg);setDlg('r')}
-function resetFabs(){[['#fab',232],['#wa',92],['#ml',162]].forEach(([s,b])=>{const e=$(s);e.style.left=e.style.top='';e.style.right='14px';e.style.bottom=b+'px'});S.fab=S.wa=S.ml=null}
+function resetFabs(){[['#fab',162],['#ml',92]].forEach(([s,b])=>{const e=$(s);e.style.left=e.style.top='';e.style.right='14px';e.style.bottom=b+'px'});S.fab=S.ml=null}
 function setDlg(tab){tab=tab||'b';const g=$('#gd');
  const tabs=`<div class="chips"><button class="cc${tab==='b'?' on':''}" data-t="b">Yedekleme</button><button class="cc${tab==='r'?' on':''}" data-t="r">Sıfırlama</button><button class="cc${tab==='h'?' on':''}" data-t="h">Yardım</button></div>`;
  let body;
@@ -702,7 +703,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
  <div class="row" style="margin:0"><select id="rx" style="flex:1">${S.ex.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')||'<option value="">Yazılı yok</option>'}</select><button class="g d" data-r="exscores">Notlarını sıfırla</button><button class="g d" data-r="exdel">Yazılıyı sil</button></div>
  <div class="row" style="margin:0"><select id="rc" style="flex:1">${classes().map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'}</select><button class="g d" data-r="cls">Sınıfı sil</button></div>
  <button class="g d" data-r="theme">Tema ve renkleri sıfırla</button>
- <button class="g d" data-r="fab">Simgelerin yerini sıfırla<small>Excel, WhatsApp ve e-posta simgeleri</small></button>
+ <button class="g d" data-r="fab">Simgelerin yerini sıfırla<small>Excel ve e-posta simgeleri</small></button>
  <button class="b" style="background:var(--er);color:#fff" data-r="all">Tüm uygulamayı sıfırla</button></div>`;
  g.innerHTML=`<h3>Ayarlar</h3>${tabs}${body}<div class="row" style="justify-content:flex-end;margin:10px 0 0"><button class="g" data-a="x">Kapat</button></div>`;
  $('#gm').classList.add('on');
@@ -749,11 +750,20 @@ function fabDrag(f,key,tap){const place=(x,y)=>{x=Math.max(0,Math.min(innerWidth
  f.onpointermove=e=>{if(!st)return;if(Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6)st.m=true;if(st.m)place(e.clientX-st.dx,e.clientY-st.dy)};
  f.onpointerup=()=>{if(!st)return;const m=st.m;st=null;if(m){const r=f.getBoundingClientRect();S[key]=[r.left,r.top];save()}else tap()};
  f.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tap()}}}
-const WA_URL='https://wa.me/serkansarix';
 const MAIL_URL='mailto:sebasmobil@proton.me?subject='+encodeURIComponent('Hızlı Not Girişi');
 const openLink=(u,blank)=>{const a=document.createElement('a');a.href=u;if(blank){a.target='_blank';a.rel='noopener'}document.body.appendChild(a);a.click();a.remove()};
-fabDrag($('#wa'),'wa',()=>ask('Geliştiriciye WhatsApp’tan (@serkansarix) mesaj göndermek ister misiniz?\n\nWhatsApp açılacak ve sohbet penceresi gelecektir.',()=>openLink(WA_URL,true),{title:'WhatsApp ile iletişim',ok:'Evet, mesaj ilet',good:true}));
 fabDrag($('#ml'),'ml',()=>ask('Geliştiriciye e-posta göndermek ister misiniz?\n\nCihazınızın e-posta uygulaması açılacak.\nAlıcı: sebasmobil@proton.me\nKonu: Hızlı Not Girişi',()=>openLink(MAIL_URL),{title:'E-posta ile iletişim',ok:'Evet, mesaj ilet',good:true}));
+/* Uzun metinli pencerelerde "aşağıda devamı var" göstergesi */
+function shTarget(){let root=null;if(!$('#tc').hidden)root=$('#tcw');else if($('#gm').classList.contains('on'))root=$('#gd');if(!root)return null;
+ const c=root.querySelector('.tbody,.tct');return c||root}
+function shUpdate(){const sh=$('#sh'),el=shTarget();
+ if(!el||el.scrollHeight-el.clientHeight-el.scrollTop<=8||el.clientHeight<40){sh.hidden=true;return}
+ const r=el.getBoundingClientRect();sh.style.left=r.left+'px';sh.style.width=r.width+'px';sh.style.top=(r.bottom-58)+'px';sh.hidden=false}
+const shSoon=()=>requestAnimationFrame(()=>requestAnimationFrame(shUpdate));
+document.addEventListener('scroll',shUpdate,true);addEventListener('resize',shSoon);
+['#gd','#tcw'].forEach(s=>new MutationObserver(shSoon).observe($(s),{childList:true,subtree:true}));
+['#gm','#tc'].forEach(s=>new MutationObserver(shSoon).observe($(s),{attributes:true,attributeFilter:['class','hidden']}));
+$('#shb').onclick=()=>{const el=shTarget();if(el)el.scrollBy({top:Math.max(80,el.clientHeight*0.7),behavior:'smooth'})};
 function syncClr(){document.querySelectorAll('.clr').forEach(b=>{const i=$('#'+b.dataset.for);b.hidden=!(i&&i.value)})}
 document.addEventListener('input',e=>{if(e.target.type==='search')syncClr()});
 document.addEventListener('click',e=>{const b=e.target.closest('.clr');if(!b)return;const i=$('#'+b.dataset.for);i.value='';syncClr();i.dispatchEvent(new Event('input',{bubbles:true}));i.focus()});
