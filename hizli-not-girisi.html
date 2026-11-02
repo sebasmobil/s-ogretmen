@@ -223,10 +223,20 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 #sh{position:fixed;z-index:110;height:58px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--card) 78%)}
 #sh[hidden]{display:none}
 #shb{pointer-events:auto;margin-bottom:6px;border:0;border-radius:16px;padding:5px 14px;background:var(--ac);color:var(--onac);font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer}
+.rq{font-style:normal;font-size:11px;color:var(--er);font-weight:600;margin-left:6px}
+.xs.bad{outline:2px solid var(--er);outline-offset:4px;border-radius:10px}
+.dm{margin:8px 0;border:1px solid var(--ln);border-radius:10px;padding:8px;background:var(--bg)}
+.dmr{display:flex;gap:6px;margin:5px 0}.dmr input{flex:1;min-width:0}.dmr button{flex:none;padding:4px 10px}
+.fold{margin-bottom:10px}
+.fh{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:11px 12px;font-size:16px;cursor:pointer}
+.fh svg{width:18px;height:18px;flex:none;transition:transform .15s}.fh[aria-expanded=true] svg{transform:rotate(90deg)}
+.cnt{margin-left:auto;background:var(--acs);color:var(--ink);border-radius:12px;padding:1px 10px;font-size:13px;font-weight:700}
+.fb{padding:8px 0 0}.fb[hidden]{display:none}
+.tag{display:inline-block;background:var(--acs);color:var(--ink);border-radius:10px;padding:1px 8px;font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.25</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.26</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -322,6 +332,9 @@ const T=a=>a.every(v=>v==null)?'':sum(a);
 const cmpC=(a,b)=>String(a).localeCompare(b,'tr',{numeric:true});
 const lab=c=>c||'Sınıfsız';
 const classes=()=>[...new Set(S.st.map(s=>s.cls))].sort(cmpC);
+const DERS0=['Türkçe','Türk Dili ve Edebiyatı','Matematik','Fen Bilimleri','Fizik','Kimya','Biyoloji','Sosyal Bilgiler','Tarih','Coğrafya','Felsefe','T.C. İnkılap Tarihi ve Atatürkçülük','Din Kültürü ve Ahlak Bilgisi','İngilizce','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Teknoloji ve Tasarım','Bilişim Teknolojileri ve Yazılım','Sağlık Bilgisi ve Trafik Kültürü'];
+const dersList=()=>S.dersler||DERS0.slice();
+const exFull=e=>(e.ders?e.ders+' · ':'')+e.title;
 const exById=id=>S.ex.find(e=>e.id===id),stById=id=>S.st.find(s=>s.id===id);
 const exSt=ex=>S.st.filter(s=>ex.cls.includes(s.cls));
 const gs=(ex,id,mk)=>{let a=ex.sc[id];if(!a){if(!mk)return ex.max.map(()=>null);a=ex.sc[id]=ex.max.map(()=>null)}while(a.length<ex.max.length)a.push(null);a.length=ex.max.length;return a};
@@ -349,51 +362,81 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.
 $('#back').onclick=()=>{cur=null;go('ex')};
 
 /* Yazılı listesi */
-function rC(){$('#cards').innerHTML=S.ex.length?S.ex.map(ex=>{const L=exSt(ex),d=L.filter(s=>done(ex,s)).length,p=L.length?Math.round(d*100/L.length):0;
- return `<div class="card ec" data-id="${ex.id}"><div class="row" style="margin:0"><b class="et">${esc(ex.title)}</b><button class="g ed" title="Düzenle">✎</button><button class="g d xd" title="Sil">🗑</button></div>
- <div class="hint">${ex.cls.length?ex.cls.map(c=>esc(lab(c))).join(', '):'Sınıf seçilmedi'} · ${ex.max.length} soru · ${sum(ex.max)} puan</div>
+function rC(){const G=[[1,'1. Dönem'],[2,'2. Dönem'],[0,'Dönem belirtilmemiş']];
+ const by=k=>S.ex.filter(e=>(e.donem||0)===k).sort((a,b)=>(a.ders||'').localeCompare(b.ders||'','tr')||a.title.localeCompare(b.title,'tr'));
+ const card=ex=>{const L=exSt(ex),d=L.filter(s=>done(ex,s)).length,p=L.length?Math.round(d*100/L.length):0;
+  return `<div class="card ec" data-id="${ex.id}"><div class="row" style="margin:0"><b class="et">${esc(ex.title)}</b><button class="g ed" title="Düzenle">✎</button><button class="g d xd" title="Sil">🗑</button></div>
+ <div class="hint"><span class="tag">${esc(ex.ders||'Ders seçilmemiş')}</span> ${ex.cls.length?ex.cls.map(c=>esc(lab(c))).join(', '):'Sınıf seçilmedi'} · ${ex.max.length} soru · ${sum(ex.max)} puan</div>
  <div class="bar"><i style="width:${p}%"></i></div>
- <div class="row" style="margin:6px 0 0"><span class="hint" style="flex:1">${d}/${L.length} öğrenci tamamlandı</span><button class="b go">Not gir</button></div></div>`}).join(''):'<div class="card hint">Henüz yazılı yok. “+ Yeni yazılı” ile başlayın.</div>'}
-$('#cards').onclick=e=>{const c=e.target.closest('.ec');if(!c)return;const ex=exById(c.dataset.id);
+ <div class="row" style="margin:6px 0 0"><span class="hint" style="flex:1">${d}/${L.length} öğrenci tamamlandı</span><button class="b go">Not gir</button></div></div>`};
+ $('#cards').innerHTML=G.filter(([k])=>k||by(0).length).map(([k,t])=>{const L=by(k),open=(S.fo||{})[k]!==false;
+  return `<div class="fold"><button class="fh" data-k="${k}" aria-expanded="${open}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg><b>${t}</b><span class="cnt">${L.length}</span></button><div class="fb"${open?'':' hidden'}>${L.length?L.map(card).join(''):'<p class="hint" style="margin:4px 6px 10px">Bu dönemde henüz yazılı yok.</p>'}</div></div>`}).join('')}
+$('#cards').onclick=e=>{const fh=e.target.closest('.fh');
+ if(fh){const k=fh.dataset.k,o=fh.getAttribute('aria-expanded')==='true';(S.fo=S.fo||{})[k]=!o;save();rC();return}
+ const c=e.target.closest('.ec');if(!c)return;const ex=exById(c.dataset.id);
  if(e.target.closest('.ed'))exDlg(ex.id);
  else if(e.target.closest('.xd')){ask(`“${ex.title}” yazılısı ve girilen tüm notları silinsin mi?\nÖğrenci listesi etkilenmez.`,()=>{S.ex=S.ex.filter(x=>x!==ex);save();rC()})}
  else{cur=ex.id;$('#eq').value='';go('ex')}};
 $('#newex').onclick=()=>exDlg();
 
 /* Yazılı oluştur / düzenle */
-function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd'),PRE=[3,4,5,6,7,8,9,10];
- let eq=ex.max.every(v=>v===ex.max[0]),cu=!PRE.includes(ex.max.length);
+function exDlg(id){const old=id&&exById(id),ex=old?JSON.parse(JSON.stringify(old)):{id:uid(),title:'',donem:0,ders:'',max:[20,20,20,20,20],cls:[],sc:{}},CL=classes(),g=$('#gd'),PRE=[3,4,5,6,7,8,9,10];
+ let eq=ex.max.every(v=>v===ex.max[0]),cu=!PRE.includes(ex.max.length),DL=[];
  g.innerHTML=`<h3>${old?'Yazılıyı düzenle':'Yeni yazılı'}</h3>
- <div class="xs"><b>1 · Yazılının adı</b><input id="xt" placeholder="ör. Fen Bilimleri 1. Dönem 2. Yazılı" value="${esc(ex.title)}" style="width:100%"></div>
- <div class="xs"><b>2 · Kaç soru var?</b><div class="chips" id="xq"></div><label class="xe" id="xnw" hidden>Soru sayısı <input id="xn" type="number" min="1" max="40"></label></div>
- <div class="xs"><b>3 · Soru puanları</b><div class="chips" id="xmd"></div><div id="xpt"></div><p class="hint" id="xtot" style="margin:6px 0 0"></p></div>
- <div class="xs"><b>4 · Hangi sınıflara uygulanacak?</b><div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
+ <div class="xs" id="xs-dn"><b>1 · Dönem <em class="rq">zorunlu</em></b><div class="chips" id="xdn"></div></div>
+ <div class="xs" id="xs-ds"><b>2 · Ders <em class="rq">zorunlu</em></b><div class="chips" id="xds"></div><button class="g" id="xdm" style="font-size:13px;padding:4px 10px">✎ Dersleri düzenle</button><div id="xdp" hidden></div></div>
+ <div class="xs"><b>3 · Yazılının adı <small class="hint">(isteğe bağlı)</small></b><input id="xt" placeholder="ör. 1. Yazılı" value="${esc(ex.title)}" style="width:100%"></div>
+ <div class="xs"><b>4 · Kaç soru var?</b><div class="chips" id="xq"></div><label class="xe" id="xnw" hidden>Soru sayısı <input id="xn" type="number" min="1" max="40"></label></div>
+ <div class="xs"><b>5 · Soru puanları</b><div class="chips" id="xmd"></div><div id="xpt"></div><p class="hint" id="xtot" style="margin:6px 0 0"></p></div>
+ <div class="xs"><b>6 · Hangi sınıflara uygulanacak?</b><div class="chips">${CL.map((c,i)=>`<button class="cc${ex.cls.includes(c)?' on':''}" data-i="${i}">${esc(lab(c))}</button>`).join('')||'<span class="hint">Önce Öğrenciler bölümünden öğrenci ekleyin.</span>'}</div>
  <div class="row" style="margin:0"><button class="g" id="xall">Tümü</button><button class="g" id="xnone">Hiçbiri</button></div></div>
  <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc2">İptal</button><button class="b" id="xs">Kaydet</button></div>`;
  const tot=()=>{$('#xtot').innerHTML=`Toplam: <b>${sum(ex.max)}</b> puan`+(eq?` (${ex.max.length} soru × ${fmt(ex.max[0])})`:'')};
+ const dD=()=>{$('#xdn').innerHTML=[1,2].map(k=>`<button class="cc${ex.donem===k?' on':''}" data-dn="${k}">${k}. Dönem</button>`).join('')};
+ const dS=()=>{DL=dersList().slice();if(ex.ders&&!DL.includes(ex.ders))DL.unshift(ex.ders);
+  $('#xds').innerHTML=DL.map((d,i)=>`<button class="cc${ex.ders===d?' on':''}" data-ds="${i}">${esc(d)}</button>`).join('')||'<span class="hint">Ders listesi boş. “Dersleri düzenle” ile ders ekleyin.</span>'};
+ const dPm=()=>{$('#xdp').innerHTML=`<div class="dm">${dersList().map((d,i)=>`<div class="dmr"><input class="dmi" data-r="${i}" value="${esc(d)}" aria-label="Ders adı"><button class="g d" data-dd="${i}" aria-label="Sil">🗑</button></div>`).join('')}<div class="dmr"><input id="dna" placeholder="Yeni ders adı" autocomplete="off"><button class="b" data-da="1">+ Ekle</button></div></div>`};
  const dQ=()=>{const n=ex.max.length;
   $('#xq').innerHTML=PRE.map(k=>`<button class="cc${!cu&&n===k?' on':''}" data-n="${k}">${k}</button>`).join('')+`<button class="cc${cu?' on':''}" data-n="c">Özel</button>`;
   $('#xnw').hidden=!cu;$('#xn').value=n};
  const dM=()=>{$('#xmd').innerHTML=`<button class="cc${eq?' on':''}" data-md="eq">Hepsi aynı puan</button><button class="cc${!eq?' on':''}" data-md="ind">Her soru farklı</button>`};
  const dP=()=>{$('#xpt').innerHTML=eq?`<label class="xe">Her sorunun puanı <input id="xe" type="number" min="0" step="any" value="${ex.max[0]}"></label>`:`<div class="mx">${ex.max.map((m,i)=>`<label>Soru ${i+1}<input type="number" min="0" step="any" value="${m}" data-i="${i}"></label>`).join('')}</div>`;tot()};
- const draw=()=>{dQ();dM();dP()};
+ const draw=()=>{dD();dS();dQ();dM();dP()};
  const setN=n=>{n=Math.max(1,Math.min(40,n||1));const T0=sum(ex.max),v0=ex.max[0];while(ex.max.length<n)ex.max.push(ex.max[ex.max.length-1]||10);ex.max.length=n;if(eq){const v=Math.round(T0/n*100)/100;ex.max=ex.max.map(()=>Math.abs(v*n-T0)<1e-6?v:v0)}};
  const num=v=>parseFloat(String(v).replace(',','.'))||0;
+ const bad=s=>{const n=$(s);n.classList.add('bad');n.scrollIntoView({block:'center',behavior:'smooth'})};
+ const addDers=()=>{const i=$('#dna'),nv=(i.value||'').trim();if(!nv)return toast('Ders adını yazın');
+  const L=dersList().slice();if(L.some(x=>x.toLowerCase()===nv.toLowerCase()))return toast('Bu ders zaten listede');
+  L.push(nv);S.dersler=L;ex.ders=nv;$('#xs-ds').classList.remove('bad');save();dS();dPm();$('#dna').focus()};
+ const renDers=(i,nv)=>{const L=dersList().slice(),o=L[i];nv=(nv||'').trim();if(!nv||nv===o)return dPm();
+  if(L.some((x,k)=>k!==i&&x.toLowerCase()===nv.toLowerCase())){toast('Bu ders zaten listede');return dPm()}
+  L[i]=nv;S.dersler=L;S.ex.forEach(e=>{if(e.ders===o)e.ders=nv});if(ex.ders===o)ex.ders=nv;save();dS();dPm()};
  draw();$('#gm').classList.add('on');
  g.oninput=e=>{const t=e.target;if(t.id==='xt')ex.title=t.value;else if(t.id==='xe'){ex.max=ex.max.map(()=>num(t.value));tot()}else if(t.dataset.i!==undefined&&t.type==='number'){ex.max[+t.dataset.i]=num(t.value);tot()}};
- g.onchange=e=>{if(e.target.id==='xn'){setN(+e.target.value);e.target.value=ex.max.length;dP()}};
+ g.onchange=e=>{const t=e.target;if(t.id==='xn'){setN(+t.value);t.value=ex.max.length;dP()}else if(t.classList.contains('dmi'))renDers(+t.dataset.r,t.value)};
+ g.onkeydown=e=>{if(e.key!=='Enter')return;if(e.target.id==='dna'){e.preventDefault();addDers()}else if(e.target.classList.contains('dmi')){e.preventDefault();e.target.blur()}};
  g.onclick=e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
-  if(d.n!==undefined){if(d.n==='c'){cu=true;draw();$('#xn').focus()}else{cu=false;setN(+d.n);draw()}}
+  if(d.dn!==undefined){ex.donem=+d.dn;$('#xs-dn').classList.remove('bad');dD()}
+  else if(d.ds!==undefined){ex.ders=DL[+d.ds];$('#xs-ds').classList.remove('bad');dS()}
+  else if(t.id==='xdm'){const p=$('#xdp');p.hidden=!p.hidden;t.textContent=p.hidden?'✎ Dersleri düzenle':'✓ Düzenlemeyi bitir';if(!p.hidden)dPm()}
+  else if(d.da)addDers()
+  else if(d.dd!==undefined){const L=dersList(),nm=L[+d.dd],n=S.ex.filter(x=>x.ders===nm).length;
+   ask(`“${nm}” dersi listeden silinsin mi?`+(n?`\nBu derse ait ${n} yazılı var; yazılılar silinmez.`:''),()=>{S.dersler=L.filter((_,k)=>k!==+d.dd);if(ex.ders===nm&&!old)ex.ders='';save();dS();dPm()},{title:'Ders silinsin mi?'})}
+  else if(d.n!==undefined){if(d.n==='c'){cu=true;draw();$('#xn').focus()}else{cu=false;setN(+d.n);draw()}}
   else if(d.md){const v=ex.max[0];if(d.md==='eq'){eq=true;ex.max=ex.max.map(()=>v)}else eq=false;draw()}
   else if(d.i!==undefined&&t.classList.contains('cc')){const c=CL[+d.i],k=ex.cls.indexOf(c);k<0?ex.cls.push(c):ex.cls.splice(k,1);t.classList.toggle('on')}
   else if(t.id==='xall'||t.id==='xnone'){ex.cls=t.id==='xall'?CL.slice():[];g.querySelectorAll('.cc[data-i]').forEach(b=>b.classList.toggle('on',t.id==='xall'))}
   else if(t.id==='xc2')closeG();
-  else if(t.id==='xs'){ex.title=ex.title.trim()||'Adsız yazılı';if(old)S.ex[S.ex.indexOf(old)]=ex;else S.ex.push(ex);Object.keys(ex.sc).forEach(k=>gs(ex,k,true));save();closeG();cur?rE():rC()}}}
+  else if(t.id==='xs'){
+   if(!ex.donem){bad('#xs-dn');return toast('Dönem zorunlu, lütfen seçin.',true)}
+   if(!ex.ders){bad('#xs-ds');return toast('Ders zorunlu, lütfen seçin.',true)}
+   ex.title=(ex.title||'').trim()||`${ex.ders} ${ex.donem}. Dönem Yazılı`;
+   if(old)S.ex[S.ex.indexOf(old)]=ex;else S.ex.push(ex);Object.keys(ex.sc).forEach(k=>gs(ex,k,true));save();closeG();cur?rE():rC()}}}
 
 /* Not girişi: öğrenci listesi */
 function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
  return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n?`${n}/${a.length} (${sum(a)})`:''}</span></button>`}
-function rE(){const ex=exById(cur);$('#etit').textContent=ex.title;ecl=ex.cls.slice().sort(cmpC);
+function rE(){const ex=exById(cur);$('#etit').textContent=exFull(ex);ecl=ex.cls.slice().sort(cmpC);
  $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('');
  const f=S.fE||{},ix=f.c==null?-1:ecl.indexOf(f.c);$('#ecf').value=ix<0?'':String(ix);$('#est').value=f.st||(f.m?'none':'all');$('#es').value=S.sEn||'cls';syncClr();rL()}
 const stOf=(ex,s)=>{const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;return n===0?'none':n===a.length?'full':'part'};
@@ -540,7 +583,7 @@ function tour(){const g=$('#gd');let i=0;
  const ST=[
  ['Hoş geldiniz','<p>Bu uygulama, <b>OYSS (Ortak Yazılı Sınavı Sistemi) ile uyumludur</b>: yazılı sonuçlarını <b>çok hızlı girmeniz</b> ve tek dokunuşla <b>e-Okul için kopyalamanız</b> (ya da Excel’e aktarmanız) için yapıldı.</p><div class="tv"><div class="flow"><div><i>1</i>Öğrenciler</div><b>›</b><div><i>2</i>Yazılı</div><b>›</b><div><i>3</i>Not gir</div><b>›</b><div><i>4</i>Kopyala</div><b>›</b><div><i>5</i>e-Okul</div></div></div><p>Asıl amaç: notları burada hızlıca girip, <b>Not Doldurucu</b> ile e-Okul’a <b>toplu</b> aktarmak. Birkaç adımda nasıl yapıldığını gösterelim.</p><p class="hint">Bu tanıtımda görünen isimler rastgele örneklerdir, kayıtlı öğrencilerinizle ilgisi yoktur.</p>'],
  ['1 · Öğrencilerinizi ekleyin','<p>Alttaki <b>Öğrenciler</b> sekmesinden sınıf listenizi Excel veya CSV ile <b>toplu</b> aktarın ya da <b>+ Elle ekle</b> ile tek tek ekleyin.</p><div class="tv"><div class="mr"><b>Elif Yıldız</b><span>101 · 6/A</span><em>✎</em></div><div class="mr"><b>Mert Demir</b><span>102 · 6/A</span><em>✎</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em>✎</em></div></div><ul><li><b>Okul numarası zorunludur</b>: uygulama okul numarasına göre çalışır.</li><li>Aktarırken sütunları siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa otomatik <b>6/A</b> olur.</li><li>İsterseniz öğrenciyi ✎ ile düzenler, 🗑 ile silersiniz.</li></ul>'],
- ['2 · Yazılıyı oluşturun','<p><b>Yazılılar</b> sekmesinde <b>+ Yeni yazılı</b> düğmesine basın.</p><div class="tv"><div class="mf"><span>Yazılı adı</span><u>Fen Bilimleri 1. Yazılı</u></div><div class="mc"><span>Kaç soru?</span><i>3</i><i>4</i><i class="on">5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>Özel</i></div><div class="mc"><span>Soru puanları</span><i class="on">Hepsi aynı: 20</i><i>Her soru farklı</i></div><div class="mc"><span>Hangi sınıflar?</span><i class="on">6/A</i><i class="on">6/B</i><i>6/C</i></div></div><p>Soru sayısını, puanları ve yazılının uygulanacağı sınıfları seçin. İstediğiniz kadar yazılı oluşturabilirsiniz; her birinin notları ayrı tutulur.</p>'],
+ ['2 · Yazılıyı oluşturun','<p><b>Yazılılar</b> sekmesinde <b>+ Yeni yazılı</b> düğmesine basın.</p><div class="tv"><div class="mc"><span>Dönem · zorunlu</span><i>1. Dönem</i><i class="on">2. Dönem</i></div><div class="mc"><span>Ders · zorunlu</span><i class="on">Fen Bilimleri</i><i>Matematik</i><i>Türkçe</i><i>…</i></div><div class="mf" style="margin-top:8px"><span>Yazılı adı (isteğe bağlı)</span><u>1. Yazılı</u></div><div class="mc"><span>Kaç soru?</span><i>3</i><i>4</i><i class="on">5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>Özel</i></div><div class="mc"><span>Soru puanları</span><i class="on">Hepsi aynı: 20</i><i>Her soru farklı</i></div><div class="mc"><span>Hangi sınıflar?</span><i class="on">6/A</i><i class="on">6/B</i><i>6/C</i></div></div><p>Önce <b>dönemi</b> ve <b>dersi</b> seçin (ikisi de zorunlu). Ders listesini “Dersleri düzenle” ile değiştirebilirsiniz. Sonra soru sayısını, puanları ve sınıfları seçin.</p><p>Yazılılar, <b>Yazılılar</b> sayfasında 1. Dönem ve 2. Dönem klasörlerinde toplanır; klasör başlığına dokununca açılıp kapanır.</p>'],
  ['3 · Not girmeye başlayın','<p>Yazılının kartındaki <b>Not gir</b> düğmesine basın. Öğrenci listesi açılır.</p><div class="tv"><div class="ms">Öğrenci ara…</div><div class="mr done"><b>Elif Yıldız</b><span>101 · 6/A</span><em>5/5 (88)</em></div><div class="mr part"><b>Mert Demir</b><span>102 · 6/A</span><em>3/5 (45)</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em></em></div></div><ul><li>Öğrenciyi <b>aratın</b> (tüm sınıflarda aranır) veya listeden seçin.</li><li><b>Yeşil</b> çizgi tamamlananı, <b>turuncu</b> yarım kalanı gösterir. <b>5/5 (88)</b> = 5 sorudan 5’i girildi, toplam 88.</li><li><b>Hiç not girilmemişler</b> kutusuyla yalnız boş olanları görürsünüz.</li></ul>'],
  ['4 · Hızlı not penceresi','<p>Öğrenciye dokununca not penceresi açılır. İlk boş sorudan başlar.</p><div class="tv kwin"><div class="kh"><b>Elif Yıldız</b><span class="tot">70<small>/100</small></span></div><div class="kq"><i class="f">S1<b>20</b></i><i class="f">S2<b>18</b></i><i class="on">S3<b>&nbsp;</b></i><i>S4<b>&nbsp;</b></i><i>S5<b>&nbsp;</b></i></div><div class="kv">17<small>/20</small></div><div class="kk"><i>7</i><i>8</i><i>9</i><i>4</i><i>5</i><i>6</i><i>1</i><i>2</i><i>3</i><i>,</i><i>0</i><i>⌫</i></div></div><ul><li>Rakamlarla puanı yazın. <b>20 puanlık soruda 5</b> yazınca kendiliğinden sonraki soruya geçer; <b>10</b> gibi iki haneli puanlarda yazdıktan sonra <b>›</b> ile geçin.</li><li>Her puan <b>anında kaydedilir</b>; kaydet düğmesi yoktur.</li><li>Soru kutucuklarına dokunup istediğiniz soruya atlayabilirsiniz. 12’den fazla soruda yana kaydırın.</li></ul>'],
  ['5 · Pencerenin düğmeleri','<div class="tv"><div class="ka2"><span class="r">Boş geç</span><span class="bl">Bu soru tam</span><span class="gr">Hepsi tam</span></div><div class="bb2"><span class="kz">Kapat</span><span>‹</span><span>›</span><span>⌨ Orta</span></div></div><ul><li><b>Boş geç</b>: soruyu boş bırakıp sonrakine geçer.</li><li><b>Bu soru tam</b>: o sorunun tam puanını yazar.</li><li><b>Hepsi tam</b>: öğrencinin tüm sorularına tam puan yazar.</li><li><b>‹ ›</b>: önceki / sonraki soru.</li><li><b>⌨ Orta</b>: klavye boyutunu değiştirir (küçük, orta, büyük).</li><li><b>Kapat</b>: pencereyi kapatır.</li><li><b>↺ Notları sıfırla</b> (pencerenin üstünde): yanlış girdiyseniz o öğrencinin notlarını siler.</li></ul>'],
@@ -607,12 +650,12 @@ function expDlg(){const g=$('#gd');
  g.innerHTML=`<h3>Excel'e aktar</h3>
  ${S.ex.length?`<div class="sec sa"><div class="st"><span class="sn1">1</span>Puanları kopyala <small>e-Okul için</small></div>
  <p class="hint" style="margin:0 0 8px">Seçilen sınıf kopyalanır: <b>ilk sütun okul numarası</b>, sonra soru puanları. Okul numarasına göre sıralıdır; ad, başlık ve toplam yoktur; girilmeyen puan boş hücre olur.</p>
- <div class="row"><select id="cpx" style="flex:1;min-width:0">${S.ex.map((e,i)=>`<option value="${i}">${esc(e.title)}</option>`).join('')}</select><select id="cpc"></select></div>
+ <div class="row"><select id="cpx" style="flex:1;min-width:0">${S.ex.map((e,i)=>`<option value="${i}">${esc(exFull(e))}</option>`).join('')}</select><select id="cpc"></select></div>
  <button class="pb a" id="cpgo">Puanları kopyala</button>
  <textarea id="cpt" readonly rows="6" style="width:100%;margin-top:8px;font-size:13px" hidden></textarea></div>`:''}
  <div class="sec sb"><div class="st"><span class="sn1">2</span>Excel dosyası indir <small>tüm bilgilerle</small></div>
  <p class="hint" style="margin:0 0 6px">Öğrenci adı, numara, puanlar ve toplamla .xlsx dosyası oluşturur.</p>
- ${S.ex.map((e,i)=>`<label class="ck2"><input type="checkbox" class="xe" data-i="${i}" checked> ${esc(e.title)}</label>`).join('')||'<p class="hint">Henüz yazılı yok.</p>'}
+ ${S.ex.map((e,i)=>`<label class="ck2"><input type="checkbox" class="xe" data-i="${i}" checked> ${esc(exFull(e))}</label>`).join('')||'<p class="hint">Henüz yazılı yok.</p>'}
  <label class="ck2"><input type="checkbox" id="xp" checked> Sınıf sayfaları da olsun</label>
  <button class="pb b" id="xgo" style="margin-top:6px">Excel'i indir</button></div>
  <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc3">Kapat</button></div>`;
@@ -628,14 +671,15 @@ function expDlg(){const g=$('#gd');
    const t=scoreTSV(ex,cls,true),ta=$('#cpt');
    if(await copyText(t)){ta.hidden=true;toast(`✓ ${lab(cls)}: ${n} öğrenci × ${ex.max.length} soru kopyalandı`,'ok')}
    else{ta.hidden=false;ta.value=t;ta.focus();ta.select();toast('Otomatik kopyalanamadı. Metni seçip kopyalayın.',true)}}}}
+const shortEx=e=>((e.donem?e.donem+'.D ':'')+(e.ders||e.title)).slice(0,18);
 function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
  const wb=XLSX.utils.book_new(),used=new Set(),multi=list.length>1;
  const nm=(t,c)=>{const b=((multi?t.slice(0,16)+' ':'')+c).replace(/[\[\]:*?\/\\]/g,'-').slice(0,31).trim()||'Sayfa';let x=b,i=2;while(used.has(x))x=b.slice(0,28)+'_'+i++;used.add(x);return x};
  list.forEach(ex=>{const L=exSt(ex),hd=['No','Ad Soyad','Sınıf',...ex.max.map((m,i)=>`S${i+1} (${m})`),'Toplam'],
   row=s=>{const a=gs(ex,s.id);return[/^\d+$/.test(s.no)?+s.no:s.no,s.name,s.cls,...a.map(v=>v??''),T(a)]};
   const add=(n,R)=>{const ws=XLSX.utils.aoa_to_sheet([hd,...R.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},...ex.max.map(()=>({wch:9})),{wch:9}];XLSX.utils.book_append_sheet(wb,ws,n)};
-  add(nm(ex.title,'Tümü'),L);if(per)ex.cls.slice().sort(cmpC).forEach(c=>add(nm(ex.title,lab(c)),L.filter(s=>s.cls===c)))});
- XLSX.writeFile(wb,(multi?'yazililar':list[0].title).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
+  add(nm(shortEx(ex),'Tümü'),L);if(per)ex.cls.slice().sort(cmpC).forEach(c=>add(nm(shortEx(ex),lab(c)),L.filter(s=>s.cls===c)))});
+ XLSX.writeFile(wb,(multi?'yazililar':exFull(list[0])).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
 (()=>{const f=$('#fab'),place=(x,y)=>{x=Math.max(0,Math.min(innerWidth-56,x));y=Math.max(0,Math.min(innerHeight-140,y));f.style.left=x+'px';f.style.top=y+'px';f.style.right=f.style.bottom='auto'};
  if(S.fab)place(S.fab[0],S.fab[1]);let st=null;
  f.onpointerdown=e=>{const r=f.getBoundingClientRect();st={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY,m:false};f.setPointerCapture(e.pointerId)};
@@ -702,6 +746,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
  <button class="g d" data-r="students">Tüm öğrencileri sil<small>Yazılılar kalır; girilen notlar da silinir</small></button>
  <div class="row" style="margin:0"><select id="rx" style="flex:1">${S.ex.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')||'<option value="">Yazılı yok</option>'}</select><button class="g d" data-r="exscores">Notlarını sıfırla</button><button class="g d" data-r="exdel">Yazılıyı sil</button></div>
  <div class="row" style="margin:0"><select id="rc" style="flex:1">${classes().map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'}</select><button class="g d" data-r="cls">Sınıfı sil</button></div>
+ <button class="g d" data-r="ders">Ders listesini varsayılana al<small>Eklediğiniz ve sildiğiniz dersler sıfırlanır; yazılılar etkilenmez</small></button>
  <button class="g d" data-r="theme">Tema ve renkleri sıfırla</button>
  <button class="g d" data-r="fab">Simgelerin yerini sıfırla<small>Excel ve e-posta simgeleri</small></button>
  <button class="b" style="background:var(--er);color:#fff" data-r="all">Tüm uygulamayı sıfırla</button></div>`;
@@ -727,6 +772,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
   else if(r==='exdel'){if(!ex)return toast('Yazılı seçin');ask(`“${ex.title}” yazılısı ve notları silinsin mi?`,()=>{S.ex=S.ex.filter(x=>x!==ex);afterReset('Yazılı silindi')})}
   else if(r==='cls'){if(c===undefined)return toast('Sınıf seçin');const n=S.st.filter(s=>s.cls===c).length;
    ask(`${lab(c)} sınıfındaki ${n} öğrenci silinsin mi?\nNotları da silinir.`,()=>{S.st=S.st.filter(s=>s.cls!==c);S.ex.forEach(e=>e.cls=e.cls.filter(x=>x!==c));cleanSc();afterReset('Sınıf silindi')})}
+  else if(r==='ders'){ask('Ders listesi varsayılan derslere döndürülsün mü?\n(Eklediğiniz dersler silinir, silinen varsayılanlar geri gelir. Yazılılar etkilenmez.)',()=>{S.dersler=null;afterReset('Ders listesi varsayılana alındı')},{ok:'Evet, sıfırla'})}
   else if(r==='theme'){ask('Görünüm ve renk teması varsayılana dönsün mü?',()=>{S.theme=null;applyTheme();afterReset('Tema sıfırlandı')})}
   else if(r==='fab'){resetFabs();afterReset('Simgelerin yeri sıfırlandı')}
   else if(r==='all'){ask('TÜM veriler (öğrenciler, yazılılar, notlar, tema) silinecek.\nOnaylamak için SIL yazın.',()=>{KEYS().forEach(k=>localStorage.removeItem(k));S={st:[],ex:[],fab:null,theme:null};cur=null;applyTheme();resetFabs();afterReset('Uygulama sıfırlandı')},{need:'SIL',ok:'Tümünü sil'})}}}
