@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Not Doldurucu Pro 1.0.20
+  Not Doldurucu Pro 1.0.21
   Excel'den kopyalanan notlari web sayfasindaki kutulara toplu doldurur.
   Copyright (C) 2026 sebasmobil
 
@@ -27,23 +27,23 @@
 <meta name="apple-mobile-web-app-title" content="Not Doldurucu">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMmM3YTdiIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTAgNTApIHNjYWxlKDEpIHRyYW5zbGF0ZSgtNTAgLTUwKSI+PHBhdGggZD0iTTUwIDlWMjVNNDIgMThMNTAgMjZMNTggMTgiIHN0cm9rZT0iI2Y2YzM0MyIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHJlY3QgeD0iMjAiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjQxLjUiIHk9IjMyIiB3aWR0aD0iMTciIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjZmZmZmZmIi8+CjxyZWN0IHg9IjYzIiB5PSIzMiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIvPgo8cGF0aCBkPSJNMjAgNTBIMzdNMjAgNjhIMzdNNDEuNSA1MEg1OC41TTQxLjUgNjhINTguNU02MyA1MEg4ME02MyA2OEg4MCIgc3Ryb2tlPSIjMmM3YTdiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
-<title>Not Doldurucu Pro 1.0.20</title>
+<title>Not Doldurucu Pro 1.0.21</title>
 <style>
   :root{
-    --bg:#f6f7f9;--card:#fff;--text:#222;--border:#dde;--muted:#555;
+    --bg:#f6f7f9;--card:#fff;--card0:rgba(255,255,255,0);--text:#222;--border:#dde;--muted:#555;
     --bar:#e9ecf3;--bar-text:#4a5068;--bar-line:#d3d8e4;
     --input:#fff;--input-border:#99a;--btn:#2b6cb0;--btn-hover:#245a94;--ok:#2f855a;
     color-scheme:light;
   }
   :root[data-theme="dark"]{
-    --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
+    --bg:#10131b;--card:#1b2030;--card0:rgba(27,32,48,0);--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
     --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
     --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
     color-scheme:dark;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme]){
-      --bg:#10131b;--card:#1b2030;--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
+      --bg:#10131b;--card:#1b2030;--card0:rgba(27,32,48,0);--text:#e6e8ee;--border:#2c3348;--muted:#9aa1b8;
       --bar:#1b2030;--bar-text:#9aa1b8;--bar-line:#2c3348;
       --input:#10131b;--input-border:#4a5270;--btn:#3b82c4;--btn-hover:#4a93d6;--ok:#48bb78;
       color-scheme:dark;
@@ -103,15 +103,21 @@
   @keyframes pls{50%{opacity:.3}}
   @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
   .kodcard{height:auto;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}
-  #kodbody{padding:16px;font-size:17px;line-height:1.55;overflow-y:auto}
+  #kodbody{padding:16px;font-size:17px;line-height:1.55;overflow-y:auto;flex:1 1 auto}
   .kodcard .tutnever{padding-top:0}
   #kodok{background:var(--btn);color:#fff}
+  .tutwrap{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  .tutmore{position:absolute;left:0;right:0;bottom:0;height:76px;display:none;align-items:flex-end;justify-content:center;padding-bottom:8px;pointer-events:none;background:linear-gradient(to bottom,var(--card0),var(--card) 78%)}
+  .tutmore button{pointer-events:auto;background:var(--btn);color:#fff;border:0;border-radius:999px;padding:9px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+  .tutmore .ar{display:inline-block;animation:bnc 1s ease-in-out infinite}
+  @keyframes bnc{50%{transform:translateY(3px)}}
+  @media (prefers-reduced-motion:reduce){.tutmore .ar{animation:none}}
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <div class="info"><span id="ver">Pro 1.0.20</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
+  <div class="info"><span id="ver">Pro 1.0.21</span> | &copy;sebasmobil 2026 | <a class="lic" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" title="GNU AGPL v3.0 lisans metni">AGPL v3.0</a></div>
   <div class="tools"><button id="helpBtn" type="button" title="Kurulum tanıtımını göster" aria-label="Kurulum tanıtımını göster">?</button><button id="themeBtn" type="button" aria-label="Tema"></button></div>
 </div>
 
@@ -160,7 +166,7 @@
 </div>
 
 <script>
-var VERSION="1.0.20";
+var VERSION="1.0.21";
 document.getElementById("ver").textContent="Pro "+VERSION;
 
 function core(TID,LID,CLS,VER){
@@ -830,10 +836,24 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   ov.className="tut";
   ov.id="tut";
   ov.style.display="none";
-  ov.innerHTML='<div class="tutcard" role="dialog" aria-modal="true" aria-label="Kurulum tanıtımı"><div class="tuttop"><span id="tutcnt"></span><button type="button" id="tutskip">Tanıtımı geç &#10005;</button></div><div id="tutbody"></div><div class="tutdots" id="tutdots"></div><div class="tutnav"><button type="button" id="tutback">Geri</button><button type="button" id="tutnext">İleri</button></div><label class="tutnever"><input type="checkbox" id="tutnever"> Bir daha gösterme</label></div>';
+  ov.innerHTML='<div class="tutcard" role="dialog" aria-modal="true" aria-label="Kurulum tanıtımı"><div class="tuttop"><span id="tutcnt"></span><button type="button" id="tutskip">Tanıtımı geç &#10005;</button></div><div class="tutwrap"><div id="tutbody"></div><div class="tutmore" id="tutmore"><button type="button">Devamı aşağıda <span class="ar">&#8595;</span></button></div></div><div class="tutdots" id="tutdots"></div><div class="tutnav"><button type="button" id="tutback">Geri</button><button type="button" id="tutnext">İleri</button></div><label class="tutnever"><input type="checkbox" id="tutnever"> Bir daha gösterme</label></div>';
   document.body.appendChild(ov);
   var body=document.getElementById("tutbody"),cnt=document.getElementById("tutcnt"),dots=document.getElementById("tutdots"),back=document.getElementById("tutback"),next=document.getElementById("tutnext"),never=document.getElementById("tutnever");
 
+  function moreFor(scrollEl,moreEl){
+    function upd(){
+      var need=scrollEl.scrollHeight-scrollEl.clientHeight>6&&scrollEl.scrollTop+scrollEl.clientHeight<scrollEl.scrollHeight-8;
+      moreEl.style.display=need?"flex":"none";
+    }
+    scrollEl.addEventListener("scroll",upd);
+    window.addEventListener("resize",upd);
+    moreEl.getElementsByTagName("button")[0].addEventListener("click",function(){
+      var by=Math.max(120,scrollEl.clientHeight*0.8);
+      if(scrollEl.scrollBy){scrollEl.scrollBy({top:by,behavior:"smooth"});}else{scrollEl.scrollTop+=by;}
+    });
+    return upd;
+  }
+  var updTut=moreFor(body,document.getElementById("tutmore"));
   function devHtml(){
     var o=[["ios","iPhone veya iPad (Safari)",ICON.phone],["and","Android telefon (Chrome)",ICON.phone],["pc","Bilgisayar (Chrome, Edge, Firefox...)",ICON.pc]],i,h="";
     for(i=0;i<o.length;i++){h+='<button type="button" class="tutdev'+(dev===o[i][0]?" on":"")+'" data-d="'+o[i][0]+'">'+o[i][2]+'<span>'+o[i][1]+'</span></button>';}
@@ -860,6 +880,8 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
     dots.innerHTML=d;
     back.disabled=idx===0;
     next.textContent=idx===S.length-1?"Bitir":"İleri";
+    updTut();
+    setTimeout(updTut,80);
   }
   function open(){
     ov.style.display="flex";
@@ -901,14 +923,17 @@ var PWA={i192:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3Gw
   kov.id="kodnot";
   kov.style.display="none";
   kov.style.zIndex="10000";
-  kov.innerHTML='<div class="tutcard kodcard" role="alertdialog" aria-modal="true" aria-label="Yer imi güncellemesi"><div class="tuttop"><b>Yer imi kodu güncellendi</b></div><div id="kodbody"></div><label class="tutnever"><input type="checkbox" id="kodnever"> Bir daha gösterme</label><div class="tutnav"><button type="button" id="kodok">Tamam</button></div></div>';
+  kov.innerHTML='<div class="tutcard kodcard" role="alertdialog" aria-modal="true" aria-label="Yer imi güncellemesi"><div class="tuttop"><b>Yer imi kodu güncellendi</b></div><div class="tutwrap"><div id="kodbody"></div><div class="tutmore" id="kodmore"><button type="button">Devamı aşağıda <span class="ar">&#8595;</span></button></div></div><label class="tutnever"><input type="checkbox" id="kodnever"> Bir daha gösterme</label><div class="tutnav"><button type="button" id="kodok">Tamam</button></div></div>';
   document.body.appendChild(kov);
+  var updKod=moreFor(document.getElementById("kodbody"),document.getElementById("kodmore"));
   var kodok=document.getElementById("kodok"),kodnever=document.getElementById("kodnever"),noticePending=store("notKodUyari")!==KOD.ver;
   function openNotice(){
     document.getElementById("kodbody").innerHTML="<b>Yer imi kodu "+trDate(KOD.date)+" tarihinde değişti</b> (sürüm "+KOD.ver+"). "+KOD.note+"<br><br>Yer iminizi bu tarihten önce oluşturduysanız <b>yer iminizi güncelleyin</b>: eski yer imini silin ve yenisini ekleyin. Nasıl yapılacağını görmek için üstteki <b>?</b> düğmesine basın.<br><br>e-Okul'daki kartın sağ üstünde <b>v"+KOD.ver+"</b>'den eski bir sürüm yazıyorsa yer iminiz eskidir.";
     kodnever.checked=false;
     kov.style.display="flex";
     document.body.style.overflow="hidden";
+    updKod();
+    setTimeout(updKod,80);
     kodok.focus();
   }
   function closeNotice(){
