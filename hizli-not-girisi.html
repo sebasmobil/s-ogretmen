@@ -214,10 +214,18 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .sr{padding:8px 12px}
 #ml{position:fixed;right:14px;bottom:162px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 #ml svg{width:56px;height:56px;display:block}
+.r3{flex-wrap:nowrap}.r3>#impbtn{flex:1;min-width:0;padding:8px 6px}.r3>#addbtn{flex:none}
+#imphelp{width:40px;height:38px;padding:0;font-size:18px;flex:none}
+.selall{display:flex;align-items:center;padding:0 6px;flex:none}.selall input{width:22px;height:22px}
+.r2>#dsel{flex:none;font-size:14px;padding:6px 10px}
+.srow{padding:5px 10px;gap:8px}
+.srow .sm b{font-size:15px;line-height:1.2}.srow .sm span{font-size:12px}
+.srow .ck{width:22px;height:22px}
+.srow button{padding:3px 9px;height:34px;font-size:15px}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.23</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.24</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -243,13 +251,7 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </section>
 
 <section id="v-st">
-  <div class="card">
-    <div class="row">
-      <button class="b" id="impbtn">Excel / CSV'den aktar</button>
-      <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
-      <button class="g" id="imphelp" style="font-size:13px;padding:5px 10px">ⓘ Nasıl hazırlanır?</button>
-    </div>
-    <div id="map" class="card" style="background:var(--bg)">
+  <div id="map" class="card" style="background:var(--bg)">
       <div class="mg">
         <label>Ad (veya Ad Soyad) · zorunlu<select id="m_name"></select></label>
         <label>Soyad (ayrıysa)<select id="m_sur"></select></label>
@@ -265,23 +267,13 @@ body.lk{position:fixed;left:0;right:0;width:100%}
       </div>
       <div class="hint" id="pv"></div>
     </div>
-    <div class="row" style="margin:0">
-      <input id="an" placeholder="No" style="width:84px">
-      <input id="ad" placeholder="Ad Soyad" style="flex:1;min-width:150px">
-      <input id="ac" placeholder="Sınıf (6/A)" style="width:100px">
-      <button class="b" id="add">Ekle</button>
-    </div>
+  <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
+  <div class="ctl">
+    <div class="row r3"><button class="b" id="impbtn">Excel / CSV'den aktar</button><button class="g" id="imphelp" aria-label="Nasıl hazırlanır?" title="Nasıl hazırlanır?">ⓘ</button><button class="b" id="addbtn">+ Elle ekle</button></div>
+    <div class="row r2"><div class="sbx"><input id="q2" type="search" placeholder="Tüm sınıflarda ara…" autocomplete="off"><button class="clr" data-for="q2" hidden aria-label="Temizle">✕</button></div><select id="cf2"></select></div>
+    <div class="row r2"><label class="selall" title="Görünenlerin hepsini seç"><input type="checkbox" id="ca" aria-label="Görünenlerin hepsini seç"></label><select id="ss"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select><button class="g d" id="dsel" disabled>Seçilenleri sil</button></div>
   </div>
-  <div class="row">
-    <div class="sbx"><input id="q2" type="search" placeholder="Öğrenci ara…" autocomplete="off"><button class="clr" data-for="q2" hidden aria-label="Temizle">✕</button></div>
-    <select id="cf2"></select>
-    <select id="ss"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option></select>
-    <button class="g d" id="dsel" disabled>Seçilenleri sil</button>
-    <button class="g d" id="dall">Tümünü sil</button>
-  </div>
-  <div class="row" style="margin-bottom:6px"><label class="hint" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ca"> Görünenlerin hepsini seç</label></div>
   <div id="sb" class="slist"></div>
-  <p class="hint">Aralık seçmek için bir kutuya tıklayıp <b>Shift</b> ile diğerine tıklayın. Düzenlemek için ✎ simgesine basın.</p>
 </section>
 
 </main>
@@ -343,7 +335,7 @@ let tm;const toast=(m,w)=>{const t=$('#toast');t.textContent=m;t.classList.toggl
  if(w&&$('#sm').classList.contains('on')){t.style.bottom='auto';t.style.top=$('.sd .mnav').getBoundingClientRect().top+'px'}else{t.style.top='';t.style.bottom=''}
  if(w===true){try{navigator.vibrate&&navigator.vibrate([40,40,40])}catch(e){}}
  t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>t.classList.remove('on'),2300)};
-const closeG=()=>$('#gm').classList.remove('on');
+const closeG=()=>{$('#gm').classList.remove('on');$('#gd').onkeydown=null};
 
 /* Görünümler */
 let view='ex',cur=null,ecl=[];
@@ -486,7 +478,6 @@ $('#sb').onclick=e=>{const t=e.target,tr=t.closest('.srow');if(!tr)return;const 
   if(e.shiftKey&&last>-1){const a=Math.min(i,last),b=Math.max(i,last);ids.slice(a,b+1).forEach(x=>t.checked?sel.add(x):sel.delete(x))}else t.checked?sel.add(id):sel.delete(id);last=i;rS()}};
 $('#ca').onchange=e=>{visS().forEach(s=>e.target.checked?sel.add(s.id):sel.delete(s.id));rS()};
 $('#dsel').onclick=()=>{ask(sel.size+' öğrenci silinsin mi?',()=>{S.st=S.st.filter(s=>!sel.has(s.id));sel.clear();save();fillCls();rS()})};
-$('#dall').onclick=()=>{if(S.st.length)ask('Tüm öğrenciler silinsin mi?',()=>{S.st=[];sel.clear();save();fillCls();rS()})};
 const sortS=()=>S.st.sort((a,b)=>cmpC(a.cls,b.cls)||cmpC(a.no,b.no)||a.name.localeCompare(b.name,'tr'));
 $('#ss').onchange=e=>{S.sSt=e.target.value;save();rS()};
 function stDlg(id){const s=stById(id),g=$('#gd');
@@ -500,10 +491,22 @@ function stDlg(id){const s=stById(id),g=$('#gd');
   if(i==='sc2')closeG();
   else if(i==='sdel'){ask(s.name+' silinsin mi?',()=>{S.st=S.st.filter(x=>x!==s);save();closeG();fillCls();rS()})}
   else if(i==='ssv'){const n=$('#sn').value.trim();if(!n)return toast('Ad Soyad boş olamaz');if(!$('#sno').value.trim())return toast('Okul numarası boş olamaz');s.name=n;s.no=$('#sno').value.trim();s.cls=$('#scl').value.trim();save();closeG();fillCls();rS()}}}
-function addOne(){const name=$('#ad').value.trim();if(!name)return toast('Ad Soyad yazın');if(!$('#an').value.trim())return toast('Okul numarasını yazın');
- S.st.push({id:uid(),no:$('#an').value.trim(),name,cls:$('#ac').value.trim()});save();
- $('#an').value=/^\d+$/.test($('#an').value)?+$('#an').value+1:'';$('#ad').value='';fillCls();rS();$('#ad').focus()}
-$('#add').onclick=addOne;['#an','#ad','#ac'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')addOne()});
+function addDlg(){const g=$('#gd');let cnt=0;
+ g.innerHTML=`<h3>Öğrenci ekle</h3>
+ <label class="hint">Okul numarası · zorunlu<input id="dn" inputmode="numeric" autocomplete="off" style="width:100%;margin-bottom:8px"></label>
+ <label class="hint">Ad Soyad · zorunlu<input id="dd" autocomplete="off" style="width:100%;margin-bottom:8px"></label>
+ <label class="hint">Sınıf (ör. 6/A)<input id="dc" list="dcl" autocomplete="off" style="width:100%"></label><datalist id="dcl">${classes().filter(Boolean).map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+ <p class="hint" id="dok" style="margin:8px 0 0;min-height:18px"></p>
+ <div class="row" style="justify-content:flex-end;margin:6px 0 0"><button class="g" data-d="x">Bitti</button><button class="b" data-d="a">Ekle</button></div>`;
+ $('#dc').value=$('#cf2').value||'';$('#gm').classList.add('on');setTimeout(()=>$('#dn').focus(),60);
+ const add=()=>{const no=$('#dn').value.trim(),name=$('#dd').value.trim(),cls=$('#dc').value.trim();
+  if(!no)return toast('Okul numarasını yazın');if(!name)return toast('Ad Soyad yazın');
+  if(S.st.some(s=>s.no===no&&s.cls===cls))return toast('Bu numara bu sınıfta zaten var');
+  S.st.push({id:uid(),no,name,cls});save();cnt++;fillCls();rS();
+  $('#dn').value=/^\d+$/.test(no)?String(+no+1):'';$('#dd').value='';$('#dok').textContent='✓ '+name+' eklendi ('+cnt+')';$('#dd').focus()};
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.d==='a')add();else if(b.dataset.d==='x')closeG()};
+ g.onkeydown=e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();add()}}}
+$('#addbtn').onclick=addDlg;
 
 /* İçe aktarma */
 $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -535,7 +538,7 @@ $('#doimp').onclick=()=>{if($('#m_no').value==='')return toast('Okul numarası s
 function tour(){const g=$('#gd');let i=0;
  const ST=[
  ['Hoş geldiniz','<p>Bu uygulama, <b>OYSS (Ortak Yazılı Sınavı Sistemi) ile uyumludur</b>: yazılı sonuçlarını <b>çok hızlı girmeniz</b> ve tek dokunuşla <b>e-Okul için kopyalamanız</b> (ya da Excel’e aktarmanız) için yapıldı.</p><div class="tv"><div class="flow"><div><i>1</i>Öğrenciler</div><b>›</b><div><i>2</i>Yazılı</div><b>›</b><div><i>3</i>Not gir</div><b>›</b><div><i>4</i>Kopyala</div><b>›</b><div><i>5</i>e-Okul</div></div></div><p>Asıl amaç: notları burada hızlıca girip, <b>Not Doldurucu</b> ile e-Okul’a <b>toplu</b> aktarmak. Birkaç adımda nasıl yapıldığını gösterelim.</p><p class="hint">Bu tanıtımda görünen isimler rastgele örneklerdir, kayıtlı öğrencilerinizle ilgisi yoktur.</p>'],
- ['1 · Öğrencilerinizi ekleyin','<p>Alttaki <b>Öğrenciler</b> sekmesinden sınıf listenizi Excel veya CSV ile <b>toplu</b> aktarın ya da tek tek ekleyin.</p><div class="tv"><div class="mr"><b>Elif Yıldız</b><span>101 · 6/A</span><em>✎</em></div><div class="mr"><b>Mert Demir</b><span>102 · 6/A</span><em>✎</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em>✎</em></div></div><ul><li><b>Okul numarası zorunludur</b>: uygulama okul numarasına göre çalışır.</li><li>Aktarırken sütunları siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa otomatik <b>6/A</b> olur.</li><li>İsterseniz öğrenciyi ✎ ile düzenler, 🗑 ile silersiniz.</li></ul>'],
+ ['1 · Öğrencilerinizi ekleyin','<p>Alttaki <b>Öğrenciler</b> sekmesinden sınıf listenizi Excel veya CSV ile <b>toplu</b> aktarın ya da <b>+ Elle ekle</b> ile tek tek ekleyin.</p><div class="tv"><div class="mr"><b>Elif Yıldız</b><span>101 · 6/A</span><em>✎</em></div><div class="mr"><b>Mert Demir</b><span>102 · 6/A</span><em>✎</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em>✎</em></div></div><ul><li><b>Okul numarası zorunludur</b>: uygulama okul numarasına göre çalışır.</li><li>Aktarırken sütunları siz eşleştirirsiniz.</li><li>Sınıf ve şube ayrı sütundaysa otomatik <b>6/A</b> olur.</li><li>İsterseniz öğrenciyi ✎ ile düzenler, 🗑 ile silersiniz.</li></ul>'],
  ['2 · Yazılıyı oluşturun','<p><b>Yazılılar</b> sekmesinde <b>+ Yeni yazılı</b> düğmesine basın.</p><div class="tv"><div class="mf"><span>Yazılı adı</span><u>Fen Bilimleri 1. Yazılı</u></div><div class="mc"><span>Kaç soru?</span><i>3</i><i>4</i><i class="on">5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>Özel</i></div><div class="mc"><span>Soru puanları</span><i class="on">Hepsi aynı: 20</i><i>Her soru farklı</i></div><div class="mc"><span>Hangi sınıflar?</span><i class="on">6/A</i><i class="on">6/B</i><i>6/C</i></div></div><p>Soru sayısını, puanları ve yazılının uygulanacağı sınıfları seçin. İstediğiniz kadar yazılı oluşturabilirsiniz; her birinin notları ayrı tutulur.</p>'],
  ['3 · Not girmeye başlayın','<p>Yazılının kartındaki <b>Not gir</b> düğmesine basın. Öğrenci listesi açılır.</p><div class="tv"><div class="ms">Öğrenci ara…</div><div class="mr done"><b>Elif Yıldız</b><span>101 · 6/A</span><em>5/5 (88)</em></div><div class="mr part"><b>Mert Demir</b><span>102 · 6/A</span><em>3/5 (45)</em></div><div class="mr"><b>Zeynep Kaya</b><span>103 · 6/B</span><em></em></div></div><ul><li>Öğrenciyi <b>aratın</b> (tüm sınıflarda aranır) veya listeden seçin.</li><li><b>Yeşil</b> çizgi tamamlananı, <b>turuncu</b> yarım kalanı gösterir. <b>5/5 (88)</b> = 5 sorudan 5’i girildi, toplam 88.</li><li><b>Hiç not girilmemişler</b> kutusuyla yalnız boş olanları görürsünüz.</li></ul>'],
  ['4 · Hızlı not penceresi','<p>Öğrenciye dokununca not penceresi açılır. İlk boş sorudan başlar.</p><div class="tv kwin"><div class="kh"><b>Elif Yıldız</b><span class="tot">70<small>/100</small></span></div><div class="kq"><i class="f">S1<b>20</b></i><i class="f">S2<b>18</b></i><i class="on">S3<b>&nbsp;</b></i><i>S4<b>&nbsp;</b></i><i>S5<b>&nbsp;</b></i></div><div class="kv">17<small>/20</small></div><div class="kk"><i>7</i><i>8</i><i>9</i><i>4</i><i>5</i><i>6</i><i>1</i><i>2</i><i>3</i><i>,</i><i>0</i><i>⌫</i></div></div><ul><li>Rakamlarla puanı yazın. <b>20 puanlık soruda 5</b> yazınca kendiliğinden sonraki soruya geçer; <b>10</b> gibi iki haneli puanlarda yazdıktan sonra <b>›</b> ile geçin.</li><li>Her puan <b>anında kaydedilir</b>; kaydet düğmesi yoktur.</li><li>Soru kutucuklarına dokunup istediğiniz soruya atlayabilirsiniz. 12’den fazla soruda yana kaydırın.</li></ul>'],
