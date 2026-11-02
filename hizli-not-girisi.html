@@ -89,7 +89,7 @@ td.nm{font-weight:600;width:100%}td.ac2{display:flex;gap:6px}
 .okb{width:100%;margin-top:8px;height:48px;border:0;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer}
 .okb.nx{background:#f7b6d6;color:#6b1b44}.okb.sv{background:#fbe3a0;color:#5b4500}
 .okb:active,.okb.pr{filter:brightness(.9)}
-#fab{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#fab{position:fixed;right:14px;bottom:162px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}#toast.on{opacity:1}
 #toast.warn,#toast.ok{background:#e5384a;color:#fff;font-size:19px;font-weight:700;padding:14px 22px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;width:max-content;max-width:90vw;z-index:60}
 #toast.ok{background:#16a34a}
@@ -200,12 +200,22 @@ nav button:not(.on),nav a{color:var(--ink);opacity:.8}
 body.lk{position:fixed;left:0;right:0;width:100%}
 .dlg,.tbody,.tct,#pl{overscroll-behavior:contain}
 .tbody,.tct{touch-action:pan-y}
-#wa{position:fixed;right:14px;bottom:162px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+#wa{position:fixed;right:14px;bottom:92px;width:56px;height:56px;z-index:15;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 #wa svg{width:56px;height:56px;display:block}
+#back{width:40px;height:40px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none}
+#back:active{filter:brightness(.9)}
+#etit{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#epg{white-space:nowrap}
+.ctl{padding-top:6px}
+.ctl .row{margin-bottom:6px;gap:6px}
+.ctl input,.ctl select{padding:6px 9px}
+.r2{flex-wrap:nowrap}.r2>select{flex:1;min-width:0}.r2>.sbx{min-width:0;flex:1.6}
+.r2>#ecf{flex:1}
+.sr{padding:8px 12px}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">1.0.21</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">1.0.22</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener">e-Okul aktarma ↗</a></nav>
@@ -222,9 +232,9 @@ body.lk{position:fixed;left:0;right:0;width:100%}
   </div>
   <div id="exe" hidden>
     <div class="ctl">
-      <div class="row"><button class="g" id="back">‹ Yazılılar</button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
-      <div class="row"><div class="sbx"><input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" autocomplete="off"><button class="clr" data-for="eq" hidden aria-label="Temizle">✕</button></div><select id="ecf"></select></div>
-      <div class="row"><select id="es"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option><option value="pd">Puan: yüksekten düşüğe</option><option value="pa">Puan: düşükten yükseğe</option></select><select id="est" aria-label="Durum filtresi"><option value="all">Tümü</option><option value="none">Hiç not girilmemiş</option><option value="part">Eksik girilmiş</option><option value="full">Tam girilmiş</option><option value="open">Tamamlanmamış (hiç + eksik)</option></select></div>
+      <div class="row"><button id="back" aria-label="Geri" title="Geri"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b class="et" id="etit"></b><span class="hint" id="epg"></span></div>
+      <div class="row r2"><div class="sbx"><input id="eq" type="search" placeholder="Öğrenci ara (tüm sınıflarda)…" autocomplete="off"><button class="clr" data-for="eq" hidden aria-label="Temizle">✕</button></div><select id="ecf"></select></div>
+      <div class="row r2"><select id="es"><option value="cls">Sınıf → No</option><option value="name">Ad Soyad</option><option value="no">Okul no</option><option value="pd">Puan ↓</option><option value="pa">Puan ↑</option></select><select id="est" aria-label="Durum filtresi"><option value="all">Tümü</option><option value="none">Hiç not girilmemiş</option><option value="part">Eksik girilmiş</option><option value="full">Tam girilmiş</option><option value="open">Tamamlanmamış (hiç + eksik)</option></select></div>
     </div>
     <div id="el"></div>
   </div>
@@ -394,13 +404,13 @@ const stOf=(ex,s)=>{const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;return n==
 const stOk=(f,t)=>f==='all'||f===t||(f==='open'&&t!=='full');
 function entryBase(ex){const q=norm($('#eq').value),v=$('#ecf').value;return exSt(ex).filter(s=>(v===''||s.cls===ecl[+v])&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))}
 function fillEst(){const ex=exById(cur);if(!ex)return;const c={none:0,part:0,full:0},B=entryBase(ex);B.forEach(s=>c[stOf(ex,s)]++);
- const t={all:`Tümü (${B.length})`,none:`Hiç not girilmemiş (${c.none})`,part:`Eksik girilmiş (${c.part})`,full:`Tam girilmiş (${c.full})`,open:`Tamamlanmamış: hiç + eksik (${c.none+c.part})`};
+ const t={all:`Tümü (${B.length})`,none:`Hiç girilmemiş (${c.none})`,part:`Eksik (${c.part})`,full:`Tam (${c.full})`,open:`Tamamlanmamış (${c.none+c.part})`};
  [...$('#est').options].forEach(o=>o.textContent=t[o.value])}
-function rL(){const ex=exById(cur),f=$('#est').value,k=S.sEn||'cls';fillEst();
+function rL(){const ex=exById(cur),f=$('#est').value,k=S.sEn||'cls',cv=$('#ecf').value;$('#eq').placeholder=cv===''?'Tüm sınıflarda ara…':lab(ecl[+cv])+' içinde ara…';fillEst();
  const L=entryBase(ex).filter(s=>stOk(f,stOf(ex,s)));
  const R=(k==='pd'||k==='pa')?L.slice().sort((a,b)=>((k==='pd'?1:-1)*(sum(gs(ex,b.id))-sum(gs(ex,a.id))))||cmpC(a.cls,b.cls)||cmpC(a.no,b.no)):sortList(L,k);
  $('#el').innerHTML=R.map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Bu filtreye uyan öğrenci yok.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
-function prog(){const ex=exById(cur),L=exSt(ex);$('#epg').textContent=`${L.filter(s=>done(ex,s)).length}/${L.length} tamamlandı`}
+function prog(){const ex=exById(cur),L=exSt(ex);$('#epg').textContent=`${L.filter(s=>done(ex,s)).length}/${L.length}`;$('#epg').title='tamamlanan öğrenci / toplam'}
 $('#es').onchange=e=>{S.sEn=e.target.value;save();rL()};
 $('#eq').oninput=rL;
 $('#ecf').onchange=()=>{const v=$('#ecf').value;(S.fE=S.fE||{}).c=v===''?null:ecl[+v];save();rL()};
@@ -462,7 +472,7 @@ function fillCls(){const el=$('#cf2'),v=el.value,C=classes();el.innerHTML='<opti
 function sortList(L,k){const c=(a,b)=>cmpC(a.cls,b.cls),n=(a,b)=>cmpC(a.no,b.no),m=(a,b)=>a.name.localeCompare(b.name,'tr'),f=k==='name'?[m,c,n]:k==='no'?[n,c,m]:[c,n,m];
  return L.slice().sort((a,b)=>f[0](a,b)||f[1](a,b)||f[2](a,b))}
 const visS=()=>{const q=norm($('#q2').value),c=$('#cf2').value;return sortList(S.st.filter(s=>(!c||s.cls===c)&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q))),S.sSt||'cls')};
-function rS(){const L=visS();
+function rS(){const L=visS();$('#q2').placeholder=$('#cf2').value?lab($('#cf2').value)+' içinde ara…':'Tüm sınıflarda ara…';
  $('#sb').innerHTML=L.length?L.map(s=>`<div class="srow" data-id="${s.id}"><input type="checkbox" class="ck" ${sel.has(s.id)?'checked':''}><div class="sm"><b>${esc(s.name)}</b><span>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</span></div><button class="g ep" title="Düzenle">✎</button><button class="g d x" title="Sil">🗑</button></div>`).join(''):'<p class="hint" style="padding:18px;margin:0">Öğrenci yok. Excel’den aktarın veya yukarıdan ekleyin.</p>';syncClr();
  $('#dsel').disabled=!sel.size;$('#dsel').textContent=sel.size?`Seçilenleri sil (${sel.size})`:'Seçilenleri sil'}
 $('#q2').oninput=rS;$('#cf2').onchange=rS;
@@ -710,8 +720,8 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
   else if(r==='cls'){if(c===undefined)return toast('Sınıf seçin');const n=S.st.filter(s=>s.cls===c).length;
    ask(`${lab(c)} sınıfındaki ${n} öğrenci silinsin mi?\nNotları da silinir.`,()=>{S.st=S.st.filter(s=>s.cls!==c);S.ex.forEach(e=>e.cls=e.cls.filter(x=>x!==c));cleanSc();afterReset('Sınıf silindi')})}
   else if(r==='theme'){ask('Görünüm ve renk teması varsayılana dönsün mü?',()=>{S.theme=null;applyTheme();afterReset('Tema sıfırlandı')})}
-  else if(r==='fab'){const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';{const w=$('#wa');w.style.left=w.style.top='';w.style.right='14px';w.style.bottom='162px'};S.fab=null;S.wa=null;afterReset('Simge yeri sıfırlandı')}
-  else if(r==='all'){ask('TÜM veriler (öğrenciler, yazılılar, notlar, tema) silinecek.\nOnaylamak için SIL yazın.',()=>{KEYS().forEach(k=>localStorage.removeItem(k));S={st:[],ex:[],fab:null,theme:null};cur=null;applyTheme();const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='92px';{const w=$('#wa');w.style.left=w.style.top='';w.style.right='14px';w.style.bottom='162px'};afterReset('Uygulama sıfırlandı')},{need:'SIL',ok:'Tümünü sil'})}}}
+  else if(r==='fab'){const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='162px';{const w=$('#wa');w.style.left=w.style.top='';w.style.right='14px';w.style.bottom='92px'};S.fab=null;S.wa=null;afterReset('Simge yeri sıfırlandı')}
+  else if(r==='all'){ask('TÜM veriler (öğrenciler, yazılılar, notlar, tema) silinecek.\nOnaylamak için SIL yazın.',()=>{KEYS().forEach(k=>localStorage.removeItem(k));S={st:[],ex:[],fab:null,theme:null};cur=null;applyTheme();const f=$('#fab');f.style.left=f.style.top='';f.style.right='14px';f.style.bottom='162px';{const w=$('#wa');w.style.left=w.style.top='';w.style.right='14px';w.style.bottom='92px'};afterReset('Uygulama sıfırlandı')},{need:'SIL',ok:'Tümünü sil'})}}}
 $('#set').onclick=()=>setDlg('b');
 
 applyTheme();
