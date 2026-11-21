@@ -249,10 +249,11 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 #ozl{max-height:44vh}
 .ozr{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
 .ozr input{width:22px;height:22px;flex:none}.ozr b{font-size:15px}.ozr small{display:block;color:var(--mut);font-size:12px}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mg2 label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px;min-width:0}.mg2 select{width:100%}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.3</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.4</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -278,22 +279,6 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </section>
 
 <section id="v-st">
-  <div id="map" class="card" style="background:var(--bg)">
-      <div class="mg">
-        <label>Ad (veya Ad Soyad) · zorunlu<select id="m_name"></select></label>
-        <label>Soyad (ayrıysa)<select id="m_sur"></select></label>
-        <label>Okul numarası · zorunlu<select id="m_no"></select></label>
-        <label>Sınıf (veya Sınıf/Şube)<select id="m_cls"></select></label>
-        <label>Şube (ayrıysa, sınıfla birleşir)<select id="m_sub"></select></label>
-      </div>
-      <div class="row">
-        <label><input type="checkbox" id="hdr" checked> İlk satır başlık</label>
-        <select id="mode"><option value="add">Listeye ekle</option><option value="rep">Listeyi değiştir</option></select>
-        <button class="b" id="doimp">İçe aktar</button>
-        <button class="g" onclick="$('#map').classList.remove('on')">Vazgeç</button>
-      </div>
-      <div class="hint" id="pv"></div>
-    </div>
   <input type="file" id="file" accept=".xlsx,.xls,.csv,.txt" hidden>
   <div class="ctl">
     <div class="row r3"><button class="b" id="impbtn">Excel / CSV'den aktar</button><button class="g" id="imphelp" aria-label="Nasıl hazırlanır?" title="Nasıl hazırlanır?">ⓘ</button><button class="b" id="addbtn">+ Elle ekle</button></div>
@@ -533,7 +518,7 @@ document.addEventListener('keydown',e=>{if(!$('#sm').classList.contains('on')||$
  else if(k==='Escape')closeScore()});
 
 /* Öğrenciler */
-let sel=new Set(),last=-1,IM=[];
+let sel=new Set(),last=-1,IM=[],IMN='';
 function fillCls(){const el=$('#cf2'),v=el.value,C=classes(),zn=S.st.filter(s=>s.ozel).length;el.innerHTML='<option value="">Tüm sınıflar</option>'+C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('')+(zn?`<option value="__oz">Özel gereksinimli (${zn})</option>`:'');el.value=(C.includes(v)||(v==='__oz'&&zn))?v:''}
 function sortList(L,k){const c=(a,b)=>cmpC(a.cls,b.cls),n=(a,b)=>cmpC(a.no,b.no),m=(a,b)=>a.name.localeCompare(b.name,'tr'),f=k==='name'?[m,c,n]:k==='no'?[n,c,m]:[c,n,m];
  return L.slice().sort((a,b)=>f[0](a,b)||f[1](a,b)||f[2](a,b))}
@@ -604,31 +589,44 @@ function ozDlg(){const g=$('#gd'),C=classes();let only=false;
 $('#ozbtn').onclick=ozDlg;
 
 /* İçe aktarma */
-$('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+$('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;IMN=f.name;
  if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
  try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
   IM=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false}).filter(r=>r.some(x=>String(x).trim()));
   if(!IM.length)return toast('Dosyada veri yok');openMap()}catch(err){toast('Dosya okunamadı')}};
 const colL=i=>String.fromCharCode(65+i%26);
-function openMap(){const h=IM[0],n=Math.max(...IM.slice(0,20).map(r=>r.length));
+function openMap(){const h=IM[0],n=Math.max(...IM.slice(0,20).map(r=>r.length)),g=$('#gd');
  const opt='<option value="">— yok —</option>'+Array.from({length:n},(_,i)=>`<option value="${i}">${colL(i)}: ${esc(String(h[i]??'').slice(0,24))}</option>`).join('');
- const g=(re,ex)=>{const i=h.findIndex(x=>re.test(norm(x))&&!(ex&&ex.test(norm(x))));return i<0?'':i};
- const a=g(/^(ad|adi|isim)$/),nm=g(/soyad/)!==''&&a!==''?a:g(/ad|isim/,/soyad$/);
- const m={name:nm===''?g(/ad|isim/):nm,sur:g(/^soyad(i)?$/),no:g(/no|numara/),cls:g(/sinif/),sub:g(/sube/)};
+ g.innerHTML=`<h3 style="margin:0 0 4px">Öğrenci listesini içe aktar</h3>
+ <p class="hint" style="margin:0 0 8px">${IMN?esc(IMN)+' · ':''}${IM.length} satır. Sütunları eşleştirin; <b>Ad Soyad</b> ve <b>Okul numarası</b> zorunludur.</p>
+ <div class="mg2">
+  <label>Ad / Ad Soyad · zorunlu<select id="m_name">${opt}</select></label>
+  <label>Soyad (ayrıysa)<select id="m_sur">${opt}</select></label>
+  <label>Okul numarası · zorunlu<select id="m_no">${opt}</select></label>
+  <label>Sınıf (veya Sınıf/Şube)<select id="m_cls">${opt}</select></label>
+  <label>Şube (ayrıysa sınıfla birleşir)<select id="m_sub">${opt}</select></label>
+ </div>
+ <div class="row" style="margin:10px 0 6px"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="hdr" checked> İlk satır başlık</label><select id="mode" style="flex:1;min-width:0"><option value="add">Listeye ekle</option><option value="rep">Listeyi değiştir</option></select></div>
+ <div class="hint" id="pv" style="margin-bottom:10px"></div>
+ <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="mcancel">Vazgeç</button><button class="b" id="doimp">İçe aktar</button></div>`;
+ const gu=(re,ex)=>{const i=h.findIndex(x=>re.test(norm(x))&&!(ex&&ex.test(norm(x))));return i<0?'':i};
+ const a=gu(/^(ad|adi|isim)$/),nm=gu(/soyad/)!==''&&a!==''?a:gu(/ad|isim/,/soyad$/);
+ const m={name:nm===''?gu(/ad|isim/):nm,sur:gu(/^soyad(i)?$/),no:gu(/no|numara/),cls:gu(/sinif/),sub:gu(/sube/)};
  if(m.sub===m.cls)m.sub='';if(m.sur===m.name)m.sur='';if(m.no===m.name)m.no='';
- for(const k in m){$('#m_'+k).innerHTML=opt;$('#m_'+k).value=m[k]}
- $('#map').classList.add('on');pv()}
-$('#map').onchange=pv;
+ for(const k in m)$('#m_'+k).value=m[k];
+ g.onchange=pv;
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='mcancel')closeG();else if(b.id==='doimp')doImport()};
+ $('#gm').classList.add('on');pv()}
 function mapped(){const H=$('#hdr').checked,ix=k=>$('#m_'+k).value===''?-1:+$('#m_'+k).value,[a,b,n,c,d]=['name','sur','no','cls','sub'].map(ix);
  return IM.slice(H?1:0).map(r=>{const v=i=>i<0?'':String(r[i]??'').trim(),sb=v(d).toLocaleUpperCase('tr');let cl=v(c);if(sb)cl=cl?cl+'/'+sb:sb;
   return{id:uid(),no:v(n),name:[v(a),v(b)].filter(Boolean).join(' '),cls:cl}}).filter(s=>s.name)}
 function pv(){const all=mapped(),L=all.filter(s=>s.no),miss=all.length-L.length,noCol=$('#m_no').value==='';
  $('#pv').innerHTML=(noCol?'<b style="color:var(--er)">Okul numarası sütununu seçmelisiniz.</b> Uygulama okul numarasına göre çalışır.':`<b>${L.length}</b> öğrenci aktarılacak. Örnek: `+L.slice(0,3).map(s=>`${esc(s.no)} · ${esc(s.name)} · ${esc(s.cls)}`).join(' | ')+(miss?` <b style="color:var(--er)">· numarası olmayan ${miss} satır atlanacak</b>`:''))}
-$('#doimp').onclick=()=>{if($('#m_no').value==='')return toast('Okul numarası sütununu seçin');const all=mapped(),L=all.filter(s=>s.no),skipped=all.length-L.length;if(!L.length)return toast('Aktarılacak öğrenci yok (ad ve okul numarası gerekli)');
+function doImport(){if($('#m_no').value==='')return toast('Okul numarası sütununu seçin');const all=mapped(),L=all.filter(s=>s.no),skipped=all.length-L.length;if(!L.length)return toast('Aktarılacak öğrenci yok (ad ve okul numarası gerekli)');
  const oldOz=new Set(S.st.filter(s=>s.ozel).map(s=>s.no+'|'+s.cls));if($('#mode').value==='rep')S.st=[];
  const have=new Set(S.st.map(s=>s.no&&s.no+'|'+s.cls));let k=0;
  L.forEach(s=>{if(s.no&&have.has(s.no+'|'+s.cls))return;if(oldOz.has(s.no+'|'+s.cls))s.ozel=true;S.st.push(s);k++});
- sortS();save();$('#map').classList.remove('on');fillCls();rS();toast(k+' öğrenci aktarıldı'+(skipped?` · numarasız ${skipped} satır atlandı`:''))};
+ sortS();save();closeG();fillCls();rS();toast(k+' öğrenci aktarıldı'+(skipped?` · numarasız ${skipped} satır atlandı`:''))}
 
 function tour(){const g=$('#gd');let i=0;
  const ST=[
