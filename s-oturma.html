@@ -107,7 +107,7 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="top">Pro 2.1 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
+<div class="top">Pro 2.2 | ©sebasmobil 2026 | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a><button id="tg" aria-label="Tema değiştir" title="Aydınlık / karanlık tema">🌙</button></div>
 <div class="wrap">
 <h1>🪑 Sınıf Oturma Düzeni</h1>
 
@@ -196,6 +196,9 @@ details.card>summary h2{margin:0}details.card[open]>summary{margin-bottom:10px}
   <button id="seq">Sırayla doldur</button>
   <button id="clr">Yerleşimi temizle</button>
  </div>
+ <div class="row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)"><label>Sıra yerleri (öğrencilerle birlikte)</label>
+  <button id="rtw">Duvardan pencereye</button><button id="rtd">Pencereden duvara</button></div>
+ <div class="row" style="margin-top:10px"><button id="hu">↶ Geri al</button><button id="hr">↷ İleri al</button></div>
  <div class="row" style="margin-top:8px"><span id="st" class="ct"></span></div>
 </details>
 
@@ -264,13 +267,14 @@ function room(){
  const V=w=>wi(w,1)+at(w).map(i=>`<div class="bc" style="justify-content:${{l:'flex-start',m:'center',r:'flex-end'}[i[2]]}"><div class="${i[0]+((i[0]=='bd'||dv)?' v':'')}">${i[3]}</div></div>`).join('');
  const inner=H('f')+mid+H('b'),L=V('l'),Rg=V('r');
  $('room').innerHTML=(L||Rg)?`<div class="sw">${L}<div class="mid">${inner}</div>${Rg}</div>`:inner;
+rotLab();
  const total=S.cols.reduce((a,c)=>a+c.d*c.s,0),f=Object.values(S.names).filter(Boolean).length;
  $('st').textContent=`Toplam ${total} yer · ${f} dolu`;
 }
 function all(){cfg();room();save()}
 const keys=()=>{const m=Math.max(...S.cols.map(c=>c.d)),o=[];for(let d=0;d<m;d++)S.cols.forEach((c,i)=>{if(d<c.d)for(let s=0;s<c.s;s++)o.push(`${i}-${d}-${s}`)});return o};
 const list=()=>shown().map(nm);
-function fill(arr){S.names={};const k=keys();arr.slice(0,k.length).forEach((n,i)=>S.names[k[i]]=n);
+function fill(arr){hpush();S.names={};const k=keys();arr.slice(0,k.length).forEach((n,i)=>S.names[k[i]]=n);
  room();save();if(arr.length>k.length)$('st').textContent+=` · ${arr.length-k.length} öğrenci sığmadı, masa ekleyin`}
 
 $('cm').onclick=()=>{if(S.cols.length>1){S.cols.pop();all()}};
@@ -297,7 +301,7 @@ const hasPlan=()=>Object.values(S.names).some(Boolean);
 const guard=(title,what,yes,fn)=>hasPlan()?confirmDlg(title,`Mevcut oturma düzeni <b>${what}</b>. Emin misin?`,yes,fn):fn();
 $('rnd').onclick=()=>guard('Rastgele dağıt','silinip öğrenciler rastgele yeniden yerleştirilecek','Rastgele dağıt',()=>{const a=list();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}fill(a)});
 $('seq').onclick=()=>guard('Sırayla doldur','silinip öğrenciler alfabetik sırayla yeniden yerleştirilecek','Sırayla doldur',()=>fill(list()));
-$('clr').onclick=()=>{if(hasPlan())confirmDlg('Yerleşimi temizle','Tüm masalardaki öğrenciler <b>kaldırılacak</b>. Emin misin?','Temizle',()=>{S.names={};room();save()})};
+$('clr').onclick=()=>{if(hasPlan())confirmDlg('Yerleşimi temizle','Tüm masalardaki öğrenciler <b>kaldırılacak</b>. Emin misin?','Temizle',()=>{hpush();S.names={};room();save()})};
 
 /* ---- Öğrenci listesi ---- */
 let ROWS=[],STU=[];
@@ -486,9 +490,9 @@ document.addEventListener('keydown',e=>{if(e.key=='Escape'){plock(true);glock(tr
 const savePR=()=>{try{localStorage.setItem(PK,JSON.stringify(PR))}catch(e){}};
 const curP=()=>PR.list.find(x=>x.id==PR.cur);
 function renderPR(){$('prs').innerHTML=PR.list.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');$('prs').value=PR.cur;$('prd').disabled=PR.list.length<2}
-function loadProfile(id,skip){if(!skip)persist();PR.cur=id;savePR();PD=rd('sod_p_'+id)||{};S=defS();
+function loadProfile(id,skip){HIST.u=[];HIST.r=[];if(!skip)persist();PR.cur=id;savePR();PD=rd('sod_p_'+id)||{};S=defS();
  try{const o=PD.S;if(o&&Array.isArray(o.cols)&&o.cols.length)Object.assign(S,o)}catch(e){}
- STU=Array.isArray(PD.STU)?PD.STU:[];PO=Object.assign({},PO0,PD.PO||{});all();after();pwrite();renderPR()}
+ STU=Array.isArray(PD.STU)?PD.STU:[];PO=Object.assign({},PO0,PD.PO||{});all();after();pwrite();renderPR();hbtn()}
 $('prs').onchange=e=>loadProfile(e.target.value);
 const q_=t=>esc(t).replace(/"/g,'&quot;');
 $('pra').onclick=()=>{dlg(`<h3>Yeni profil</h3><div class="one"><label style="flex:1 1 100%">Profil adı (örn. 6-A)<input id="pn"></label></div><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="pc" checked> Mevcut düzen ayarlarını kopyala (öğrenciler kopyalanmaz)</label><div class="act"><button id="dc">Vazgeç</button><button class="p" id="dy">Oluştur</button></div>`);
@@ -535,6 +539,24 @@ $('rs2').onclick=()=>confirmDlg('Görünüm ayarlarını sıfırla','Tema ve kar
  try{localStorage.removeItem('sod_theme');localStorage.removeItem('sod_open')}catch(e){}location.reload()});
 $('rs3').onclick=()=>confirmDlg('Tüm verileri sil','Tüm profiller, öğrenciler, düzenler ve ayarlar <b>kalıcı olarak</b> silinecek. Emin misin?','Hepsini sil',()=>{
  try{sodKeys().forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()});
+/* sıra yerlerini döndürme + geri/ileri al */
+const HIST={u:[],r:[]};
+const snap=()=>JSON.stringify({c:S.cols,n:S.names});
+function hpush(){HIST.u.push(snap());if(HIST.u.length>40)HIST.u.shift();HIST.r=[];hbtn()}
+function hbtn(){$('hu').disabled=!HIST.u.length;$('hr').disabled=!HIST.r.length}
+function hrestore(j){const o=JSON.parse(j);S.cols=o.c;S.names=o.n;all();hbtn()}
+$('hu').onclick=()=>{if(!HIST.u.length)return;HIST.r.push(snap());hrestore(HIST.u.pop());$('st').textContent='Geri alındı.'};
+$('hr').onclick=()=>{if(!HIST.r.length)return;HIST.u.push(snap());hrestore(HIST.r.pop());$('st').textContent='İleri alındı.'};
+function rotLab(){const l=S.ww=='l',r=S.ww=='r',n=S.cols.length;
+ $('rtw').textContent='Duvardan pencereye'+(l?' ←':r?' →':'');$('rtd').textContent='Pencereden duvara'+(l?' →':r?' ←':'');
+ $('rtw').disabled=$('rtd').disabled=n<2}
+function rot(dir){const n=S.cols.length;if(n<2)return;hpush();
+ const step=(S.ww=='r'?1:-1)*dir,mp=i=>(i+step+n)%n,nc=[],nn={};
+ S.cols.forEach((c,i)=>nc[mp(i)]=c);
+ Object.keys(S.names).forEach(k=>{const p=k.split('-');p[0]=mp(+p[0]);nn[p.join('-')]=S.names[k]});
+ S.cols=nc;S.names=nn;all();$('st').textContent=dir>0?'Sıralar duvardan pencereye doğru bir adım kaydırıldı.':'Sıralar pencereden duvara doğru bir adım kaydırıldı.'}
+$('rtw').onclick=()=>rot(1);$('rtd').onclick=()=>rot(-1);
+hbtn();rotLab();
 /* PWA manifest */
 (()=>{try{const I='data:image/png;base64,';
  const m={name:'Sınıf Oturma Düzeni',short_name:'Sınıf Düzeni',description:'sebasmobil',display:'standalone',orientation:'any',background_color:'#1F5E4A',theme_color:'#1F5E4A',lang:'tr',start_url:location.href.split('#')[0],
