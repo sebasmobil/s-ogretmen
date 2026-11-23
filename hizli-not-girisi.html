@@ -253,7 +253,7 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.7</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.8</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -451,7 +451,7 @@ function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
  return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b${s.ozel?' class="oz"':''}>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n?`${n}/${a.length} (${sum(a)})`:''}</span></button>`}
 function rE(){const ex=exById(cur);$('#etit').textContent=exFull(ex);ecl=ex.cls.slice().sort(cmpC);
  $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')+(()=>{const zn=exSt(ex).filter(s=>s.ozel).length;return zn?`<option value="oz">Özel gereksinimli (${zn})</option>`:''})();
- const f=S.fE||{},ix=(f.c==null||f.c==='__oz')?-1:ecl.indexOf(f.c);$('#ecf').value=(f.c==='__oz'&&[...$('#ecf').options].some(o=>o.value==='oz'))?'oz':(ix<0?'':String(ix));$('#est').value='all';$('#es').value=S.sEn||'cls';syncClr();rL()}
+ const f=S.fE||{},ix=(f.c==null||f.c==='__oz')?-1:ecl.indexOf(f.c);$('#ecf').value=(f.c==='__oz'&&[...$('#ecf').options].some(o=>o.value==='oz'))?'oz':(ix<0?'':String(ix));{const v=ex.fst;$('#est').value=['all','none','part','full','open'].includes(v)?v:'all'}$('#es').value=S.sEn||'cls';syncClr();rL()}
 const stOf=(ex,s)=>{const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;return n===0?'none':n===a.length?'full':'part'};
 const stOk=(f,t)=>f==='all'||f===t||(f==='open'&&t!=='full');
 function entryBase(ex){const q=norm($('#eq').value),v=$('#ecf').value;return exSt(ex).filter(s=>(v===''||(v==='oz'?!!s.ozel:s.cls===ecl[+v]))&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))}
@@ -466,7 +466,7 @@ function prog(){const ex=exById(cur),q=progOf(ex);$('#epg').textContent=q.n?`${q
 $('#es').onchange=e=>{S.sEn=e.target.value;save();rL()};
 $('#eq').oninput=rL;
 $('#ecf').onchange=()=>{const v=$('#ecf').value;(S.fE=S.fE||{}).c=v===''?null:(v==='oz'?'__oz':ecl[+v]);save();rL()};
-$('#est').onchange=rL;
+$('#est').onchange=()=>{const ex=exById(cur);if(ex){ex.fst=$('#est').value;save()}rL()};
 $('#eq').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('#el .sr');if(b)b.click()}};
 $('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id)};
 
