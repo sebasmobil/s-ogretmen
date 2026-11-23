@@ -253,7 +253,7 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.5</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.7</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -364,7 +364,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cur=null;go(b.
 $('#back').onclick=()=>{cur=null;go('ex')};
 
 /* Yazılı listesi */
-const progOf=ex=>{const L=exSt(ex),st=L.filter(s=>gs(ex,s.id).some(v=>v!=null)),d=st.filter(s=>done(ex,s)).length;return{d,n:st.length,none:L.length-st.length,total:L.length,p:st.length?Math.round(d*100/st.length):0}};
+const progOf=ex=>{const L=exSt(ex),st=L.filter(s=>gs(ex,s.id).some(v=>v!=null)),Q=ex.max.length;let f=0;st.forEach(s=>{f+=gs(ex,s.id).filter(v=>v!=null).length});const d=st.filter(s=>done(ex,s)).length;return{d,n:st.length,none:L.length-st.length,total:L.length,p:st.length?Math.round(f*100/(st.length*Q)):0}};
 function rC(){const G=[[1,'1. Dönem'],[2,'2. Dönem'],[0,'Dönem belirtilmemiş']];
  const op=k=>(S.fo||{})[k]!==false;
  const chev='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
@@ -372,7 +372,7 @@ function rC(){const G=[[1,'1. Dönem'],[2,'2. Dönem'],[0,'Dönem belirtilmemiş
   return `<div class="card ec" data-id="${ex.id}"><div class="row eh"><b class="et">${esc(ex.title)}</b><button class="g ed" title="Düzenle">✎</button><button class="g d xd" title="Sil">🗑</button></div>
  <div class="hint ei"><span class="tag">${esc(ex.ders||'Ders seçilmemiş')}</span> ${ex.cls.length?ex.cls.map(c=>esc(lab(c))).join(', '):'Sınıf seçilmedi'} · ${ex.max.length} soru · ${sum(ex.max)} puan</div>
  <div class="bar"><i style="width:${p}%"></i></div>
- <div class="row ef"><span class="hint" style="flex:1">${q.n?`${q.d}/${q.n} öğrenci tamamlandı`:'Henüz not girilmedi'}${q.n&&q.none?` · ${q.none} hiç girilmemiş`:''}</span><button class="b go">Not gir</button></div></div>`};
+ <div class="row ef"><span class="hint" style="flex:1">${q.n?`%${q.p} girildi · ${q.d}/${q.n} öğrenci tamamlandı`:'Henüz not girilmedi'}${q.n&&q.none?` · ${q.none} hiç girilmemiş`:''}</span><button class="b go">Not gir</button></div></div>`};
  const fold=(key,cls,title,cnt,body)=>{const o=op(key);return `<div class="fold ${cls}"><button class="fh ${cls}" data-k="${esc(key)}" aria-expanded="${o}">${chev}<b>${esc(title)}</b><span class="cnt">${cnt}</span></button><div class="fb"${o?'':' hidden'}>${body}</div></div>`};
  const sortEx=(a,b)=>(a.yno||999)-(b.yno||999)||a.title.localeCompare(b.title,'tr');
  $('#cards').innerHTML=G.filter(([k])=>k||S.ex.some(e=>!e.donem)).map(([k,t])=>{
@@ -451,7 +451,7 @@ function rowH(ex,s){const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;
  return `<button class="sr ${n===a.length?'done':n?'part':''}" data-id="${s.id}"><span class="sn"><b${s.ozel?' class="oz"':''}>${esc(s.name)}</b><small>${esc([s.no,s.cls].filter(Boolean).join(' · '))}</small></span><span class="sp">${n?`${n}/${a.length} (${sum(a)})`:''}</span></button>`}
 function rE(){const ex=exById(cur);$('#etit').textContent=exFull(ex);ecl=ex.cls.slice().sort(cmpC);
  $('#ecf').innerHTML='<option value="">Tüm sınıflar</option>'+ecl.map((c,i)=>`<option value="${i}">${esc(lab(c))}</option>`).join('')+(()=>{const zn=exSt(ex).filter(s=>s.ozel).length;return zn?`<option value="oz">Özel gereksinimli (${zn})</option>`:''})();
- const f=S.fE||{},ix=(f.c==null||f.c==='__oz')?-1:ecl.indexOf(f.c);$('#ecf').value=(f.c==='__oz'&&[...$('#ecf').options].some(o=>o.value==='oz'))?'oz':(ix<0?'':String(ix));$('#est').value=f.st||(f.m?'none':'all');$('#es').value=S.sEn||'cls';syncClr();rL()}
+ const f=S.fE||{},ix=(f.c==null||f.c==='__oz')?-1:ecl.indexOf(f.c);$('#ecf').value=(f.c==='__oz'&&[...$('#ecf').options].some(o=>o.value==='oz'))?'oz':(ix<0?'':String(ix));$('#est').value='all';$('#es').value=S.sEn||'cls';syncClr();rL()}
 const stOf=(ex,s)=>{const a=gs(ex,s.id),n=a.filter(x=>x!=null).length;return n===0?'none':n===a.length?'full':'part'};
 const stOk=(f,t)=>f==='all'||f===t||(f==='open'&&t!=='full');
 function entryBase(ex){const q=norm($('#eq').value),v=$('#ecf').value;return exSt(ex).filter(s=>(v===''||(v==='oz'?!!s.ozel:s.cls===ecl[+v]))&&(!q||norm(s.name+' '+s.no+' '+s.cls).includes(q)))}
@@ -462,11 +462,11 @@ function rL(){const ex=exById(cur),f=$('#est').value,k=S.sEn||'cls',cv=$('#ecf')
  const L=entryBase(ex).filter(s=>stOk(f,stOf(ex,s)));
  const R=(k==='pd'||k==='pa')?L.slice().sort((a,b)=>((k==='pd'?1:-1)*(sum(gs(ex,b.id))-sum(gs(ex,a.id))))||cmpC(a.cls,b.cls)||cmpC(a.no,b.no)):sortList(L,k);
  $('#el').innerHTML=R.map(s=>rowH(ex,s)).join('')||`<p class="hint" style="padding:14px;margin:0">${ex.cls.length?'Bu filtreye uyan öğrenci yok.':'Bu yazılıya sınıf seçilmemiş. Kartındaki ✎ ile sınıf ekleyin.'}</p>`;prog()}
-function prog(){const ex=exById(cur),q=progOf(ex);$('#epg').textContent=q.n?`${q.d}/${q.n}`:'–';$('#epg').title=`Tamamlanan / not girilmeye başlanan öğrenci. Hiç girilmemiş: ${q.none}`}
+function prog(){const ex=exById(cur),q=progOf(ex);$('#epg').textContent=q.n?`${q.d}/${q.n}`:'–';$('#epg').title=`Tamamlanan / not girilmeye başlanan öğrenci. Girilen puan oranı: %${q.p}. Hiç girilmemiş: ${q.none}`}
 $('#es').onchange=e=>{S.sEn=e.target.value;save();rL()};
 $('#eq').oninput=rL;
 $('#ecf').onchange=()=>{const v=$('#ecf').value;(S.fE=S.fE||{}).c=v===''?null:(v==='oz'?'__oz':ecl[+v]);save();rL()};
-$('#est').onchange=()=>{(S.fE=S.fE||{}).st=$('#est').value;save();rL()};
+$('#est').onchange=rL;
 $('#eq').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('#el .sr');if(b)b.click()}};
 $('#el').onclick=e=>{const b=e.target.closest('.sr');if(b)openScore(b.dataset.id)};
 
