@@ -100,7 +100,7 @@ button.r{background:#dc2626;color:#fff;padding:4px 8px;font-size:13px}
 <script>(function(){var t=null;try{t=localStorage.getItem('nbt_tema')}catch(e){}var m=(t==='light'||t==='dark')?t:'auto';if(m==='auto')t=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';var r=document.documentElement;r.setAttribute('data-theme',t);r.setAttribute('data-tmode',m)})()</script>
 </head>
 <body>
-<div id="vbar" class="np">Pro 1.4 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></div>
+<div id="vbar" class="np">Pro 1.5 | ©sebasmobil | <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL v3.0</a></div>
 <header><span>Nöbetçi Öğrenci Çizelgesi</span>
  <button id="thm" aria-label="Tema" title="Tema">
   <svg class="au" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
@@ -130,7 +130,7 @@ button.r{background:#dc2626;color:#fff;padding:4px 8px;font-size:13px}
  </div>
  <div class="card">
   <h3>Öğrenciler <small id="cn" style="font-weight:400;color:var(--muted)"></small></h3>
-  <div class="row"><button class="s" id="addb">+ Öğrenci ekle</button><button class="s" id="impb">Excel'den aktar</button><button class="s" id="tstb">Test verisi (24)</button></div>
+  <div class="row"><button class="s" id="addb">+ Öğrenci ekle</button><button class="s" id="impb">Excel'den aktar</button></div>
   <div id="sf" hidden style="margin-top:8px;padding:8px;background:var(--cell);border-radius:8px">
    <div class="row"><div><label>Numara</label><input id="fno"></div><div><label>Sınıf</label><input id="fsn"></div><div><label>Şube</label><input id="fsb"></div></div>
    <label>Adı Soyadı</label><input id="fad">
@@ -783,12 +783,6 @@ $('eok').onclick=()=>{
 };
 ['eno','esn','esb','ead'].forEach(i=>$(i).onkeydown=e=>{if(e.key==='Enter')$('eok').click()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('emd').hidden)closeEdit()});
-$('tstb').onclick=()=>{
-  const N=["Ahmet Yılmaz","Zeynep Kaya","Mehmet Demir","Elif Çelik","Mustafa Şahin","Ayşe Yıldız","Emre Aydın","Fatma Öztürk","Burak Arslan","Merve Doğan","Can Kılıç","Selin Aslan","Yusuf Çetin","Büşra Kara","Kerem Koç","İrem Kurt","Oğuz Özdemir","Gamze Polat","Eren Güneş","Nur Şimşek","Tuna Erdem","Hatice Bozkurt","Berkay Acar","Dilara Tekin"];
-  N.forEach((ad,i)=>{const o={no:String(101+i),ad,sinif:'9',sube:'A'};
-    if(!S.some(s=>s.no===o.no&&s.ad===o.ad&&cls(s)===cls(o)))S.push({id:uid(),...o});});
-  changed();
-};
 drawS();
 
 function range(){
