@@ -250,13 +250,13 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .ozr{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
 .ozr input{width:22px;height:22px;flex:none}.ozr b{font-size:15px}.ozr small{display:block;color:var(--mut);font-size:12px}
 .mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mg2 label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px;min-width:0}.mg2 select{width:100%}
-.pcard{background:var(--el);border:1px solid var(--ln);border-radius:12px;padding:9px 10px;margin-bottom:8px}.pl{display:flex;align-items:center;gap:6px}.pl+.pl{margin-top:7px}.pl .hint{width:62px;flex:none}.pl input{width:64px;text-align:center;padding:6px 3px;background:var(--card)}.pl select{padding:6px 4px;background:var(--card);flex:none}.pdel{margin-left:auto;padding:4px 11px!important}
+.pcard{background:var(--el);border:1px solid var(--ln);border-radius:12px;padding:9px 10px;margin-bottom:8px}.pl{display:flex;align-items:center;gap:6px}.pl+.pl{margin-top:7px}.pl .hint{width:62px;flex:none}.pl input{width:64px;text-align:center;padding:6px 3px;background:var(--card)}.pl select{padding:6px 4px;background:var(--card);flex:none}.pl input[type=checkbox]{width:22px;height:22px;padding:0;flex:none}.pdel{margin-left:auto;padding:4px 11px!important}
 .pfoot{position:sticky;bottom:0;z-index:3;display:flex;gap:10px;margin:10px -14px -14px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--ln)}.pfoot button{flex:1;height:44px;font-size:16px}
 .pvw{margin-top:4px}.pvw table{width:100%}.pvw td,.pvw th{padding:5px 3px;font-size:12.5px}.pvw th{z-index:2}.pvw td{white-space:normal;word-break:break-word}.pvw td:first-child{white-space:nowrap;font-size:12px}.pvi{width:42px;text-align:center;padding:5px 1px}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.12</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.13</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -757,7 +757,9 @@ function perfLab(G){return (G.donem?G.donem+'. Dönem · ':'')+G.ders}
 function perfAvg(s,E){const A=E.filter(e=>e.cls.includes(s.cls));if(!A.length)return null;let any=false,t=0;
  A.forEach(e=>{const a=gs(e,s.id),m=sum(e.max);if(a.some(v=>v!=null))any=true;t+=m?sum(a)*100/m:0});return any?t/A.length:null}
 function perfPick(r,rules){for(const u of rules){const lo=Math.min(u.a,u.b),hi=Math.max(u.a,u.b);if(r>=lo&&r<=hi)return u}return null}
-function perfGen(u,c){const o=[];for(let i=0;i<c;i++){if(u.m==='f')o.push(u.x);else{const lo=Math.ceil(Math.min(u.x,u.y)),hi=Math.floor(Math.max(u.x,u.y));o.push(hi<lo?lo:lo+Math.floor(Math.random()*(hi-lo+1)))}}return o}
+function perfGen(u,c){const o=[];for(let i=0;i<c;i++){if(u.m==='f'){o.push(u.x);continue}const l=Math.min(u.x,u.y),h=Math.max(u.x,u.y);let lo=Math.ceil(l),hi=Math.floor(h);
+ if(u.s){const f5=Math.ceil(l/5)*5,l5=Math.floor(h/5)*5;if(f5<=l5){o.push(f5+5*Math.floor(Math.random()*((l5-f5)/5+1)));continue}}
+ o.push(hi<lo?lo:lo+Math.floor(Math.random()*(hi-lo+1)))}return o}
 function perfValid(u){return [u.a,u.b,u.x].every(Number.isFinite)&&(u.m==='f'||Number.isFinite(u.y))}
 function perfGroups(){return Object.keys(S.perf||{}).filter(k=>S.perf[k]&&S.perf[k].v&&Object.keys(S.perf[k].v).length).map(k=>{const p=k.split('|');return{key:k,donem:+p[0],ders:p.slice(1).join('|')}})}
 const nv=x=>Number.isFinite(x)?x:'';
@@ -766,12 +768,12 @@ function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
  if(!E.length)return toast('Bu derste yazılı yok');
  const P=(S.perf&&S.perf[key])||null,L=S.st.filter(s=>E.some(e=>e.cls.includes(s.cls))).sort((a,b)=>cmpC(a.cls,b.cls)||byNo(a,b));
  if(!L.length)return toast('Bu yazılıların sınıflarında öğrenci yok');
- let cnt=P?P.cnt:3,rules=P&&P.rules&&P.rules.length?JSON.parse(JSON.stringify(P.rules)).map(u=>({a:u.a==null?NaN:u.a,b:u.b==null?NaN:u.b,m:u.m,x:u.x==null?NaN:u.x,y:u.y==null?NaN:u.y})):[{a:60,b:70,m:'f',x:80,y:80},{a:90,b:100,m:'r',x:95,y:100}],rows=null;
+ let cnt=P?P.cnt:3,rules=P&&P.rules&&P.rules.length?JSON.parse(JSON.stringify(P.rules)).map(u=>({a:u.a==null?NaN:u.a,b:u.b==null?NaN:u.b,m:u.m,x:u.x==null?NaN:u.x,y:u.y==null?NaN:u.y,s:!!u.s})):[{a:60,b:70,m:'f',x:80,y:80},{a:90,b:100,m:'r',x:95,y:100}],rows=null;
  const mk=keep=>{rows=L.map(s=>{const av=perfAvg(s,E);let v=null;
    if(av!=null){const sv=keep&&P&&P.v&&P.v[s.id];if(sv){v=sv.slice(0,cnt);while(v.length<cnt)v.push(null)}else{const u=perfPick(Math.round(av),rules);v=u?perfGen(u,cnt):null}}
    return{s,av,v}})};
  const drR=()=>{const ni=(i,f,v)=>`<input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="${f}" value="${nv(v)}">`;
-  $('#pfr').innerHTML=rules.map((u,i)=>`<div class="pcard"><div class="pl"><span class="hint">Ortalama</span>${ni(i,'a',u.a)}<span>–</span>${ni(i,'b',u.b)}<button class="g d pdel" data-del="${i}" aria-label="Kuralı sil">✕</button></div><div class="pl"><span class="hint">Verilecek</span><select data-i="${i}" data-f="m"><option value="f"${u.m==='f'?' selected':''}>Sabit</option><option value="r"${u.m==='r'?' selected':''}>Rastgele</option></select>${ni(i,'x',u.x)}${u.m==='r'?`<span>–</span>${ni(i,'y',u.y)}`:''}</div></div>`).join('')||'<p class="hint">Henüz kural yok.</p>'};
+  $('#pfr').innerHTML=rules.map((u,i)=>`<div class="pcard"><div class="pl"><span class="hint">Ortalama</span>${ni(i,'a',u.a)}<span>–</span>${ni(i,'b',u.b)}<button class="g d pdel" data-del="${i}" aria-label="Kuralı sil">✕</button></div><div class="pl"><span class="hint">Verilecek</span><select data-i="${i}" data-f="m"><option value="f"${u.m==='f'?' selected':''}>Sabit</option><option value="r"${u.m==='r'?' selected':''}>Rastgele</option></select>${ni(i,'x',u.x)}${u.m==='r'?`<span>–</span>${ni(i,'y',u.y)}`:''}</div>${u.m==='r'?`<div class="pl"><label class="ck2" style="padding:0 0 0 0"><input type="checkbox" data-i="${i}" data-f="s"${u.s?' checked':''}> 5'er 5'er ver (x0 / x5)</label></div>`:''}</div>`).join('')||'<p class="hint">Henüz kural yok.</p>'};
  const drP=()=>{const el=$('#pfv');if(!rows){el.innerHTML='<p class="hint" style="margin:6px 0">Kuralları girip “Hesapla” düğmesine basın.</p>';return}
   let ok=0,nm=0,na=0;rows.forEach(r=>{if(r.av==null)na++;else if(r.v)ok++;else nm++});
   const th=Array.from({length:cnt},(_,j)=>`<th>P${j+1}</th>`).join('');
@@ -785,10 +787,11 @@ function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
  if(P&&P.v)mk(true);drR();drP();
  $('#gm').classList.add('on');
  g.oninput=e=>{const t=e.target;
-  if(t.closest('#pfr')&&t.tagName==='INPUT'){rules[+t.dataset.i][t.dataset.f]=pnum(t.value)}
+  if(t.closest('#pfr')&&t.tagName==='INPUT'&&t.type!=='checkbox'){rules[+t.dataset.i][t.dataset.f]=pnum(t.value)}
   else if(t.classList&&t.classList.contains('pvi')){const r=rows[+t.dataset.r];if(!r.v)r.v=Array(cnt).fill(null);const v=pnum(t.value);r.v[+t.dataset.j]=Number.isFinite(v)?v:null}};
  g.onchange=e=>{const t=e.target;
-  if(t.id==='pfc'){let v=parseInt(t.value);if(!(v>=1))v=1;if(v>10)v=10;t.value=v;if(v!==cnt){cnt=v;rows=null;drP()}}
+  if(t.type==='checkbox'&&t.closest&&t.closest('#pfr')){rules[+t.dataset.i].s=t.checked}
+  else if(t.id==='pfc'){let v=parseInt(t.value);if(!(v>=1))v=1;if(v>10)v=10;t.value=v;if(v!==cnt){cnt=v;rows=null;drP()}}
   else if(t.closest&&t.closest('#pfr')&&t.tagName==='SELECT'){const u=rules[+t.dataset.i];u.m=t.value;if(u.m==='r'&&!Number.isFinite(u.y))u.y=u.x;drR()}};
  const doSave=()=>{const v={},a={};rows.forEach(r=>{if(r.av!=null&&r.v&&r.v.some(x=>x!=null)){v[r.s.id]=r.v.map(x=>Number.isFinite(x)?x:null);a[r.s.id]=Math.round(r.av*100)/100}});
   if(!Object.keys(v).length)return toast('Kaydedilecek performans notu yok',true);
