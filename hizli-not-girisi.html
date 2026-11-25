@@ -250,10 +250,12 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .ozr{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
 .ozr input{width:22px;height:22px;flex:none}.ozr b{font-size:15px}.ozr small{display:block;color:var(--mut);font-size:12px}
 .mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mg2 label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px;min-width:0}.mg2 select{width:100%}
+.prow{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:center;margin-bottom:6px}.prow input{width:58px;text-align:center;padding:6px 3px}.prow select{padding:6px 4px}.prow button{padding:5px 9px}
+.pvw{overflow:auto;max-height:40vh;border:1px solid var(--ln);border-radius:10px;background:var(--card)}.pvw td,.pvw th{padding:5px 7px;font-size:13px}.pvi{width:54px;text-align:center;padding:5px 2px}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.9</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.10</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -377,9 +379,9 @@ function rC(){const G=[[1,'1. Dönem'],[2,'2. Dönem'],[0,'Dönem belirtilmemiş
  const sortEx=(a,b)=>(a.yno||999)-(b.yno||999)||a.title.localeCompare(b.title,'tr');
  $('#cards').innerHTML=G.filter(([k])=>k||S.ex.some(e=>!e.donem)).map(([k,t])=>{
   const E=S.ex.filter(e=>(e.donem||0)===k),names=[...new Set(E.map(e=>e.ders||''))].sort((x,y)=>(x===''?1:0)-(y===''?1:0)||x.localeCompare(y,'tr'));
-  const body=names.map(n=>{const L=E.filter(e=>(e.ders||'')===n).sort(sortEx);return fold(k+'|'+n,'f2',n||'Ders belirtilmemiş',L.length,L.map(card).join(''))}).join('')||'<p class="hint" style="margin:4px 6px 10px">Bu dönemde henüz yazılı yok.</p>';
+  const body=names.map(n=>{const L=E.filter(e=>(e.ders||'')===n).sort(sortEx);return fold(k+'|'+n,'f2',n||'Ders belirtilmemiş',L.length,(k&&n?`<div class="row" style="margin:0 0 8px"><button class="g pf" data-pk="${k}" data-pn="${esc(n)}">Performans notu${S.perf&&S.perf[pkey(k,n)]?' ✓':''}</button></div>`:'')+L.map(card).join(''))}).join('')||'<p class="hint" style="margin:4px 6px 10px">Bu dönemde henüz yazılı yok.</p>';
   return fold(String(k),'f1',t,E.length,body)}).join('')}
-$('#cards').onclick=e=>{const fh=e.target.closest('.fh');
+$('#cards').onclick=e=>{const pf=e.target.closest('.pf');if(pf){perfDlg(+pf.dataset.pk,pf.dataset.pn);return}const fh=e.target.closest('.fh');
  if(fh){const k=fh.dataset.k,o=fh.getAttribute('aria-expanded')==='true';(S.fo=S.fo||{})[k]=!o;save();rC();return}
  const c=e.target.closest('.ec');if(!c)return;const ex=exById(c.dataset.id);
  if(e.target.closest('.ed'))exDlg(ex.id);
@@ -698,8 +700,9 @@ function scoreRows(ex,cls,inclEmpty,inclOz){const all=S.st.filter(s=>s.cls===cls
  all.forEach(s=>{if(s.ozel&&!inclOz){X.oz++;return}if(!inclEmpty&&gs(ex,s.id).every(v=>v==null)){X.empty++;return}R.push(s)});
  return{R:R.sort(byNo),X,total:all.length}}
 function scoreTSV(R,ex){return R.map(s=>[String(s.no||'')].concat(gs(ex,s.id).map(v=>fmt(v==null?0:v))).join('\t')).join('\n')}
-function expDlg(){const g=$('#gd');
+function expDlg(){const g=$('#gd'),PG=perfGroups();
  g.innerHTML=`<h3>Excel'e aktar</h3>
+  <div class="chips"><button class="cc on" id="xt1">Yazılılar</button><button class="cc" id="xt2">Performans notları</button></div><div id="xp1">
  ${S.ex.length?`<div class="sec sa"><div class="st"><span class="sn1">1</span>Puanları kopyala</div>
  <p class="hint" style="margin:0 0 8px">Seçilen sınıf kopyalanır: <b>ilk sütun okul numarası</b>, sonra soru puanları. Okul numarasına göre sıralıdır; ad, başlık ve toplam yoktur; girilmeyen (cevapsız) puan <b>0</b> olarak gelir. Varsayılan olarak notu hiç girilmemiş ve özel gereksinimli öğrenciler kopyalanmaz.</p>
  <div class="row"><select id="cpx" style="flex:1;min-width:0">${S.ex.map((e,i)=>`<option value="${i}">${esc(exFull(e))}</option>`).join('')}</select><select id="cpc"></select></div>
@@ -712,13 +715,17 @@ function expDlg(){const g=$('#gd');
  ${S.ex.map((e,i)=>`<label class="ck2"><input type="checkbox" class="xe" data-i="${i}" checked> ${esc(exFull(e))}</label>`).join('')||'<p class="hint">Henüz yazılı yok.</p>'}
  <label class="ck2"><input type="checkbox" id="xp" checked> Sınıf sayfaları da olsun</label>
  <button class="pb b" id="xgo" style="margin-top:6px">Excel'i indir</button></div>
+</div><div id="xp2" hidden>${perfTab(PG)}</div>
  <div class="row" style="justify-content:flex-end;margin:0"><button class="g" id="xc3">Kapat</button></div>`;
  $('#gm').classList.add('on');
  const fillC=()=>{const ex=S.ex[+$('#cpx').value],C=ex?ex.cls.slice().sort(cmpC):[];$('#cpc').innerHTML=C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'};
- if(S.ex.length)fillC();
- g.onchange=e=>{if(e.target.id==='cpx')fillC()};
+ if(S.ex.length)fillC();perfFillC(PG);
+ g.oninput=null;g.onchange=e=>{if(e.target.id==='cpx')fillC();else if(e.target.id==='pcx')perfFillC(PG)};
  g.onclick=async e=>{const id=e.target.id;
-  if(id==='xc3')closeG();
+  if(id==='xt1'||id==='xt2'){const t=id==='xt2';$('#xp1').hidden=t;$('#xp2').hidden=!t;$('#xt1').classList.toggle('on',!t);$('#xt2').classList.toggle('on',t)}
+  else if(id==='pcgo')await perfCopy(PG);
+  else if(id==='pxgo')perfXlsx(PG,g);
+  else if(id==='xc3')closeG();
   else if(id==='xgo'){const L=[...g.querySelectorAll('.xe:checked')].map(c=>S.ex[+c.dataset.i]);if(!L.length)return toast('Yazılı seçin');doExp(L,$('#xp').checked);closeG()}
   else if(id==='cpgo'){const ex=S.ex[+$('#cpx').value],cls=$('#cpc').value;if(!ex)return;
    const r=scoreRows(ex,cls,$('#cpe').checked,$('#cpz').checked);
@@ -741,6 +748,88 @@ function doExp(list,per){if(typeof XLSX==='undefined')return toast('Excel kütü
  f.onpointerdown=e=>{const r=f.getBoundingClientRect();st={dx:e.clientX-r.left,dy:e.clientY-r.top,x:e.clientX,y:e.clientY,m:false};f.setPointerCapture(e.pointerId)};
  f.onpointermove=e=>{if(!st)return;if(Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6)st.m=true;if(st.m)place(e.clientX-st.dx,e.clientY-st.dy)};
  f.onpointerup=()=>{if(!st)return;const m=st.m;st=null;if(m){const r=f.getBoundingClientRect();S.fab=[r.left,r.top];save()}else expDlg()}})();
+
+/* Performans notu */
+function pkey(k,n){return k+'|'+n}
+function perfEx(k,n){return S.ex.filter(e=>(e.donem||0)===k&&(e.ders||'')===n)}
+function perfLab(G){return (G.donem?G.donem+'. Dönem · ':'')+G.ders}
+function perfAvg(s,E){const A=E.filter(e=>e.cls.includes(s.cls));if(!A.length)return null;let any=false,t=0;
+ A.forEach(e=>{const a=gs(e,s.id),m=sum(e.max);if(a.some(v=>v!=null))any=true;t+=m?sum(a)*100/m:0});return any?t/A.length:null}
+function perfPick(r,rules){for(const u of rules){const lo=Math.min(u.a,u.b),hi=Math.max(u.a,u.b);if(r>=lo&&r<=hi)return u}return null}
+function perfGen(u,c){const o=[];for(let i=0;i<c;i++){if(u.m==='f')o.push(u.x);else{const lo=Math.ceil(Math.min(u.x,u.y)),hi=Math.floor(Math.max(u.x,u.y));o.push(hi<lo?lo:lo+Math.floor(Math.random()*(hi-lo+1)))}}return o}
+function perfValid(u){return [u.a,u.b,u.x].every(Number.isFinite)&&(u.m==='f'||Number.isFinite(u.y))}
+function perfGroups(){return Object.keys(S.perf||{}).filter(k=>S.perf[k]&&S.perf[k].v&&Object.keys(S.perf[k].v).length).map(k=>{const p=k.split('|');return{key:k,donem:+p[0],ders:p.slice(1).join('|')}})}
+const nv=x=>Number.isFinite(x)?x:'';
+const pnum=t=>t===''?NaN:parseFloat(String(t).replace(',','.'));
+function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
+ if(!E.length)return toast('Bu derste yazılı yok');
+ const P=(S.perf&&S.perf[key])||null,L=S.st.filter(s=>E.some(e=>e.cls.includes(s.cls))).sort((a,b)=>cmpC(a.cls,b.cls)||byNo(a,b));
+ if(!L.length)return toast('Bu yazılıların sınıflarında öğrenci yok');
+ let cnt=P?P.cnt:3,rules=P&&P.rules&&P.rules.length?JSON.parse(JSON.stringify(P.rules)).map(u=>({a:u.a==null?NaN:u.a,b:u.b==null?NaN:u.b,m:u.m,x:u.x==null?NaN:u.x,y:u.y==null?NaN:u.y})):[{a:60,b:70,m:'f',x:80,y:80},{a:90,b:100,m:'r',x:95,y:100}],rows=null;
+ const mk=keep=>{rows=L.map(s=>{const av=perfAvg(s,E);let v=null;
+   if(av!=null){const sv=keep&&P&&P.v&&P.v[s.id];if(sv){v=sv.slice(0,cnt);while(v.length<cnt)v.push(null)}else{const u=perfPick(Math.round(av),rules);v=u?perfGen(u,cnt):null}}
+   return{s,av,v}})};
+ const drR=()=>{$('#pfr').innerHTML=rules.map((u,i)=>`<div class="prow"><span class="hint">Ort.</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="a" value="${nv(u.a)}"><span>–</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="b" value="${nv(u.b)}"><span>→</span><select data-i="${i}" data-f="m"><option value="f"${u.m==='f'?' selected':''}>Sabit</option><option value="r"${u.m==='r'?' selected':''}>Rastgele</option></select><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="x" value="${nv(u.x)}">${u.m==='r'?`<span>–</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="y" value="${nv(u.y)}">`:''}<button class="g d" data-del="${i}" aria-label="Kuralı sil">✕</button></div>`).join('')||'<p class="hint">Henüz kural yok.</p>'};
+ const drP=()=>{const el=$('#pfv');if(!rows){el.innerHTML='<p class="hint" style="margin:6px 0">Kuralları girip “Hesapla” düğmesine basın.</p>';return}
+  let ok=0,nm=0,na=0;rows.forEach(r=>{if(r.av==null)na++;else if(r.v)ok++;else nm++});
+  const th=Array.from({length:cnt},(_,j)=>`<th>P${j+1}</th>`).join('');
+  el.innerHTML=`<p class="hint" style="margin:6px 0">${rows.length} öğrenci · ${ok} notlandı${nm?` · <b style="color:var(--er)">${nm} kurala uymadı</b>`:''}${na?` · ${na} öğrencinin hiç notu yok`:''}</p><div class="pvw"><table><thead><tr><th>Sınıf/No</th><th>Ad Soyad</th><th>Ort.</th>${th}</tr></thead><tbody>${rows.map((r,i)=>`<tr${r.s.ozel?' style="color:var(--er)"':''}><td>${esc(r.s.cls)} ${esc(r.s.no)}</td><td>${esc(r.s.name)}</td><td>${r.av==null?'—':fmt(Math.round(r.av*10)/10)}</td>${Array.from({length:cnt},(_,j)=>r.av==null?'<td>—</td>':`<td><input type="number" step="any" inputmode="decimal" class="pvi" data-r="${i}" data-j="${j}" value="${r.v&&r.v[j]!=null?r.v[j]:''}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`};
+ g.innerHTML=`<h3>Performans notu</h3><p class="hint" style="margin:0 0 8px"><b>${esc(perfLab({donem:k,ders:n}))}</b> · ${E.length} yazılı: ${E.map(e=>esc(e.title)).join(', ')}.<br>Her öğrencinin bu yazılıların 100 üzerinden ortalaması alınır; notu girilmemiş yazılı 0 sayılır, hiçbir yazılıdan notu olmayan öğrenciye not verilmez. Ortalama tam sayıya yuvarlanıp kurallarla eşleştirilir (alt ve üst sınır dahil, ilk uyan kural geçerli).</p>
+ <div class="row"><label class="hint" for="pfc">Kaç performans notu?</label><input id="pfc" type="number" min="1" max="10" value="${cnt}" style="width:64px;text-align:center"></div>
+ <div id="pfr"></div><div class="row"><button class="g" data-a="add">+ Kural ekle</button></div>
+ <div class="row"><button class="b" data-a="calc">Hesapla / yeniden dağıt</button></div>
+ <div id="pfv"></div>
+ <div class="row" style="justify-content:space-between;margin:10px 0 0"><button class="g" data-a="x">Kapat</button><button class="b" data-a="save">Uygula</button></div>`;
+ if(P&&P.v)mk(true);drR();drP();
+ $('#gm').classList.add('on');
+ g.oninput=e=>{const t=e.target;
+  if(t.closest('#pfr')&&t.tagName==='INPUT'){rules[+t.dataset.i][t.dataset.f]=pnum(t.value)}
+  else if(t.classList&&t.classList.contains('pvi')){const r=rows[+t.dataset.r];if(!r.v)r.v=Array(cnt).fill(null);const v=pnum(t.value);r.v[+t.dataset.j]=Number.isFinite(v)?v:null}};
+ g.onchange=e=>{const t=e.target;
+  if(t.id==='pfc'){let v=parseInt(t.value);if(!(v>=1))v=1;if(v>10)v=10;t.value=v;if(v!==cnt){cnt=v;rows=null;drP()}}
+  else if(t.closest&&t.closest('#pfr')&&t.tagName==='SELECT'){const u=rules[+t.dataset.i];u.m=t.value;if(u.m==='r'&&!Number.isFinite(u.y))u.y=u.x;drR()}};
+ const doSave=()=>{const v={},a={};rows.forEach(r=>{if(r.av!=null&&r.v&&r.v.some(x=>x!=null)){v[r.s.id]=r.v.map(x=>Number.isFinite(x)?x:null);a[r.s.id]=Math.round(r.av*100)/100}});
+  if(!Object.keys(v).length)return toast('Kaydedilecek performans notu yok',true);
+  (S.perf=S.perf||{})[key]={cnt,rules:rules.filter(perfValid),v,a,t:Date.now()};save();closeG();rC();toast(`✓ ${Object.keys(v).length} öğrenciye ${cnt} performans notu uygulandı`,'ok')};
+ g.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.del!==undefined){rules.splice(+b.dataset.del,1);drR();return}
+  const a=b.dataset.a;
+  if(a==='add'){const l=rules[rules.length-1];rules.push({a:l&&Number.isFinite(l.b)?l.b+1:0,b:100,m:'f',x:100,y:100});drR()}
+  else if(a==='calc'){if(!rules.length)return toast('Önce en az bir kural ekleyin',true);if(!rules.every(perfValid))return toast('Kurallardaki boş alanları doldurun',true);mk(false);drP()}
+  else if(a==='save'){if(!rows)return toast('Önce “Hesapla” düğmesine basın',true);
+   if(P&&P.v&&Object.keys(P.v).length)ask('Bu ders için kayıtlı performans notlarının yerine yenileri yazılsın mı?',doSave,{ok:'Evet, değiştir'});else doSave()}
+  else if(a==='x')closeG()}}
+function perfTab(PG){if(!PG.length)return '<p class="hint">Henüz performans notu yok. Yazılılar sekmesinde bir dersin klasöründeki “Performans notu” düğmesiyle oluşturabilirsiniz.</p>';
+ return `<div class="sec sa"><div class="st"><span class="sn1">1</span>Performans notlarını kopyala</div>
+ <p class="hint" style="margin:0 0 8px">Seçilen sınıf kopyalanır: <b>ilk sütun okul numarası</b>, sonra performans notları (P1, P2…). Okul numarasına göre sıralıdır; ad ve başlık yoktur. Varsayılan olarak özel gereksinimli öğrenciler kopyalanmaz.</p>
+ <div class="row"><select id="pcx" style="flex:1;min-width:0">${PG.map((G,i)=>`<option value="${i}">${esc(perfLab(G))}</option>`).join('')}</select><select id="pcc"></select></div>
+ <label class="ck2"><input type="checkbox" id="pcz"> Özel gereksinimli öğrencileri de ekle</label>
+ <button class="pb a" id="pcgo">Performans notlarını kopyala</button>
+ <textarea id="pct" readonly rows="6" style="width:100%;margin-top:8px;font-size:13px" hidden></textarea></div>
+ <div class="sec sb"><div class="st"><span class="sn1">2</span>Excel dosyası indir <small>tüm bilgilerle</small></div>
+ <p class="hint" style="margin:0 0 6px">Okul no, ad soyad, sınıf, yazılı ortalaması ve performans notlarıyla .xlsx dosyası oluşturur.</p>
+ ${PG.map((G,i)=>`<label class="ck2"><input type="checkbox" class="pe" data-i="${i}" checked> ${esc(perfLab(G))}</label>`).join('')}
+ <label class="ck2"><input type="checkbox" id="pxp" checked> Sınıf sayfaları da olsun</label>
+ <button class="pb b" id="pxgo" style="margin-top:6px">Excel'i indir</button></div>`}
+function perfFillC(PG){const x=$('#pcx');if(!x)return;const G=PG[+x.value],ids=G?Object.keys(S.perf[G.key].v):[],C=[...new Set(S.st.filter(s=>ids.includes(s.id)).map(s=>s.cls))].sort(cmpC);
+ $('#pcc').innerHTML=C.map(c=>`<option value="${esc(c)}">${esc(lab(c))}</option>`).join('')||'<option value="">Sınıf yok</option>'}
+async function perfCopy(PG){const G=PG[+$('#pcx').value],cls=$('#pcc').value;if(!G)return;const P=S.perf[G.key];
+ const all=S.st.filter(s=>s.cls===cls&&P.v[s.id]),inclOz=$('#pcz').checked,R=all.filter(s=>inclOz||!s.ozel).sort(byNo),oz=all.length-R.length;
+ if(!all.length)return toast('Bu sınıfta performans notu yok',true);
+ if(!R.length)return toast('Kopyalanacak öğrenci yok: hepsi özel gereksinimli. Kutuyu işaretleyerek ekleyebilirsiniz.',true);
+ const t=R.map(s=>[String(s.no||'')].concat(P.v[s.id].map(v=>fmt(v==null?0:v))).join('\t')).join('\n'),ta=$('#pct');
+ if(await copyText(t)){ta.hidden=true;toast(`✓ ${lab(cls)}: ${R.length} öğrenci × ${R[0]?P.v[R[0].id].length:P.cnt} performans notu kopyalandı`+(oz?` · dışarıda: ${oz} özel gereksinimli`:''),'ok')}
+ else{ta.hidden=false;ta.value=t;ta.focus();ta.select();toast('Otomatik kopyalanamadı. Metni seçip kopyalayın.',true)}}
+function perfXlsx(PG,g){if(typeof XLSX==='undefined')return toast('Excel kütüphanesi yüklenemedi (internet gerekli)');
+ const Ls=[...g.querySelectorAll('.pe:checked')].map(c=>PG[+c.dataset.i]);if(!Ls.length)return toast('Ders seçin');
+ const per=$('#pxp').checked,wb=XLSX.utils.book_new(),used=new Set(),multi=Ls.length>1;
+ const nm=(t,c)=>{const b=((multi?t.slice(0,16)+' ':'')+c).replace(/[\[\]:*?\/\\]/g,'-').slice(0,31).trim()||'Sayfa';let x=b,i=2;while(used.has(x))x=b.slice(0,28)+'_'+i++;used.add(x);return x};
+ Ls.forEach(G=>{const P=S.perf[G.key],c=Math.max(1,...Object.values(P.v).map(a=>a.length)),hd=['No','Ad Soyad','Sınıf','Yazılı ort.',...Array.from({length:c},(_,j)=>'Performans '+(j+1))];
+  const L=S.st.filter(s=>P.v[s.id]).sort((a,b)=>cmpC(a.cls,b.cls)||byNo(a,b)),row=s=>[/^\d+$/.test(s.no)?+s.no:s.no,s.name,s.cls,P.a&&P.a[s.id]!=null?P.a[s.id]:'',...P.v[s.id].map(v=>v==null?0:v)];
+  const add=(n,R)=>{const ws=XLSX.utils.aoa_to_sheet([hd,...R.map(row)]);ws['!cols']=[{wch:8},{wch:28},{wch:8},{wch:11},...Array.from({length:c},()=>({wch:13}))];XLSX.utils.book_append_sheet(wb,ws,n)};
+  const sh=((G.donem?G.donem+'.D ':'')+G.ders).slice(0,18);
+  add(nm(sh,'Tümü'),L);if(per)[...new Set(L.map(s=>s.cls))].sort(cmpC).forEach(cl=>add(nm(sh,lab(cl)),L.filter(s=>s.cls===cl)))});
+ XLSX.writeFile(wb,(multi?'performans-notlari':'Performans '+perfLab(Ls[0])).replace(/[\\\/:*?"<>|]/g,'-')+'.xlsx')}
 
 /* Tema */
 const PAL=[['Varsayılan',null],['Mavi','#2563eb'],['Gök mavisi','#0284c7'],['Turkuaz','#0891b2'],['Yeşil','#16a34a'],['Çimen','#65a30d'],['Sarı','#eab308'],['Turuncu','#ea580c'],['Kırmızı','#dc2626'],['Gül','#e11d48'],['Pembe','#db2777'],['Mor','#7c3aed'],['İndigo','#4f46e5'],['Kahve','#92400e'],['Gri','#475569']];
@@ -798,6 +887,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
  else body=`<p class="hint">Silinenler geri getirilemez. Önce <b>Yedekleme</b> sekmesinden yedek almanız önerilir.</p>
  <div class="rl">
  <button class="g d" data-r="scores">Tüm notları sıfırla<small>Yazılılar ve öğrenciler kalır</small></button>
+ <button class="g d" data-r="perf">Performans notlarını sıfırla<small>Kurallar ve performans notları silinir; yazılılar kalır</small></button>
  <button class="g d" data-r="exams">Tüm yazılıları sil<small>Notlarıyla birlikte; öğrenciler kalır</small></button>
  <button class="g d" data-r="students">Tüm öğrencileri sil<small>Yazılılar kalır; girilen notlar da silinir</small></button>
  <div class="row" style="margin:0"><select id="rx" style="flex:1">${S.ex.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')||'<option value="">Yazılı yok</option>'}</select><button class="g d" data-r="exscores">Notlarını sıfırla</button><button class="g d" data-r="exdel">Yazılıyı sil</button></div>
@@ -822,6 +912,7 @@ function setDlg(tab){tab=tab||'b';const g=$('#gd');
   const r=d.r;if(!r)return;
   const ex=exById($('#rx')&&$('#rx').value),c=classes()[+($('#rc')?$('#rc').value:-1)];
   if(r==='scores'){ask('Tüm yazılılardaki girilmiş notlar silinsin mi?\nyazılılar ve öğrenciler kalır.',()=>{S.ex.forEach(e=>e.sc={});afterReset('Tüm notlar sıfırlandı')})}
+  else if(r==='perf'){ask('Tüm performans notları ve kuralları silinsin mi?\nYazılılar ve notlar kalır.',()=>{S.perf=null;afterReset('Performans notları sıfırlandı')})}
   else if(r==='exams'){if(S.ex.length)ask(S.ex.length+' yazılı notlarıyla birlikte silinsin mi?\nÖğrenci listesi kalır.',()=>{S.ex=[];afterReset('Yazılılar silindi')})}
   else if(r==='students'){if(S.st.length)ask(S.st.length+' öğrenci silinsin mi?\nGirilen notlar da silinir, yazılılar kalır.',()=>{S.st=[];cleanSc();afterReset('Öğrenciler silindi')})}
   else if(r==='exscores'){if(!ex)return toast('Yazılı seçin');ask(`“${ex.title}” yazılısının notları silinsin mi?`,()=>{ex.sc={};afterReset('Notlar sıfırlandı')})}
