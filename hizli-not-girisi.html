@@ -250,12 +250,13 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 .ozr{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
 .ozr input{width:22px;height:22px;flex:none}.ozr b{font-size:15px}.ozr small{display:block;color:var(--mut);font-size:12px}
 .mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mg2 label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px;min-width:0}.mg2 select{width:100%}
-.prow{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:center;margin-bottom:6px}.prow input{width:58px;text-align:center;padding:6px 3px}.prow select{padding:6px 4px}.prow button{padding:5px 9px}
-.pvw{overflow:auto;max-height:40vh;border:1px solid var(--ln);border-radius:10px;background:var(--card)}.pvw td,.pvw th{padding:5px 7px;font-size:13px}.pvi{width:54px;text-align:center;padding:5px 2px}
+.pcard{background:var(--el);border:1px solid var(--ln);border-radius:12px;padding:9px 10px;margin-bottom:8px}.pl{display:flex;align-items:center;gap:6px}.pl+.pl{margin-top:7px}.pl .hint{width:62px;flex:none}.pl input{width:64px;text-align:center;padding:6px 3px;background:var(--card)}.pl select{padding:6px 4px;background:var(--card);flex:none}.pdel{margin-left:auto;padding:4px 11px!important}
+.pfoot{position:sticky;bottom:0;z-index:3;display:flex;gap:10px;margin:10px -14px -14px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--ln)}.pfoot button{flex:1;height:44px;font-size:16px}
+.pvw{margin-top:4px}.pvw table{width:100%}.pvw td,.pvw th{padding:5px 3px;font-size:12.5px}.pvw th{z-index:2}.pvw td{white-space:normal;word-break:break-word}.pvw td:first-child{white-space:nowrap;font-size:12px}.pvi{width:42px;text-align:center;padding:5px 1px}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.10</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.12</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -769,7 +770,8 @@ function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
  const mk=keep=>{rows=L.map(s=>{const av=perfAvg(s,E);let v=null;
    if(av!=null){const sv=keep&&P&&P.v&&P.v[s.id];if(sv){v=sv.slice(0,cnt);while(v.length<cnt)v.push(null)}else{const u=perfPick(Math.round(av),rules);v=u?perfGen(u,cnt):null}}
    return{s,av,v}})};
- const drR=()=>{$('#pfr').innerHTML=rules.map((u,i)=>`<div class="prow"><span class="hint">Ort.</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="a" value="${nv(u.a)}"><span>–</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="b" value="${nv(u.b)}"><span>→</span><select data-i="${i}" data-f="m"><option value="f"${u.m==='f'?' selected':''}>Sabit</option><option value="r"${u.m==='r'?' selected':''}>Rastgele</option></select><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="x" value="${nv(u.x)}">${u.m==='r'?`<span>–</span><input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="y" value="${nv(u.y)}">`:''}<button class="g d" data-del="${i}" aria-label="Kuralı sil">✕</button></div>`).join('')||'<p class="hint">Henüz kural yok.</p>'};
+ const drR=()=>{const ni=(i,f,v)=>`<input type="number" step="any" inputmode="decimal" data-i="${i}" data-f="${f}" value="${nv(v)}">`;
+  $('#pfr').innerHTML=rules.map((u,i)=>`<div class="pcard"><div class="pl"><span class="hint">Ortalama</span>${ni(i,'a',u.a)}<span>–</span>${ni(i,'b',u.b)}<button class="g d pdel" data-del="${i}" aria-label="Kuralı sil">✕</button></div><div class="pl"><span class="hint">Verilecek</span><select data-i="${i}" data-f="m"><option value="f"${u.m==='f'?' selected':''}>Sabit</option><option value="r"${u.m==='r'?' selected':''}>Rastgele</option></select>${ni(i,'x',u.x)}${u.m==='r'?`<span>–</span>${ni(i,'y',u.y)}`:''}</div></div>`).join('')||'<p class="hint">Henüz kural yok.</p>'};
  const drP=()=>{const el=$('#pfv');if(!rows){el.innerHTML='<p class="hint" style="margin:6px 0">Kuralları girip “Hesapla” düğmesine basın.</p>';return}
   let ok=0,nm=0,na=0;rows.forEach(r=>{if(r.av==null)na++;else if(r.v)ok++;else nm++});
   const th=Array.from({length:cnt},(_,j)=>`<th>P${j+1}</th>`).join('');
@@ -779,7 +781,7 @@ function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
  <div id="pfr"></div><div class="row"><button class="g" data-a="add">+ Kural ekle</button></div>
  <div class="row"><button class="b" data-a="calc">Hesapla / yeniden dağıt</button></div>
  <div id="pfv"></div>
- <div class="row" style="justify-content:space-between;margin:10px 0 0"><button class="g" data-a="x">Kapat</button><button class="b" data-a="save">Uygula</button></div>`;
+ <div class="pfoot"><button class="g" data-a="x">Kapat</button><button class="b" data-a="save">Uygula</button></div>`;
  if(P&&P.v)mk(true);drR();drP();
  $('#gm').classList.add('on');
  g.oninput=e=>{const t=e.target;
@@ -951,7 +953,7 @@ function shTarget(){let root=null;if(!$('#tc').hidden)root=$('#tcw');else if($('
  const c=root.querySelector('.tbody,.tct');return c||root}
 function shUpdate(){const sh=$('#sh'),el=shTarget();
  if(!el||el.scrollHeight-el.clientHeight-el.scrollTop<=8||el.clientHeight<40){sh.hidden=true;return}
- const r=el.getBoundingClientRect();sh.style.left=r.left+'px';sh.style.width=r.width+'px';sh.style.top=(r.bottom-58)+'px';sh.hidden=false}
+ const r=el.getBoundingClientRect();sh.style.left=r.left+'px';sh.style.width=r.width+'px';const ft=el.querySelector&&el.querySelector('.pfoot');sh.style.top=(r.bottom-58-(ft?ft.offsetHeight:0))+'px';sh.hidden=false}
 const shSoon=()=>requestAnimationFrame(()=>requestAnimationFrame(shUpdate));
 document.addEventListener('scroll',shUpdate,true);addEventListener('resize',shSoon);
 ['#gd','#tcw'].forEach(s=>new MutationObserver(shSoon).observe($(s),{childList:true,subtree:true}));
