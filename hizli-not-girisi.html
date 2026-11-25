@@ -256,7 +256,7 @@ body.lk{position:fixed;left:0;right:0;width:100%}
 </style>
 </head>
 <body>
-<div id="vb"><span>Pro <span id="ver">2.0.13</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
+<div id="vb"><span>Pro <span id="ver">2.0.15</span> | ©sebasmobil 2026 | AGPL v3.0</span></div>
 <header>
   <h1>Hızlı Not Girişi</h1>
   <nav><button data-v="ex" class="on">Yazılılar</button><button data-v="st">Öğrenciler</button><a href="https://sebasmobil.github.io/s-ogretmen/not-doldurucu.html" target="_blank" rel="noopener" id="eoka">Not Doldurucu</a></nav>
@@ -350,8 +350,9 @@ function ask(msg,cb,o){o=o||{};const m=$('#cm'),d=$('#cd');
  m.classList.add('on');
  if($('#cno'))$('#cno').onclick=()=>m.classList.remove('on');
  $('#cyes').onclick=()=>{if(o.need&&$('#cn').value.trim().toUpperCase()!==o.need)return toast('Onay için '+o.need+' yazın');m.classList.remove('on');cb()}}
-let tm;const toast=(m,w)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('warn',w===true);t.classList.toggle('ok',w==='ok');
- if(w&&$('#sm').classList.contains('on')){t.style.bottom='auto';t.style.top=$('.sd .mnav').getBoundingClientRect().top+'px'}else{t.style.top='';t.style.bottom=''}
+let tm;const toast=(m,w,top)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('warn',w===true);t.classList.toggle('ok',w==='ok');
+ if(top){t.style.bottom='auto';t.style.top='calc(env(safe-area-inset-top,0px) + 40px)'}
+ else if(w&&$('#sm').classList.contains('on')){t.style.bottom='auto';t.style.top=$('.sd .mnav').getBoundingClientRect().top+'px'}else{t.style.top='';t.style.bottom=''}
  if(w===true){try{navigator.vibrate&&navigator.vibrate([40,40,40])}catch(e){}}
  t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>t.classList.remove('on'),2300)};
 const closeG=()=>{$('#gm').classList.remove('on');$('#gd').onkeydown=null};
@@ -764,10 +765,11 @@ function perfValid(u){return [u.a,u.b,u.x].every(Number.isFinite)&&(u.m==='f'||N
 function perfGroups(){return Object.keys(S.perf||{}).filter(k=>S.perf[k]&&S.perf[k].v&&Object.keys(S.perf[k].v).length).map(k=>{const p=k.split('|');return{key:k,donem:+p[0],ders:p.slice(1).join('|')}})}
 const nv=x=>Number.isFinite(x)?x:'';
 const pnum=t=>t===''?NaN:parseFloat(String(t).replace(',','.'));
+const ptoast=(m,w)=>toast(m,w,true);
 function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
- if(!E.length)return toast('Bu derste yazılı yok');
+ if(!E.length)return ptoast('Bu derste yazılı yok');
  const P=(S.perf&&S.perf[key])||null,L=S.st.filter(s=>E.some(e=>e.cls.includes(s.cls))).sort((a,b)=>cmpC(a.cls,b.cls)||byNo(a,b));
- if(!L.length)return toast('Bu yazılıların sınıflarında öğrenci yok');
+ if(!L.length)return ptoast('Bu yazılıların sınıflarında öğrenci yok');
  let cnt=P?P.cnt:3,rules=P&&P.rules&&P.rules.length?JSON.parse(JSON.stringify(P.rules)).map(u=>({a:u.a==null?NaN:u.a,b:u.b==null?NaN:u.b,m:u.m,x:u.x==null?NaN:u.x,y:u.y==null?NaN:u.y,s:!!u.s})):[{a:60,b:70,m:'f',x:80,y:80},{a:90,b:100,m:'r',x:95,y:100}],rows=null;
  const mk=keep=>{rows=L.map(s=>{const av=perfAvg(s,E);let v=null;
    if(av!=null){const sv=keep&&P&&P.v&&P.v[s.id];if(sv){v=sv.slice(0,cnt);while(v.length<cnt)v.push(null)}else{const u=perfPick(Math.round(av),rules);v=u?perfGen(u,cnt):null}}
@@ -794,14 +796,16 @@ function perfDlg(k,n){const E=perfEx(k,n),g=$('#gd'),key=pkey(k,n);
   else if(t.id==='pfc'){let v=parseInt(t.value);if(!(v>=1))v=1;if(v>10)v=10;t.value=v;if(v!==cnt){cnt=v;rows=null;drP()}}
   else if(t.closest&&t.closest('#pfr')&&t.tagName==='SELECT'){const u=rules[+t.dataset.i];u.m=t.value;if(u.m==='r'&&!Number.isFinite(u.y))u.y=u.x;drR()}};
  const doSave=()=>{const v={},a={};rows.forEach(r=>{if(r.av!=null&&r.v&&r.v.some(x=>x!=null)){v[r.s.id]=r.v.map(x=>Number.isFinite(x)?x:null);a[r.s.id]=Math.round(r.av*100)/100}});
-  if(!Object.keys(v).length)return toast('Kaydedilecek performans notu yok',true);
-  (S.perf=S.perf||{})[key]={cnt,rules:rules.filter(perfValid),v,a,t:Date.now()};save();closeG();rC();toast(`✓ ${Object.keys(v).length} öğrenciye ${cnt} performans notu uygulandı`,'ok')};
+  if(!Object.keys(v).length)return ptoast('Kaydedilecek performans notu yok',true);
+  (S.perf=S.perf||{})[key]={cnt,rules:rules.filter(perfValid),v,a,t:Date.now()};save();closeG();rC();ptoast(`✓ ${Object.keys(v).length} öğrenciye ${cnt} performans notu uygulandı`,'ok')};
  g.onclick=e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.del!==undefined){rules.splice(+b.dataset.del,1);drR();return}
   const a=b.dataset.a;
   if(a==='add'){const l=rules[rules.length-1];rules.push({a:l&&Number.isFinite(l.b)?l.b+1:0,b:100,m:'f',x:100,y:100});drR()}
-  else if(a==='calc'){if(!rules.length)return toast('Önce en az bir kural ekleyin',true);if(!rules.every(perfValid))return toast('Kurallardaki boş alanları doldurun',true);mk(false);drP()}
-  else if(a==='save'){if(!rows)return toast('Önce “Hesapla” düğmesine basın',true);
+  else if(a==='calc'){if(!rules.length)return ptoast('Önce en az bir kural ekleyin',true);if(!rules.every(perfValid))return ptoast('Kurallardaki boş alanları doldurun',true);
+   const run=()=>{const first=!rows;mk(false);drP();const ok=rows.filter(r=>r.v).length;ptoast(first?`✓ Notlar dağıtıldı · ${ok} öğrenciye ${cnt} performans notu`:`✓ Yeniden dağıtıldı · ${ok} öğrenci`,'ok')};
+   if(rows)ask('Daha önce dağıtılmış notlar var (elle değiştirdikleriniz dahil). Yeniden dağıtılırsa yerlerine yenileri yazılır. Devam edilsin mi?',run,{ok:'Evet, yeniden dağıt'});else run()}
+  else if(a==='save'){if(!rows)return ptoast('Önce “Hesapla” düğmesine basın',true);
    if(P&&P.v&&Object.keys(P.v).length)ask('Bu ders için kayıtlı performans notlarının yerine yenileri yazılsın mı?',doSave,{ok:'Evet, değiştir'});else doSave()}
   else if(a==='x')closeG()}}
 function perfTab(PG){if(!PG.length)return '<p class="hint">Henüz performans notu yok. Yazılılar sekmesinde bir dersin klasöründeki “Performans notu” düğmesiyle oluşturabilirsiniz.</p>';
